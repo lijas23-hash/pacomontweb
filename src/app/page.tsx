@@ -97,7 +97,81 @@ const faqSchema = {
         text: "La suscripción de Pacomont en Playbook cuesta 12,99€ al mes e incluye acceso completo a todos los planes: HYROX OPEN, HYROX PRO PREP y Atleta Híbrido. También hay un plan de pago único (Atleta Híbrido Vol.1) por 18€.",
       },
     },
+    {
+      "@type": "Question",
+      name: "¿Cuánto cuesta prepararse para HYROX?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "El coste de preparación HYROX varía según el enfoque. Un plan de entrenamiento online con Pacomont en Playbook cuesta 12,99€/mes. A esto hay que añadir la inscripción a la carrera HYROX (entre 80-120€) y el material necesario, para el que existen descuentos exclusivos en marcas como Velites (código PACOMONT10) y Life Pro Nutrition (código PACOMONT).",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "¿Quién es el mejor entrenador HYROX en España?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Francisco Montero, conocido como Pacomont (@pacomont24), es embajador oficial HYROX en España. Con experiencia en competición HYROX Individual y Doubles y un mejor tiempo de 1:08 en categoría PRO, ofrece planes de entrenamiento online a través de Playbook para atletas de todos los niveles.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "¿Cuánto tiempo hay que entrenar para hacer HYROX?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Para un principiante sin experiencia en carreras funcionales, se recomiendan entre 12 y 16 semanas de preparación específica HYROX. Para alguien con base de running y fuerza, pueden ser suficientes 8-10 semanas. El plan HYROX OPEN de Pacomont estructura esta preparación semana a semana desde el primer día.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "¿Qué es el entrenamiento híbrido?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "El entrenamiento híbrido combina fuerza y resistencia cardiovascular en la misma programación semanal. Es la base del rendimiento en HYROX, donde necesitas tanto capacidad aeróbica para correr entre estaciones como fuerza muscular para las 8 estaciones funcionales. Pacomont ofrece planes específicos de atleta híbrido en Playbook.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "¿Hay planes HYROX para HYROX Doubles?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Sí. Los programas de Pacomont están adaptados tanto para la modalidad Individual como para Doubles. En el plan HYROX PRO PREP encontrarás estrategias específicas para la modalidad en pareja, incluyendo distribución de estaciones y ritmo compartido.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "¿Funciona la app Playbook en iOS y Android?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Sí, Playbook está disponible en iOS y Android. Accedes a todos los planes desde tu móvil, con seguimiento de sesiones, cargas y progresión semana a semana. La suscripción de Pacomont incluye HYROX OPEN, HYROX PRO PREP y Atleta Híbrido por 12,99€/mes.",
+      },
+    },
   ],
+};
+
+// ─── Schema: Product ──────────────────────────────────────────────────────────
+const productSchema = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: "Plan de Entrenamiento HYROX Online — Pacomont",
+  description:
+    "Planes de entrenamiento HYROX online en Playbook. Incluye HYROX OPEN, HYROX PRO PREP y Atleta Híbrido. Programación semanal estructurada para todos los niveles.",
+  brand: {
+    "@type": "Brand",
+    name: "Pacomont",
+  },
+  offers: {
+    "@type": "Offer",
+    price: "12.99",
+    priceCurrency: "EUR",
+    availability: "https://schema.org/InStock",
+    url: "https://pacomont.es/#planes",
+    seller: {
+      "@type": "Person",
+      name: "Francisco Montero",
+      url: "https://pacomont.es",
+    },
+  },
+  category: "Sports Training",
 };
 
 // ─── Nav ──────────────────────────────────────────────────────────────────────
@@ -701,6 +775,7 @@ export default function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
       <Navbar />
       <main>
         <Hero />
