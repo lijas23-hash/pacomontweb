@@ -186,6 +186,7 @@ function Navbar() {
         <a href="#planes" className="hover:text-blue-300 transition-colors">Planes</a>
         <a href="#descuentos" className="hover:text-blue-300 transition-colors">Descuentos</a>
         <a href="#faq" className="hover:text-blue-300 transition-colors">FAQ</a>
+        <a href="/blog" className="hover:text-blue-300 transition-colors">Blog</a>
       </div>
       <a
         href="https://my.playbookapp.io/pacomont"
