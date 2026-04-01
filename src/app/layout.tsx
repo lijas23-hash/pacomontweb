@@ -57,6 +57,7 @@ export const metadata: Metadata = {
   },
   alternates: { canonical: "https://pacomont.com" },
   robots: { index: true, follow: true },
+  verification: { google: "qkNaCo1RI4cfE5pmPszUNnyHiA0HpR9WoEL3dx8DT94" },
 };
 
 const GA_ID = "G-XXXXXXXXXX"; // ← Reemplazar con tu ID de GA4
