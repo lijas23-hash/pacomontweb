@@ -1,0 +1,7 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "cd pacomont-web && npm run build",
+  "outputDirectory": "pacomont-web/.next",
+  "installCommand": "cd pacomont-web && npm install",
+  "devCommand": "cd pacomont-web && npm run dev"
+}
