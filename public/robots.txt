@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /_next/
 
-Sitemap: https://pacomont.com/sitemap.xml
+Sitemap: https://pacomont.es/sitemap.xml
 
 User-agent: GPTBot
 Allow: /
