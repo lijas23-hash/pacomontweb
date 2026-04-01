@@ -16,7 +16,7 @@ export default function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 md:px-12 bg-gradient-to-b from-black/60 to-transparent">
       <div className="flex items-center justify-between">
         <a href="/" className="text-white text-2xl tracking-widest uppercase" style={{ fontFamily: "var(--font-bebas)" }}>
-          PACO<span className="text-zinc-500">/</span>MONT
+          PACOMONT
         </a>
 
         {/* Desktop links */}
