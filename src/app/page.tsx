@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Navbar from "@/components/Navbar";
 
 // ─── Schema: Person ───────────────────────────────────────────────────────────
 const personSchema = {
@@ -174,31 +175,6 @@ const productSchema = {
   category: "Sports Training",
 };
 
-// ─── Nav ──────────────────────────────────────────────────────────────────────
-function Navbar() {
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 md:px-12 bg-gradient-to-b from-black/60 to-transparent">
-      <div className="text-white font-bold text-xl tracking-widest uppercase">
-        Paco<span className="text-blue-400">mont</span>
-      </div>
-      <div className="hidden md:flex items-center gap-8 text-sm text-zinc-300 font-medium">
-        <a href="#sobre-mi" className="hover:text-blue-300 transition-colors">Sobre mí</a>
-        <a href="#planes" className="hover:text-blue-300 transition-colors">Planes</a>
-        <a href="#descuentos" className="hover:text-blue-300 transition-colors">Descuentos</a>
-        <a href="#faq" className="hover:text-blue-300 transition-colors">FAQ</a>
-        <a href="/blog" className="hover:text-blue-300 transition-colors">Blog</a>
-      </div>
-      <a
-        href="https://my.playbookapp.io/pacomont"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="bg-blue-500/80 hover:bg-blue-500 text-white text-sm font-semibold px-5 py-2 rounded-full transition-colors"
-      >
-        Empezar ahora
-      </a>
-    </nav>
-  );
-}
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 function Hero() {
@@ -218,7 +194,7 @@ function Hero() {
         <p className="text-blue-400 text-sm font-bold tracking-[0.3em] uppercase mb-4">
           Embajador Oficial HYROX · España
         </p>
-        <h1 className="text-5xl md:text-7xl font-black leading-none tracking-tight mb-6">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight mb-6">
           Planes de<br />entrenamiento<br />
           <span className="gradient-text">HYROX PRO.</span>
         </h1>
@@ -521,8 +497,8 @@ function DiscountCard({ brand, category, code, discount, url, description }: Dis
         </span>
       </div>
       <p className="text-zinc-400 text-sm leading-relaxed mb-6 flex-1">{description}</p>
-      <div className="flex items-center justify-between gap-4 mt-auto">
-        <div className="bg-zinc-800 rounded-lg px-4 py-2 flex-1 text-center">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-auto">
+        <div className="bg-zinc-800 rounded-lg px-4 py-2 w-full sm:flex-1 text-center">
           <p className="text-xs text-zinc-500 mb-1">Código</p>
           <p className="font-mono font-bold text-white tracking-widest text-sm">{code}</p>
         </div>
@@ -530,7 +506,7 @@ function DiscountCard({ brand, category, code, discount, url, description }: Dis
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="bg-blue-500/80 hover:bg-blue-500 text-white font-bold text-sm px-5 py-3 rounded-xl transition-colors whitespace-nowrap"
+          className="bg-blue-500/80 hover:bg-blue-500 text-white font-bold text-sm px-5 py-3 rounded-xl transition-colors whitespace-nowrap w-full sm:w-auto text-center"
         >
           Comprar →
         </a>

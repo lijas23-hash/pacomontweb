@@ -30,7 +30,7 @@ export default function BlogIndex() {
 
       <main className="pt-32 pb-24 px-6 md:px-16 max-w-4xl mx-auto">
         <p className="text-blue-400 text-sm font-bold tracking-[0.3em] uppercase mb-4">Blog</p>
-        <h1 className="text-4xl md:text-5xl font-black mb-4">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-4">
           Todo sobre <span style={{ background: "linear-gradient(135deg, #60a5fa, #93c5fd)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>HYROX.</span>
         </h1>
         <p className="text-zinc-400 text-lg mb-16 max-w-xl">

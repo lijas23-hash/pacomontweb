@@ -77,7 +77,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         <p className="text-zinc-500 text-sm mb-4">
           {new Date(post.date).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })}
         </p>
-        <h1 className="text-4xl md:text-5xl font-black leading-tight mb-8">{post.title}</h1>
+        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight mb-8">{post.title}</h1>
 
         <div className="prose prose-invert prose-lg max-w-none
           prose-headings:font-black prose-headings:tracking-tight
