@@ -60,7 +60,7 @@ export const metadata: Metadata = {
   verification: { google: "qkNaCo1RI4cfE5pmPszUNnyHiA0HpR9WoEL3dx8DT94" },
 };
 
-const GA_ID = "G-XXXXXXXXXX"; // ← Reemplazar con tu ID de GA4
+const GA_ID = "G-42LDC0ZVCQ"; // ← Reemplazar con tu ID de GA4
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
