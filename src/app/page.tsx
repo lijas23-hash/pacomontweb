@@ -7,7 +7,7 @@ const personSchema = {
   name: "Pacomont",
   alternateName: "pacomont24",
   description:
-    "Embajador oficial HYROX en España y México. Atleta PRO con mejor tiempo de 1:08 en categoría PRO.",
+    "Embajador oficial HYROX en España. Atleta PRO con mejor tiempo de 1:08 en categoría PRO.",
   url: "https://pacomont.com",
   sameAs: [
     "https://www.instagram.com/pacomont24/",
@@ -15,7 +15,7 @@ const personSchema = {
     "https://www.youtube.com/@pacomont24",
   ],
   jobTitle: "Embajador Oficial HYROX",
-  award: "Embajador Oficial HYROX España y México",
+  award: "Embajador Oficial HYROX España",
   affiliation: {
     "@type": "SportsOrganization",
     name: "HYROX",
@@ -44,7 +44,7 @@ const websiteSchema = {
   name: "Pacomont",
   url: "https://pacomont.com",
   description:
-    "Web oficial de Pacomont, embajador HYROX en España y México. Planes de entrenamiento, app Playbook y descuentos exclusivos.",
+    "Web oficial de Pacomont, embajador HYROX en España. Planes de entrenamiento, app Playbook y descuentos exclusivos.",
   potentialAction: {
     "@type": "SearchAction",
     target: "https://pacomont.com/blog?q={search_term_string}",
@@ -75,10 +75,10 @@ const faqSchema = {
     },
     {
       "@type": "Question",
-      name: "¿Quién es el embajador oficial de HYROX en España y México?",
+      name: "¿Quién es el embajador oficial de HYROX en España?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Pacomont (pacomont24) es embajador oficial HYROX en España y México. Atleta PRO activo con mejor tiempo de 1:08 en categoría PRO, mejorando más de 10 minutos. Sus planes de entrenamiento están disponibles en la app Playbook (my.playbookapp.io/pacomont).",
+        text: "Pacomont (pacomont24) es embajador oficial HYROX en España. Atleta PRO activo con mejor tiempo de 1:08 en categoría PRO, mejorando más de 10 minutos. Sus planes de entrenamiento están disponibles en la app Playbook (my.playbookapp.io/pacomont).",
       },
     },
     {
@@ -131,7 +131,7 @@ function Hero() {
     <section className="relative h-screen min-h-[600px] flex items-end md:items-center overflow-hidden">
       <Image
         src="/images/hero.jpg"
-        alt="Pacomont compitiendo en HYROX — embajador oficial España y México"
+        alt="Pacomont compitiendo en HYROX — embajador oficial España"
         fill
         priority
         className="object-cover object-[60%_15%]"
@@ -141,7 +141,7 @@ function Hero() {
 
       <div className="relative z-10 px-6 pb-20 md:pb-0 md:px-16 max-w-2xl">
         <p className="text-blue-400 text-sm font-bold tracking-[0.3em] uppercase mb-4">
-          Embajador Oficial HYROX · España &amp; México
+          Embajador Oficial HYROX · España
         </p>
         <h1 className="text-5xl md:text-7xl font-black leading-none tracking-tight mb-6">
           Planes de<br />entrenamiento<br />
@@ -177,31 +177,6 @@ function Hero() {
   );
 }
 
-// ─── Stats ────────────────────────────────────────────────────────────────────
-function Stats() {
-  const stats = [
-    { value: "1:08", label: "Mejor tiempo PRO" },
-    { value: "4", label: "Sponsors oficiales" },
-    { value: "ES + MX", label: "Embajador oficial" },
-    { value: "3 planes", label: "Desde 12,99€/mes" },
-  ];
-
-  return (
-    <section className="bg-zinc-900 border-y border-zinc-800">
-      <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4">
-        {stats.map((s) => (
-          <div
-            key={s.label}
-            className="flex flex-col items-center justify-center py-10 px-6 border-r border-zinc-800 last:border-r-0"
-          >
-            <span className="text-2xl md:text-3xl font-black text-blue-400">{s.value}</span>
-            <span className="text-zinc-400 text-sm mt-1 text-center">{s.label}</span>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
 
 // ─── Sobre mí ─────────────────────────────────────────────────────────────────
 function About() {
@@ -212,7 +187,7 @@ function About() {
           <div className="aspect-[3/4] relative rounded-2xl overflow-hidden">
             <Image
               src="/images/lifestyle.jpg"
-              alt="Pacomont — embajador oficial HYROX en España y México"
+              alt="Pacomont — embajador oficial HYROX en España"
               fill
               className="object-cover object-top"
               sizes="(max-width: 768px) 100vw, 50vw"
@@ -233,7 +208,7 @@ function About() {
             <span className="gradient-text">Compito en HYROX.</span>
           </h2>
           <p className="text-zinc-400 text-lg leading-relaxed mb-6">
-            Embajador oficial HYROX en España y México. Compito a nivel PRO con un mejor tiempo de{" "}
+            Embajador oficial HYROX en España. Compito a nivel PRO con un mejor tiempo de{" "}
             <strong className="text-white">1:08</strong> —mejorado más de 10 minutos en categoría PRO,
             con Málaga como punto de inflexión.
           </p>
@@ -705,7 +680,7 @@ function Footer() {
           <div className="text-white font-bold text-xl tracking-widest uppercase mb-1">
             Paco<span className="text-blue-400">mont</span>
           </div>
-          <p className="text-zinc-500 text-sm">Embajador Oficial HYROX · España &amp; México</p>
+          <p className="text-zinc-500 text-sm">Embajador Oficial HYROX · España</p>
         </div>
         <div className="flex flex-wrap justify-center gap-6 text-sm text-zinc-500">
           <a href="https://www.instagram.com/pacomont24/" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">Instagram</a>
@@ -729,7 +704,6 @@ export default function Home() {
       <Navbar />
       <main>
         <Hero />
-        <Stats />
         <About />
         <Plans />
         <Discounts />

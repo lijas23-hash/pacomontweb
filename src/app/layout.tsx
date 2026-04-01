@@ -15,19 +15,17 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://pacomont.com"),
-  title: "Pacomont | Embajador Oficial HYROX España y México — Planes de Entrenamiento",
+  title: "Pacomont | Embajador Oficial HYROX España — Planes de Entrenamiento",
   description:
-    "Pacomont, embajador oficial HYROX en España y México. Atleta PRO con 1:08 en categoría PRO. Planes de entrenamiento HYROX desde 12,99€/mes en Playbook. Descuentos en Velites y Life Pro Nutrition.",
+    "Pacomont, embajador oficial HYROX en España. Atleta PRO con 1:08 en categoría PRO. Planes de entrenamiento HYROX desde 12,99€/mes en Playbook. Descuentos en Velites y Life Pro Nutrition.",
   keywords: [
     "HYROX España",
-    "HYROX México",
     "entrenamiento HYROX",
     "plan entrenamiento HYROX online",
     "cómo preparar HYROX",
     "entrenador HYROX online",
     "Pacomont",
     "embajador HYROX España",
-    "embajador HYROX México",
     "HYROX doubles",
     "HYROX individual",
     "app entrenamiento HYROX",
@@ -38,19 +36,18 @@ export const metadata: Metadata = {
     "carreras híbridas entrenamiento",
   ],
   openGraph: {
-    title: "Pacomont | Embajador Oficial HYROX España y México",
+    title: "Pacomont | Embajador Oficial HYROX España",
     description:
       "Atleta PRO HYROX con 1:16:16. Planes de entrenamiento desde 12,99€/mes en Playbook. Descuentos exclusivos en equipamiento y suplementación.",
     url: "https://pacomont.com",
     siteName: "Pacomont",
     locale: "es_ES",
-    alternateLocale: ["es_MX"],
     type: "website",
-    images: [{ url: "/images/hero.jpg", width: 1200, height: 630, alt: "Pacomont - Embajador Oficial HYROX España y México" }],
+    images: [{ url: "/images/hero.jpg", width: 1200, height: 630, alt: "Pacomont - Embajador Oficial HYROX España" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Pacomont | Embajador Oficial HYROX España y México",
+    title: "Pacomont | Embajador Oficial HYROX España",
     description: "Planes de entrenamiento HYROX PRO desde 12,99€/mes. Atleta PRO con mejor tiempo de 1:08.",
     images: ["/images/hero.jpg"],
   },
