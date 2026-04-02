@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getPostBySlug, getAllPosts } from "@/lib/blog";
+import Navbar from "@/components/Navbar";
 import type { Metadata } from "next";
 
 export async function generateStaticParams() {
@@ -56,19 +57,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
     <div className="min-h-screen" style={{ backgroundColor: "#0d1117" }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
 
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 md:px-12 bg-gradient-to-b from-black/60 to-transparent">
-        <Link href="/" className="text-white font-bold text-xl tracking-widest uppercase">
-          Paco<span className="text-blue-400">mont</span>
-        </Link>
-        <Link
-          href="https://my.playbookapp.io/pacomont"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="bg-blue-500/80 hover:bg-blue-500 text-white text-sm font-semibold px-5 py-2 rounded-full transition-colors"
-        >
-          Ver planes →
-        </Link>
-      </nav>
+      <Navbar />
 
       <main className="pt-32 pb-24 px-6 md:px-16 max-w-3xl mx-auto">
         <Link href="/blog" className="text-blue-400 text-sm font-medium hover:text-blue-300 transition-colors mb-8 inline-block">

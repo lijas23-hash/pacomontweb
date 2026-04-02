@@ -729,7 +729,7 @@ function Footer() {
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="text-center md:text-left">
           <div className="text-white font-bold text-xl tracking-widest uppercase mb-1">
-            Paco<span className="text-blue-400">mont</span>
+            <span style={{ fontFamily: "var(--font-bebas)" }}>PACOMONT</span>
           </div>
           <p className="text-zinc-500 text-sm">Embajador Oficial HYROX · España</p>
         </div>
