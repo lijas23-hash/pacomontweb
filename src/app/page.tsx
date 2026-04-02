@@ -473,6 +473,92 @@ function Plans() {
   );
 }
 
+// ─── Testimonios ─────────────────────────────────────────────────────────────
+function Testimonials() {
+  const testimonials = [
+    {
+      name: "Pablo",
+      text: "Voy a continuar contigo siempre!! Todo el plan es espectacular!! Antes me quedaba horas en el GYM, ahora solo lo que me indica la sesión y mi cuerpo ha cambiado completamente!! Ni cuando iba al gym por horas tenía el cuerpo de ahora!! Todo el mundo se da cuenta, mi espalda está súper ancha, mi pecho definido y en forma, mis hombros parecen cocos de lo redondo que están.",
+      highlight: "Mi cuerpo ha cambiado completamente.",
+    },
+    {
+      name: "Jose",
+      text: "Me siento fenomenal. Nunca había corrido y me he hecho los 10k esta mañana mejorando el ritmo. Voy lento pero cada vez mejor.",
+      highlight: "Nunca había corrido y ya hago 10k.",
+    },
+    {
+      name: "Cintia",
+      text: "El último subido sin lugar a dudas es top. Gran trabajo. Sigo en el box oficial de HYROX, tengo preparada la parte de ergómetro y carrera — me faltaba complementarlo con algo específico de fuerza y este plan lo cierra perfectamente.",
+      highlight: "Gran trabajo. Lo que me faltaba.",
+    },
+  ];
+
+  return (
+    <section className="py-24 px-6 md:px-16" style={{ backgroundColor: "#0d1117" }}>
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-16">
+          <p className="text-blue-400 text-sm font-bold tracking-[0.3em] uppercase mb-4">
+            Lo que dicen mis atletas
+          </p>
+          <h2 className="text-4xl md:text-5xl font-black mb-4">
+            Resultados reales.<br />
+            <span className="gradient-text">Sin trampa.</span>
+          </h2>
+          <p className="text-zinc-400 text-lg max-w-xl mx-auto">
+            Mensajes directos de atletas que llevan semanas entrenando con mis planes.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-6">
+          {testimonials.map((t) => (
+            <div key={t.name} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 flex flex-col">
+              <p className="text-blue-400 text-2xl font-black mb-4">&ldquo;</p>
+              <p className="text-white font-bold text-base mb-3 leading-snug">{t.highlight}</p>
+              <p className="text-zinc-400 text-sm leading-relaxed flex-1">{t.text}</p>
+              <div className="mt-6 pt-4 border-t border-zinc-800">
+                <p className="text-white font-bold text-sm">{t.name}</p>
+                <p className="text-zinc-500 text-xs">Atleta Pacomont</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Lead Magnet ──────────────────────────────────────────────────────────────
+function LeadMagnet() {
+  return (
+    <section className="py-24 px-6 md:px-16 bg-zinc-900">
+      <div className="max-w-3xl mx-auto text-center">
+        <p className="text-blue-400 text-sm font-bold tracking-[0.3em] uppercase mb-4">
+          Pruébalo gratis
+        </p>
+        <h2 className="text-4xl md:text-5xl font-black mb-6">
+          1 semana gratis.<br />
+          <span className="gradient-text">Sin compromisos.</span>
+        </h2>
+        <p className="text-zinc-400 text-lg max-w-xl mx-auto mb-4">
+          Accede a una semana completa de entrenamiento de cualquiera de mis planes — HYROX OPEN, HYROX PRO PREP o Atleta Híbrido — sin pagar nada.
+        </p>
+        <p className="text-zinc-500 text-sm mb-10">
+          Entra en Playbook, empieza el plan y comprueba por ti mismo si el método funciona.
+        </p>
+        <a
+          href="https://my.playbookapp.io/pacomont"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block bg-blue-500/80 hover:bg-blue-500 text-white font-bold px-10 py-5 rounded-full transition-colors text-lg"
+        >
+          Empezar semana gratis →
+        </a>
+        <p className="text-zinc-600 text-xs mt-4">Sin tarjeta de crédito. Cancela cuando quieras.</p>
+      </div>
+    </section>
+  );
+}
+
 // ─── Descuentos ───────────────────────────────────────────────────────────────
 type Discount = {
   brand: string;
@@ -762,6 +848,8 @@ export default function Home() {
         <Hero />
         <About />
         <Plans />
+        <Testimonials />
+        <LeadMagnet />
         <Discounts />
         <FAQ />
         <Social />
