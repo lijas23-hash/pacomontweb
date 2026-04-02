@@ -346,6 +346,7 @@ function PlanCard({ name, tag, price, priceNote, weeks, days, level, description
       >
         {cta}
       </a>
+      <p className="text-zinc-600 text-xs text-center mt-2">Accede de forma segura vía Playbook.</p>
     </div>
   );
 }
@@ -739,7 +740,10 @@ function Footer() {
           <a href="https://www.youtube.com/@pacomont24" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">YouTube</a>
           <a href="https://my.playbookapp.io/pacomont" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">Playbook</a>
         </div>
-        <p className="text-zinc-600 text-xs">© 2025 Pacomont. Todos los derechos reservados.</p>
+        <div className="flex flex-col items-center md:items-end gap-1">
+          <p className="text-zinc-600 text-xs">© 2025 Pacomont. Todos los derechos reservados.</p>
+          <a href="/privacidad" className="text-zinc-700 text-xs hover:text-zinc-500 transition-colors">Política de Privacidad</a>
+        </div>
       </div>
     </footer>
   );
