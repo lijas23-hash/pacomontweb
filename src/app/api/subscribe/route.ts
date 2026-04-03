@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
       "api-key": process.env.BREVO_API_KEY!,
     },
     body: JSON.stringify({
-      sender: { name: "Pacomont", email: "hola@pacomont.es" },
+      sender: { name: "Pacomont", email: "pacomont@pacomont.es" },
       to: [{ email }],
       subject: "Tu checklist HYROX + 20% de descuento en mis planes",
       htmlContent: emailHtml(email),
