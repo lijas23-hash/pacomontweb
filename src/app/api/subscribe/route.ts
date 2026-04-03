@@ -55,6 +55,8 @@ const emailHtml = (email: string) => `<!DOCTYPE html>
           <p style="margin:0 0 8px;font-size:12px;font-weight:700;color:#93c5fd;text-transform:uppercase;letter-spacing:0.15em">Oferta exclusiva para suscriptores</p>
           <h2 style="margin:0 0 12px;font-size:24px;font-weight:900;color:#fff">20% de descuento en mis planes</h2>
           <p style="margin:0 0 24px;font-size:14px;color:#bfdbfe;line-height:1.6">HYROX OPEN, PRO PREP y Atleta Híbrido. Los mismos programas con los que compito a nivel PRO.</p>
+          <a href="https://pacomont.es/checklist-hyrox" style="display:inline-block;background:#fff;color:#1e40af;font-weight:700;font-size:15px;text-decoration:none;padding:14px 32px;border-radius:50px;margin-bottom:12px">Ver checklist online →</a>
+          <br>
           <a href="${PLAYBOOK_DISCOUNT}" style="display:inline-block;background:#3b82f6;color:#fff;font-weight:700;font-size:15px;text-decoration:none;padding:14px 32px;border-radius:50px">Activar 20% de descuento →</a>
           <p style="margin:16px 0 0;font-size:12px;color:#93c5fd">12,99€/mes · Sin permanencia · Cancela cuando quieras</p>
         </td></tr>

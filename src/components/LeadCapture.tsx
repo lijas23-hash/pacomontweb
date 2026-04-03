@@ -22,9 +22,17 @@ export default function LeadCapture() {
 
   if (status === "ok") {
     return (
-      <div className="mt-8 bg-blue-500/10 border border-blue-400/30 rounded-2xl px-6 py-4 max-w-md">
-        <p className="text-blue-300 font-bold text-sm">✓ ¡Listo! Revisa tu email.</p>
-        <p className="text-zinc-400 text-xs mt-1">Te mando la checklist en unos minutos.</p>
+      <div className="mt-8 bg-blue-500/10 border border-blue-400/30 rounded-2xl px-6 py-5 max-w-md">
+        <p className="text-blue-300 font-bold text-sm mb-1">✓ ¡Listo! Tu checklist está lista.</p>
+        <p className="text-zinc-400 text-xs mb-4">También te la enviamos por email con el 20% de descuento en los planes.</p>
+        <a
+          href="/checklist-hyrox"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block bg-blue-500/80 hover:bg-blue-500 text-white font-bold text-sm px-6 py-3 rounded-full transition-colors"
+        >
+          Descargar checklist →
+        </a>
       </div>
     );
   }
