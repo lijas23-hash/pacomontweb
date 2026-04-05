@@ -195,10 +195,12 @@ function Hero() {
         <p className="text-blue-400 text-sm font-bold tracking-[0.3em] uppercase mb-4">
           Embajador Oficial HYROX · España
         </p>
-        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight mb-6">
-          Planes de<br />entrenamiento.<br />
-          <span className="gradient-text">Más fuerza.<br />Más velocidad.</span>
+        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight mb-3">
+          Planes de<br />entrenamiento.
         </h1>
+        <p className="text-zinc-400 text-base md:text-lg font-medium mb-5 max-w-md">
+          Gana más fuerza y corre más rápido.
+        </p>
         <p className="text-zinc-300 text-lg md:text-xl leading-relaxed mb-8 max-w-md">
           Los mismos programas con los que compito a nivel PRO,
           disponibles para ti desde 12,99€/mes. Individual, Doubles y todos los niveles.
