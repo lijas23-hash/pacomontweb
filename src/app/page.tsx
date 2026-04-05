@@ -196,8 +196,8 @@ function Hero() {
           Embajador Oficial HYROX · España
         </p>
         <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight mb-6">
-          Entrena con<br />
-          <span className="gradient-text">el embajador.</span>
+          Planes de<br />entrenamiento.<br />
+          <span className="gradient-text">Más fuerza.<br />Más velocidad.</span>
         </h1>
         <p className="text-zinc-300 text-lg md:text-xl leading-relaxed mb-8 max-w-md">
           Los mismos programas con los que compito a nivel PRO,
