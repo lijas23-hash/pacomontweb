@@ -2,15 +2,21 @@ User-agent: *
 Allow: /
 Disallow: /_next/
 
-Sitemap: https://pacomont.es/sitemap.xml
+Sitemap: https://www.pacomont.es/sitemap.xml
 
 User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
 Allow: /
 
 User-agent: PerplexityBot
 Allow: /
 
 User-agent: ClaudeBot
+Allow: /
+
+User-agent: GoogleExtendedBot
 Allow: /
 
 User-agent: Googlebot-Image

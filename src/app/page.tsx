@@ -10,12 +10,17 @@ const personSchema = {
   alternateName: "pacomont24",
   description:
     "Embajador oficial HYROX en España. Atleta PRO con mejor tiempo de 1:08 en categoría PRO.",
-  url: "https://pacomont.es",
+  url: "https://www.pacomont.es",
   sameAs: [
     "https://www.instagram.com/pacomont24/",
     "https://www.tiktok.com/@pacomont24",
     "https://www.youtube.com/@pacomont24",
+    "https://my.playbookapp.io/pacomont",
   ],
+  speakable: {
+    "@type": "SpeakableSpecification",
+    cssSelector: [".hero-description", "h2", "h3"],
+  },
   jobTitle: "Embajador Oficial HYROX",
   award: "Embajador Oficial HYROX España",
   affiliation: {
@@ -44,7 +49,7 @@ const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: "Pacomont",
-  url: "https://pacomont.es",
+  url: "https://www.pacomont.es",
   description:
     "Web oficial de Pacomont, embajador HYROX en España. Planes de entrenamiento, app Playbook y descuentos exclusivos.",
   potentialAction: {
