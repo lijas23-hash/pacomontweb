@@ -173,16 +173,58 @@ const productSchema = {
     price: "12.99",
     priceCurrency: "EUR",
     availability: "https://schema.org/InStock",
-    url: "https://pacomont.es/#planes",
+    url: "https://www.pacomont.es/#planes",
     seller: {
       "@type": "Person",
       name: "Francisco Montero",
-      url: "https://pacomont.es",
+      url: "https://www.pacomont.es",
     },
   },
   category: "Sports Training",
 };
 
+
+// ─── Schema: Organization ────────────────────────────────────────────────────
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Pacomont",
+  url: "https://www.pacomont.es",
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer service",
+    email: "hola@pacomont.es",
+    availableLanguage: "Spanish",
+  },
+  sameAs: [
+    "https://www.instagram.com/pacomont24/",
+    "https://www.tiktok.com/@pacomont24",
+    "https://www.youtube.com/@pacomont24",
+    "https://www.linkedin.com/in/francisco-montero-hernandez-335144128/",
+    "https://www.wikidata.org/wiki/Q138972599",
+  ],
+};
+
+// ─── Schema: Event ────────────────────────────────────────────────────────────
+const eventSchema = {
+  "@context": "https://schema.org",
+  "@type": "SportsEvent",
+  name: "HYROX Málaga 2026",
+  startDate: "2026-04-16",
+  endDate: "2026-04-19",
+  location: {
+    "@type": "Place",
+    name: "Málaga",
+    address: { "@type": "PostalAddress", addressLocality: "Málaga", addressCountry: "ES" },
+  },
+  performer: {
+    "@type": "Person",
+    name: "Francisco Montero",
+    alternateName: "Pacomont",
+    url: "https://www.pacomont.es",
+  },
+  url: "https://www.pacomont.es/blog/hyrox-malaga-dobles-christian",
+};
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 function Hero() {
@@ -820,6 +862,56 @@ function Social() {
   );
 }
 
+// ─── Blog destacado ───────────────────────────────────────────────────────────
+function BlogHighlights() {
+  const posts = [
+    {
+      href: "/blog/hyrox-malaga-dobles-christian",
+      label: "Competición",
+      title: "HYROX Málaga: volvemos a por el crono",
+      desc: "En dos semanas compito en dobles con Christian. Te cuento cómo hemos llegado hasta aquí.",
+    },
+    {
+      href: "/blog/como-prepararse-para-hyrox",
+      label: "Guía",
+      title: "Cómo prepararse para HYROX desde cero",
+      desc: "Lo que necesitas saber antes de empezar: estructura, semanas y errores a evitar.",
+    },
+    {
+      href: "/blog/que-es-hyrox",
+      label: "Guía",
+      title: "¿Qué es HYROX? La guía completa",
+      desc: "8 km de carrera + 8 estaciones funcionales. Te explico cómo funciona y por qué engancha.",
+    },
+  ];
+
+  return (
+    <section className="py-24 px-6 md:px-16" style={{ backgroundColor: "#0d1117" }}>
+      <div className="max-w-6xl mx-auto">
+        <div className="flex items-end justify-between mb-12">
+          <div>
+            <p className="text-blue-400 text-sm font-bold tracking-[0.3em] uppercase mb-3">Blog</p>
+            <h2 className="text-3xl md:text-4xl font-black">Todo sobre <span className="gradient-text">HYROX.</span></h2>
+          </div>
+          <a href="/blog" className="text-zinc-400 hover:text-blue-400 text-sm font-medium transition-colors hidden md:block">Ver todos →</a>
+        </div>
+        <div className="grid md:grid-cols-3 gap-6">
+          {posts.map((p) => (
+            <a key={p.href} href={p.href} className="bg-zinc-900 border border-zinc-800 hover:border-blue-400/40 rounded-2xl p-6 transition-colors group block">
+              <span className="text-blue-400 text-xs font-bold tracking-widest uppercase">{p.label}</span>
+              <h3 className="text-lg font-black mt-2 mb-3 group-hover:text-blue-300 transition-colors leading-snug">{p.title}</h3>
+              <p className="text-zinc-400 text-sm leading-relaxed">{p.desc}</p>
+            </a>
+          ))}
+        </div>
+        <div className="mt-6 text-center md:hidden">
+          <a href="/blog" className="text-zinc-400 hover:text-blue-400 text-sm font-medium transition-colors">Ver todos los artículos →</a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ─── Footer ───────────────────────────────────────────────────────────────────
 function Footer() {
   return (
@@ -854,6 +946,8 @@ export default function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(eventSchema) }} />
       <Navbar />
       <main>
         <Hero />
@@ -863,6 +957,7 @@ export default function Home() {
         <LeadMagnet />
         <Discounts />
         <FAQ />
+        <BlogHighlights />
         <Social />
       </main>
       <Footer />

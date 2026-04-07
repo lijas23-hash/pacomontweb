@@ -17,11 +17,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: `${post.title} — Pacomont`,
     description: post.description,
     keywords: post.keywords,
-    alternates: { canonical: `https://pacomont.es/blog/${slug}` },
+    alternates: { canonical: `https://www.pacomont.es/blog/${slug}` },
     openGraph: {
       title: post.title,
       description: post.description,
-      url: `https://pacomont.es/blog/${slug}`,
+      url: `https://www.pacomont.es/blog/${slug}`,
       type: "article",
     },
   };
@@ -43,19 +43,35 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
       "@type": "Person",
       name: "Francisco Montero",
       alternateName: "Pacomont",
-      url: "https://pacomont.es",
+      url: "https://www.pacomont.es",
+      sameAs: ["https://www.instagram.com/pacomont24/", "https://www.wikidata.org/wiki/Q138972599"],
     },
     publisher: {
       "@type": "Organization",
       name: "Pacomont",
-      url: "https://pacomont.es",
+      url: "https://www.pacomont.es",
     },
-    url: `https://pacomont.es/blog/${slug}`,
+    url: `https://www.pacomont.es/blog/${slug}`,
+    speakable: {
+      "@type": "SpeakableSpecification",
+      cssSelector: ["h1", "h2", "h3"],
+    },
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Inicio", item: "https://www.pacomont.es" },
+      { "@type": "ListItem", position: 2, name: "Blog", item: "https://www.pacomont.es/blog" },
+      { "@type": "ListItem", position: 3, name: post.title, item: `https://www.pacomont.es/blog/${slug}` },
+    ],
   };
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#0d1117" }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
       <Navbar />
 
@@ -63,9 +79,13 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         <Link href="/blog" className="text-blue-400 text-sm font-medium hover:text-blue-300 transition-colors mb-8 inline-block">
           ← Volver al blog
         </Link>
-        <p className="text-zinc-500 text-sm mb-4">
-          {new Date(post.date).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })}
-        </p>
+        <div className="flex items-center gap-3 mb-4 text-sm text-zinc-500">
+          <span>Por <span className="text-zinc-300 font-medium">Francisco Montero</span></span>
+          <span>·</span>
+          <time dateTime={post.date}>
+            {new Date(post.date).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })}
+          </time>
+        </div>
         <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight mb-8">{post.title}</h1>
 
         <div className="prose prose-invert prose-lg max-w-none

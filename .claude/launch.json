@@ -5,7 +5,9 @@
       "name": "pacomont-web",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
-      "port": 3000
+      "port": 3000,
+      "autoPort": true,
+      "cwd": "/Users/franciscomontero/Documents/Agenciapaco2/pacomont-web"
     }
   ]
 }
