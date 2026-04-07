@@ -57,7 +57,7 @@ export const metadata: Metadata = {
   },
   alternates: { canonical: "https://www.pacomont.es" },
   robots: { index: true, follow: true },
-  verification: { google: "qkNaCo1RI4cfE5pmPszUNnyHiA0HpR9WoEL3dx8DT94" },
+  verification: { google: "qkNaCo1RI4cfE5pmPszUNnyHiA0HpR9WoEL3dx8DT94", other: { "msvalidate.01": "B7EA9B07F7645E92B1149A3044D8FC96" } },
 };
 
 const GTM_ID = "GTM-PVLHVMGJ";
