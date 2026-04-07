@@ -17,6 +17,7 @@ const personSchema = {
     "https://www.youtube.com/@pacomont24",
     "https://my.playbookapp.io/pacomont",
     "https://www.wikidata.org/wiki/Q138972599",
+    "https://www.linkedin.com/in/francisco-montero-hernandez-335144128/",
   ],
   speakable: {
     "@type": "SpeakableSpecification",
