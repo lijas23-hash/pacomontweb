@@ -16,6 +16,7 @@ const personSchema = {
     "https://www.tiktok.com/@pacomont24",
     "https://www.youtube.com/@pacomont24",
     "https://my.playbookapp.io/pacomont",
+    "https://www.wikidata.org/wiki/Q138972599",
   ],
   speakable: {
     "@type": "SpeakableSpecification",
