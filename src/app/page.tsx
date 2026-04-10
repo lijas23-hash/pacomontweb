@@ -245,7 +245,7 @@ function Hero() {
           Embajador Oficial HYROX · España
         </p>
         <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight mb-3">
-          Planes de<br />entrenamiento.
+          Entrenamiento<br />HYROX.
         </h1>
         <p className="text-zinc-400 text-base md:text-lg font-medium mb-5 max-w-md">
           Gana más fuerza y corre más rápido.
