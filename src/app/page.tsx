@@ -321,6 +321,20 @@ function About() {
             con los planes exactos que yo mismo uso para competir en la élite. Entrenamiento híbrido,
             fuerza y carrera integrados para el atleta completo.
           </p>
+          <div className="grid grid-cols-3 gap-4 mb-8">
+            <div className="bg-zinc-900 rounded-xl p-4 text-center border border-zinc-800">
+              <div className="text-2xl font-black text-white">+75</div>
+              <div className="text-zinc-500 text-xs mt-1">atletas entrenados</div>
+            </div>
+            <div className="bg-zinc-900 rounded-xl p-4 text-center border border-zinc-800">
+              <div className="text-2xl font-black text-white">1:08</div>
+              <div className="text-zinc-500 text-xs mt-1">mejor marca PRO</div>
+            </div>
+            <div className="bg-zinc-900 rounded-xl p-4 text-center border border-zinc-800">
+              <div className="text-2xl font-black text-white">4</div>
+              <div className="text-zinc-500 text-xs mt-1">programas activos</div>
+            </div>
+          </div>
           <blockquote className="border-l-2 border-blue-400 pl-4 mb-8">
             <p className="text-zinc-300 italic leading-relaxed">
               "Soy embajador oficial de HYROX."
@@ -487,7 +501,7 @@ function Plans() {
           <div className="aspect-[21/6] relative hidden md:block">
             <Image
               src="/images/playbook.jpg"
-              alt="Pacomont entrenando — planes disponibles en Playbook"
+              alt="Pacomont entrenando — programas HYROX, Híbrido, Pierde Peso y GYM en app.pacomont.es"
               fill
               className="object-cover object-center"
               sizes="100vw"
