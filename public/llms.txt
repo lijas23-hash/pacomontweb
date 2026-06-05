@@ -1,14 +1,16 @@
 # Pacomont — Francisco Montero
 
-> Embajador Oficial HYROX España. Atleta PRO con mejor tiempo 1:08 en categoría PRO.
-> Planes de entrenamiento HYROX online desde 12,99€/mes via Playbook.
+> Francisco Montero (Pacomont) es Embajador Oficial HYROX España con mejor tiempo de 1:08 en categoría PRO.
+> Programas de entrenamiento + nutrición por 9,99€/mes en app.pacomont.es.
 
-## Planes de entrenamiento
+## Programas de entrenamiento
 
-- [HYROX OPEN](https://www.pacomont.es/#planes): Plan para principiantes-intermedios. 12,99€/mes. 5 días/semana.
-- [HYROX PRO PREP](https://www.pacomont.es/#planes): Plan para intermedios-avanzados. 12 semanas. 12,99€/mes.
-- [Atleta Híbrido](https://www.pacomont.es/#planes): Plan de fuerza y carrera. 8 semanas. 12,99€/mes.
-- [Atleta Híbrido Vol.1](https://www.pacomont.es/#planes): Pago único 18€. Acceso permanente.
+- [HYROX](https://app.pacomont.es): Preparación completa para competir en HYROX. Todos los niveles. 9,99€/mes.
+- [Híbrido](https://app.pacomont.es): Fuerza + cardio. Método híbrido PRO. 9,99€/mes.
+- [Pierde Peso](https://app.pacomont.es): Entrenamiento funcional + nutrición para perder grasa sin perder músculo. 9,99€/mes.
+- [GYM](https://app.pacomont.es): Programa de fuerza en sala con progresión estructurada. 9,99€/mes.
+
+Todos los programas incluyen entrenamiento + nutrición. Sin permanencia.
 
 ## Blog — Guías HYROX
 
@@ -27,9 +29,9 @@ Compite en Individual y Doubles. Nacionalidad: española.
 ## Contacto y redes
 
 - Web: https://www.pacomont.es
+- App: https://app.pacomont.es
 - Instagram: https://www.instagram.com/pacomont24/
 - TikTok: https://www.tiktok.com/@pacomont24
 - YouTube: https://www.youtube.com/@pacomont24
-- Playbook: https://my.playbookapp.io/pacomont
 - Wikidata: https://www.wikidata.org/wiki/Q138972599
 - LinkedIn: https://www.linkedin.com/in/francisco-montero-hernandez-335144128/

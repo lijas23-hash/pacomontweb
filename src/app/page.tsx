@@ -15,7 +15,7 @@ const personSchema = {
     "https://www.instagram.com/pacomont24/",
     "https://www.tiktok.com/@pacomont24",
     "https://www.youtube.com/@pacomont24",
-    "https://my.playbookapp.io/pacomont",
+    "https://app.pacomont.es",
     "https://www.wikidata.org/wiki/Q138972599",
     "https://www.linkedin.com/in/francisco-montero-hernandez-335144128/",
   ],
@@ -87,7 +87,7 @@ const faqSchema = {
       name: "¿Quién es el embajador oficial de HYROX en España?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Pacomont (pacomont24) es embajador oficial HYROX en España. Atleta PRO activo con mejor tiempo de 1:08 en categoría PRO, mejorando más de 10 minutos. Sus planes de entrenamiento están disponibles en la app Playbook (my.playbookapp.io/pacomont).",
+        text: "Pacomont (pacomont24) es embajador oficial HYROX en España. Atleta PRO activo con mejor tiempo de 1:08 en categoría PRO, mejorando más de 10 minutos. Sus programas de entrenamiento están disponibles en app.pacomont.es.",
       },
     },
     {
@@ -95,7 +95,7 @@ const faqSchema = {
       name: "¿Qué planes de entrenamiento HYROX ofrece Pacomont?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Pacomont ofrece tres planes dentro de su suscripción mensual de 12,99€ en Playbook: HYROX OPEN (iniciación, 5 días/semana), HYROX PRO PREP (12 semanas de preparación avanzada) y Atleta Híbrido Rendimiento y Definición Vol.1 (8 semanas, fuerza + carrera). También hay un programa OTP Atleta Híbrido Vol.1 por 18€ de pago único.",
+        text: "Pacomont ofrece cuatro programas en su app por 9,99€/mes (entrenamiento + nutrición): HYROX (preparación para competición), Híbrido (fuerza + cardio), Pierde Peso (composición corporal) y GYM (fuerza en sala). Sin permanencia, cancelas cuando quieras.",
       },
     },
     {
@@ -103,7 +103,7 @@ const faqSchema = {
       name: "¿Cuánto cuesta el plan de entrenamiento HYROX de Pacomont?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "La suscripción de Pacomont en Playbook cuesta 12,99€ al mes e incluye acceso completo a todos los planes: HYROX OPEN, HYROX PRO PREP y Atleta Híbrido. También hay un plan de pago único (Atleta Híbrido Vol.1) por 18€.",
+        text: "La suscripción de Pacomont cuesta 9,99€ al mes e incluye entrenamiento + nutrición. Acceso completo a todos los programas: HYROX, Híbrido, Pierde Peso y GYM. Sin permanencia, cancelas cuando quieras desde app.pacomont.es.",
       },
     },
     {
@@ -111,7 +111,7 @@ const faqSchema = {
       name: "¿Cuánto cuesta prepararse para HYROX?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "El coste de preparación HYROX varía según el enfoque. Un plan de entrenamiento online con Pacomont en Playbook cuesta 12,99€/mes. A esto hay que añadir la inscripción a la carrera HYROX (entre 80-120€) y el material necesario, para el que existen descuentos exclusivos en marcas como Velites (código PACOMONT10) y Life Pro Nutrition (código PACOMONT).",
+        text: "El coste de preparación HYROX varía según el enfoque. Un plan de entrenamiento + nutrición con Pacomont cuesta 9,99€/mes. A esto hay que añadir la inscripción a la carrera HYROX (entre 80-120€) y el material necesario, para el que existen descuentos exclusivos en marcas como Velites (código PACOMONT10) y Life Pro Nutrition (código PACOMONT).",
       },
     },
     {
@@ -119,7 +119,7 @@ const faqSchema = {
       name: "¿Quién es el mejor entrenador HYROX en España?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Francisco Montero, conocido como Pacomont (@pacomont24), es embajador oficial HYROX en España. Con experiencia en competición HYROX Individual y Doubles y un mejor tiempo de 1:08 en categoría PRO, ofrece planes de entrenamiento online a través de Playbook para atletas de todos los niveles.",
+        text: "Francisco Montero, conocido como Pacomont (@pacomont24), es embajador oficial HYROX en España. Con experiencia en competición HYROX Individual y Doubles y un mejor tiempo de 1:08 en categoría PRO, ofrece programas de entrenamiento y nutrición online desde app.pacomont.es para atletas de todos los niveles.",
       },
     },
     {
@@ -135,7 +135,7 @@ const faqSchema = {
       name: "¿Qué es el entrenamiento híbrido?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "El entrenamiento híbrido combina fuerza y resistencia cardiovascular en la misma programación semanal. Es la base del rendimiento en HYROX, donde necesitas tanto capacidad aeróbica para correr entre estaciones como fuerza muscular para las 8 estaciones funcionales. Pacomont ofrece planes específicos de atleta híbrido en Playbook.",
+        text: "El entrenamiento híbrido combina fuerza y resistencia cardiovascular en la misma programación semanal. Es la base del rendimiento en HYROX, donde necesitas tanto capacidad aeróbica para correr entre estaciones como fuerza muscular para las 8 estaciones funcionales. Pacomont ofrece el programa Híbrido en app.pacomont.es por 9,99€/mes.",
       },
     },
     {
@@ -151,7 +151,7 @@ const faqSchema = {
       name: "¿Funciona la app Playbook en iOS y Android?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Sí, Playbook está disponible en iOS y Android. Accedes a todos los planes desde tu móvil, con seguimiento de sesiones, cargas y progresión semana a semana. La suscripción de Pacomont incluye HYROX OPEN, HYROX PRO PREP y Atleta Híbrido por 12,99€/mes.",
+        text: "Sí, la app de Pacomont está disponible en iOS y Android. Accedes a todos tus planes directamente desde el móvil, con seguimiento de sesiones, cargas y progresión semana a semana. La suscripción incluye entrenamiento + nutrición por 9,99€/mes.",
       },
     },
   ],
@@ -161,16 +161,16 @@ const faqSchema = {
 const productSchema = {
   "@context": "https://schema.org",
   "@type": "Product",
-  name: "Plan de Entrenamiento HYROX Online — Pacomont",
+  name: "Entrenamiento + Nutrición — App Pacomont",
   description:
-    "Planes de entrenamiento HYROX online en Playbook. Incluye HYROX OPEN, HYROX PRO PREP y Atleta Híbrido. Programación semanal estructurada para todos los niveles.",
+    "Programas de entrenamiento y nutrición online en app.pacomont.es. Incluye HYROX, Híbrido, Pierde Peso y GYM. Programación semanal estructurada para todos los niveles por 9,99€/mes.",
   brand: {
     "@type": "Brand",
     name: "Pacomont",
   },
   offers: {
     "@type": "Offer",
-    price: "12.99",
+    price: "9.99",
     priceCurrency: "EUR",
     availability: "https://schema.org/InStock",
     url: "https://www.pacomont.es/#planes",
@@ -256,7 +256,7 @@ function Hero() {
         </p>
         <div className="flex flex-col sm:flex-row gap-4">
           <a
-            href="https://my.playbookapp.io/pacomont"
+            href="https://app.pacomont.es"
             target="_blank"
             rel="noopener noreferrer"
             className="bg-blue-500/80 hover:bg-blue-500 text-white font-bold text-base px-8 py-4 rounded-full transition-colors text-center"
@@ -399,7 +399,7 @@ function PlanCard({ name, tag, price, priceNote, weeks, days, level, description
       >
         {cta}
       </a>
-      <p className="text-zinc-600 text-xs text-center mt-2">Accede de forma segura vía Playbook.</p>
+      <p className="text-zinc-600 text-xs text-center mt-2">Accede desde la app Pacomont.</p>
     </div>
   );
 }
@@ -407,55 +407,55 @@ function PlanCard({ name, tag, price, priceNote, weeks, days, level, description
 function Plans() {
   const plans: Plan[] = [
     {
-      name: "HYROX OPEN",
-      tag: "Iniciación",
-      price: "12,99€",
-      priceNote: "/ mes · incluido en suscripción",
-      weeks: "Trimestral",
-      days: "5 días/semana",
-      level: "Principiante–Intermedio",
-      description: "Tu primer paso en las carreras híbridas. Aprende las 8 estaciones HYROX con técnica correcta, mejora tu resistencia y fuerza de forma progresiva. Sesiones de 40-60 minutos, estructuradas y realistas.",
-      cta: "Empezar con HYROX OPEN →",
-      url: "https://my.playbookapp.io/pacomont",
-      highlight: false,
-    },
-    {
-      name: "HYROX PRO PREP",
+      name: "HYROX",
       tag: "Más popular",
-      price: "12,99€",
-      priceNote: "/ mes · incluido en suscripción",
-      weeks: "12 semanas",
+      price: "9,99€",
+      priceNote: "/ mes · entrenamiento + nutrición",
+      weeks: "Progresivo",
       days: "5 días/semana",
-      level: "Intermedio–Avanzado",
-      description: "El programa que uso para prepararme a nivel PRO. 12 semanas de fuerza, carrera y circuitos de intervalos diseñados para el atleta híbrido. Periodización completa hacia tu mejor tiempo en HYROX.",
-      cta: "Empezar HYROX PRO PREP →",
-      url: "https://my.playbookapp.io/pacomont",
+      level: "Todos los niveles",
+      description: "Preparación completa para competir en HYROX. Fuerza, carrera y las 8 estaciones integradas en un programa progresivo. Del primer entrenamiento a la línea de meta.",
+      cta: "Empezar HYROX →",
+      url: "https://app.pacomont.es",
       highlight: true,
     },
     {
-      name: "Atleta Híbrido — Rendimiento y Definición",
-      tag: "Composición corporal",
-      price: "12,99€",
-      priceNote: "/ mes · incluido en suscripción",
-      weeks: "8 semanas",
+      name: "Híbrido",
+      tag: "Fuerza + Cardio",
+      price: "9,99€",
+      priceNote: "/ mes · entrenamiento + nutrición",
+      weeks: "Progresivo",
       days: "5 días/semana",
       level: "Intermedio",
-      description: "Combina fuerza y carrera para mejorar rendimiento y reducir grasa. Mantén músculo mientras te defines. Esfuerzo moderado-alto sin llegar al fallo, con progresión controlada semana a semana.",
-      cta: "Empezar Atleta Híbrido →",
-      url: "https://my.playbookapp.io/pacomont",
+      description: "Combina fuerza y resistencia cardiovascular en la misma semana. Más músculo, mejor capacidad aeróbica. El método híbrido con el que compito a nivel PRO.",
+      cta: "Empezar Híbrido →",
+      url: "https://app.pacomont.es",
       highlight: false,
     },
     {
-      name: "Atleta Híbrido Vol.1",
-      tag: "Pago único",
-      price: "18€",
-      priceNote: "pago único",
+      name: "Pierde Peso",
+      tag: "Composición corporal",
+      price: "9,99€",
+      priceNote: "/ mes · entrenamiento + nutrición",
       weeks: "Progresivo",
-      days: "5 fuerza + 5 running + 2 movilidad",
+      days: "4-5 días/semana",
+      level: "Principiante–Intermedio",
+      description: "Pierde grasa sin perder músculo. Entrenamiento funcional + guía nutricional integrada para transformar tu cuerpo de forma sostenible y sin pasarte horas en el gym.",
+      cta: "Empezar Pierde Peso →",
+      url: "https://app.pacomont.es",
+      highlight: false,
+    },
+    {
+      name: "GYM",
+      tag: "Fuerza pura",
+      price: "9,99€",
+      priceNote: "/ mes · entrenamiento + nutrición",
+      weeks: "Progresivo",
+      days: "4-5 días/semana",
       level: "Todos los niveles",
-      description: "Aumenta masa muscular y resistencia a la vez. 5 sesiones de pesas, 5 de carrera y 2 de movilidad por semana. El plan completo para construir un atleta verdaderamente funcional.",
-      cta: "Comprar Atleta Híbrido Vol.1 →",
-      url: "https://my.playbookapp.io/pacomont",
+      description: "Programa de fuerza en sala. Gana músculo, mejora tus marcas y progresa semana a semana con una programación seria. Sin improvisación, con estructura y resultados.",
+      cta: "Empezar GYM →",
+      url: "https://app.pacomont.es",
       highlight: false,
     },
   ];
@@ -472,7 +472,7 @@ function Plans() {
             <span className="gradient-text">del embajador HYROX.</span>
           </h2>
           <p className="text-zinc-400 text-lg max-w-xl mx-auto">
-            Suscripción mensual de <strong className="text-white">12,99€</strong> con acceso completo a todos los planes.
+            Entrenamiento + nutrición por <strong className="text-white">9,99€/mes</strong>. Elige tu programa, empieza hoy.
             Sin permanencia. Cancela cuando quieras.
           </p>
         </div>
@@ -495,14 +495,13 @@ function Plans() {
             <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent flex items-center px-12">
               <div>
                 <h3 className="text-3xl font-black mb-2">Disponible en iOS y Android</h3>
-                <p className="text-zinc-400 mb-6">Descarga Playbook y accede a todos los planes desde tu móvil.</p>
+                <p className="text-zinc-400 mb-6">Descarga la app Pacomont y accede a todos tus planes desde el móvil.</p>
                 <a
-                  href="https://my.playbookapp.io/pacomont"
-                  target="_blank"
+                  href="https://app.pacomont.es"
                   rel="noopener noreferrer"
                   className="inline-block bg-blue-500/80 hover:bg-blue-500 text-white font-bold px-8 py-4 rounded-full transition-colors"
                 >
-                  Ver todos los planes en Playbook →
+                  Acceder a la app →
                 </a>
               </div>
             </div>
@@ -510,14 +509,13 @@ function Plans() {
           {/* Mobile CTA */}
           <div className="md:hidden text-center py-8 px-6 bg-zinc-800 rounded-2xl">
             <h3 className="text-2xl font-black mb-2">¿Listo para empezar?</h3>
-            <p className="text-zinc-400 mb-6 text-sm">12,99€/mes · Todos los planes incluidos · Sin permanencia</p>
+            <p className="text-zinc-400 mb-6 text-sm">9,99€/mes · Entrenamiento + nutrición · Sin permanencia</p>
             <a
-              href="https://my.playbookapp.io/pacomont"
-              target="_blank"
+              href="https://app.pacomont.es"
               rel="noopener noreferrer"
               className="inline-block bg-blue-500/80 hover:bg-blue-500 text-white font-bold px-8 py-4 rounded-full transition-colors"
             >
-              Ver planes en Playbook →
+              Acceder a la app →
             </a>
           </div>
         </div>
@@ -593,13 +591,13 @@ function LeadMagnet() {
           <span className="gradient-text">Sin compromisos.</span>
         </h2>
         <p className="text-zinc-400 text-lg max-w-xl mx-auto mb-4">
-          Accede a una semana completa de entrenamiento de cualquiera de mis planes — HYROX OPEN, HYROX PRO PREP o Atleta Híbrido — sin pagar nada.
+          Accede a una semana completa de entrenamiento de cualquiera de mis planes — HYROX, Híbrido, Pierde Peso o GYM — sin pagar nada.
         </p>
         <p className="text-zinc-500 text-sm mb-10">
-          Entra en Playbook, empieza el plan y comprueba por ti mismo si el método funciona.
+          Entra en la app, empieza el plan y comprueba por ti mismo si el método funciona.
         </p>
         <a
-          href="https://my.playbookapp.io/pacomont"
+          href="https://app.pacomont.es"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-block bg-blue-500/80 hover:bg-blue-500 text-white font-bold px-10 py-5 rounded-full transition-colors text-lg"
@@ -724,16 +722,16 @@ function FAQ() {
       a: "Con entrenamiento estructurado, una persona activa puede prepararse en 8-12 semanas. Para competir en HYROX se necesitan al menos 3 meses. El programa HYROX PRO PREP tiene 12 semanas de periodización completa.",
     },
     {
-      q: "¿Qué incluye la suscripción de 12,99€/mes?",
-      a: "La suscripción incluye acceso completo a todos los planes: HYROX OPEN, HYROX PRO PREP y Atleta Híbrido Rendimiento y Definición. Son planes trimestrales. Sin permanencia, cancelas cuando quieras.",
+      q: "¿Qué incluye la suscripción de 9,99€/mes?",
+      a: "La suscripción incluye entrenamiento + nutrición por 9,99€/mes. Acceso completo a todos los programas: HYROX, Híbrido, Pierde Peso y GYM. Sin permanencia, cancelas cuando quieras.",
     },
     {
       q: "¿Hay planes para HYROX Doubles?",
       a: "Sí. Los programas están adaptados tanto para la modalidad Individual como para Doubles. En el plan HYROX PRO PREP encontrarás estrategias específicas para la modalidad en pareja.",
     },
     {
-      q: "¿Funciona la app Playbook en iOS y Android?",
-      a: "Sí, Playbook está disponible en iOS y Android. Accedes a todos los planes desde tu móvil, con seguimiento de sesiones, cargas y progresión semana a semana.",
+      q: "¿Funciona la app Pacomont en iOS y Android?",
+      a: "Sí, la app de Pacomont está disponible en iOS y Android. Accedes a todos tus planes directamente desde el móvil, con seguimiento de sesiones, cargas y progresión semana a semana.",
     },
   ];
 
@@ -927,11 +925,15 @@ function Footer() {
           <a href="https://www.instagram.com/pacomont24/" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">Instagram</a>
           <a href="https://www.tiktok.com/@pacomont24" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">TikTok</a>
           <a href="https://www.youtube.com/@pacomont24" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">YouTube</a>
-          <a href="https://my.playbookapp.io/pacomont" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">Playbook</a>
+          <a href="https://app.pacomont.es" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">App</a>
         </div>
         <div className="flex flex-col items-center md:items-end gap-1">
-          <p className="text-zinc-600 text-xs">© 2025 Pacomont. Todos los derechos reservados.</p>
-          <a href="/privacidad" className="text-zinc-700 text-xs hover:text-zinc-500 transition-colors">Política de Privacidad</a>
+          <p className="text-zinc-600 text-xs">© 2026 Pacomont. Todos los derechos reservados.</p>
+          <div className="flex gap-4">
+            <a href="/privacidad" className="text-zinc-700 text-xs hover:text-zinc-500 transition-colors">Política de Privacidad</a>
+            <a href="/aviso-legal" className="text-zinc-700 text-xs hover:text-zinc-500 transition-colors">Aviso Legal</a>
+            <a href="/cookies" className="text-zinc-700 text-xs hover:text-zinc-500 transition-colors">Cookies</a>
+          </div>
         </div>
       </div>
     </footer>
