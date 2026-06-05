@@ -103,12 +103,11 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         <div className="mt-16 border-t border-zinc-800 pt-12 text-center">
           <p className="text-zinc-400 mb-2">¿Quieres entrenar con este método?</p>
           <Link
-            href="https://my.playbookapp.io/pacomont"
-            target="_blank"
+            href="https://app.pacomont.es"
             rel="noopener noreferrer"
             className="inline-block bg-blue-500/80 hover:bg-blue-500 text-white font-bold px-8 py-4 rounded-full transition-colors"
           >
-            Ver mis planes en Playbook →
+            Ver mis planes →
           </Link>
         </div>
       </main>

@@ -53,7 +53,7 @@ const websiteSchema = {
   name: "Pacomont",
   url: "https://www.pacomont.es",
   description:
-    "Web oficial de Pacomont, embajador HYROX en España. Planes de entrenamiento, app Playbook y descuentos exclusivos.",
+    "Web oficial de Pacomont, embajador HYROX en España. Programas de entrenamiento y nutrición en app.pacomont.es y descuentos exclusivos.",
   potentialAction: {
     "@type": "SearchAction",
     target: "https://pacomont.es/blog?q={search_term_string}",
@@ -148,7 +148,7 @@ const faqSchema = {
     },
     {
       "@type": "Question",
-      name: "¿Funciona la app Playbook en iOS y Android?",
+      name: "¿Funciona la app Pacomont en iOS y Android?",
       acceptedAnswer: {
         "@type": "Answer",
         text: "Sí, la app de Pacomont está disponible en iOS y Android. Accedes a todos tus planes directamente desde el móvil, con seguimiento de sesiones, cargas y progresión semana a semana. La suscripción incluye entrenamiento + nutrición por 9,99€/mes.",
