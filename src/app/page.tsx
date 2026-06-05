@@ -252,7 +252,7 @@ function Hero() {
         </p>
         <p className="text-zinc-300 text-lg md:text-xl leading-relaxed mb-8 max-w-md">
           Los mismos programas con los que compito a nivel PRO,
-          disponibles para ti desde 12,99€/mes. Individual, Doubles y todos los niveles.
+          disponibles para ti desde 9,99€/mes. Entrenamiento + nutrición incluidos.
         </p>
         <div className="flex flex-col sm:flex-row gap-4">
           <a

@@ -30,8 +30,7 @@ export default function Navbar() {
 
         <div className="flex items-center gap-3">
           <a
-            href="https://my.playbookapp.io/pacomont"
-            target="_blank"
+            href="https://app.pacomont.es"
             rel="noopener noreferrer"
             className="bg-blue-500/80 hover:bg-blue-500 text-white text-sm font-semibold px-5 py-2 rounded-full transition-colors"
           >

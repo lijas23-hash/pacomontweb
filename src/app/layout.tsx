@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.pacomont.es"),
   title: "Planes de Entrenamiento HYROX | Pacomont — Embajador Oficial España",
   description:
-    "Soy el embajador oficial HYROX en España, con 1:08 en categoría PRO. Entrena con mis programas desde 12,99€/mes. Sin permanencia. Empieza hoy.",
+    "Soy el embajador oficial HYROX en España, con 1:08 en categoría PRO. Entrenamiento + nutrición desde 9,99€/mes. Sin permanencia. Empieza hoy.",
   keywords: [
     "HYROX España",
     "entrenamiento HYROX",
