@@ -9,7 +9,7 @@ const personSchema = {
   name: "Pacomont",
   alternateName: "pacomont24",
   description:
-    "Embajador oficial HYROX en España. Atleta PRO con mejor tiempo de 1:08 en categoría PRO.",
+    "Embajador oficial HYROX en España. Atleta PRO con mejor tiempo de 1:03 en categoría PRO.",
   url: "https://www.pacomont.es",
   sameAs: [
     "https://www.instagram.com/pacomont24/",
@@ -40,7 +40,7 @@ const personSchema = {
     "Preparación carreras híbridas",
   ],
   performerIn: [
-    { "@type": "SportsEvent", name: "HYROX PRO", description: "Mejor tiempo: 1:08 — mejora de más de 10 min en categoría PRO" },
+    { "@type": "SportsEvent", name: "HYROX PRO", description: "Mejor tiempo: 1:03 — mejora de más de 10 min en categoría PRO" },
     { "@type": "SportsEvent", name: "HYROX Málaga", description: "Competición categoría PRO" },
     { "@type": "SportsEvent", name: "HYROX Barcelona", description: "Competición categoría PRO" },
   ],
@@ -87,7 +87,7 @@ const faqSchema = {
       name: "¿Quién es el embajador oficial de HYROX en España?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Pacomont (pacomont24) es embajador oficial HYROX en España. Atleta PRO activo con mejor tiempo de 1:08 en categoría PRO, mejorando más de 10 minutos. Sus programas de entrenamiento están disponibles en app.pacomont.es.",
+        text: "Pacomont (pacomont24) es embajador oficial HYROX en España. Atleta PRO activo con mejor tiempo de 1:03 en categoría PRO, mejorando más de 10 minutos. Sus programas de entrenamiento están disponibles en app.pacomont.es.",
       },
     },
     {
@@ -119,7 +119,7 @@ const faqSchema = {
       name: "¿Quién es el mejor entrenador HYROX en España?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Francisco Montero, conocido como Pacomont (@pacomont24), es embajador oficial HYROX en España. Con experiencia en competición HYROX Individual y Doubles y un mejor tiempo de 1:08 en categoría PRO, ofrece programas de entrenamiento y nutrición online desde app.pacomont.es para atletas de todos los niveles.",
+        text: "Francisco Montero, conocido como Pacomont (@pacomont24), es embajador oficial HYROX en España. Con experiencia en competición HYROX Individual y Doubles y un mejor tiempo de 1:03 en categoría PRO, ofrece programas de entrenamiento y nutrición online desde app.pacomont.es para atletas de todos los niveles.",
       },
     },
     {
@@ -313,7 +313,7 @@ function About() {
           </h2>
           <p className="text-zinc-400 text-lg leading-relaxed mb-6">
             Embajador oficial HYROX en España. Compito a nivel PRO con un mejor tiempo de{" "}
-            <strong className="text-white">1:08</strong> —mejorado más de 10 minutos en categoría PRO,
+            <strong className="text-white">1:03</strong> —mejorado más de 10 minutos en categoría PRO,
             con Málaga como punto de inflexión.
           </p>
           <p className="text-zinc-400 text-lg leading-relaxed mb-6">
@@ -327,7 +327,7 @@ function About() {
               <div className="text-zinc-500 text-xs mt-1">atletas entrenados</div>
             </div>
             <div className="bg-zinc-900 rounded-xl p-4 text-center border border-zinc-800">
-              <div className="text-2xl font-black text-white">1:08</div>
+              <div className="text-2xl font-black text-white">1:03</div>
               <div className="text-zinc-500 text-xs mt-1">mejor marca PRO</div>
             </div>
             <div className="bg-zinc-900 rounded-xl p-4 text-center border border-zinc-800">

@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.pacomont.es"),
   title: "Planes de Entrenamiento HYROX | Pacomont — Embajador Oficial España",
   description:
-    "Soy el embajador oficial HYROX en España, con 1:08 en categoría PRO. Entrenamiento + nutrición desde 9,99€/mes. Sin permanencia. Empieza hoy.",
+    "Soy el embajador oficial HYROX en España, con 1:03 en categoría PRO. Entrenamiento + nutrición desde 9,99€/mes. Sin permanencia. Empieza hoy.",
   keywords: [
     "HYROX España",
     "entrenamiento HYROX",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Pacomont | Embajador Oficial HYROX España",
     description:
-      "Atleta PRO HYROX con mejor tiempo de 1:08. Planes de entrenamiento desde 12,99€/mes en Playbook. Descuentos exclusivos en equipamiento y suplementación.",
+      "Atleta PRO HYROX con mejor tiempo de 1:03. Planes de entrenamiento desde 12,99€/mes en Playbook. Descuentos exclusivos en equipamiento y suplementación.",
     url: "https://www.pacomont.es",
     siteName: "Pacomont",
     locale: "es_ES",
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Pacomont | Embajador Oficial HYROX España",
-    description: "Planes de entrenamiento HYROX PRO desde 12,99€/mes. Atleta PRO con mejor tiempo de 1:08.",
+    description: "Planes de entrenamiento HYROX PRO desde 12,99€/mes. Atleta PRO con mejor tiempo de 1:03.",
     images: ["/images/hero.jpg"],
   },
   alternates: { canonical: "https://www.pacomont.es" },
