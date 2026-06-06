@@ -245,14 +245,13 @@ function Hero() {
           Embajador Oficial HYROX · España
         </p>
         <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight mb-3">
-          Entrenamiento<br />HYROX.
+          Entrenamiento HYROX<br />con el Embajador<br />Oficial.
         </h1>
         <p className="text-zinc-400 text-base md:text-lg font-medium mb-5 max-w-md">
-          Gana más fuerza y corre más rápido.
+          El mismo método con el que compito a nivel PRO. Para todos los niveles.
         </p>
         <p className="text-zinc-300 text-lg md:text-xl leading-relaxed mb-8 max-w-md">
-          Los mismos programas con los que compito a nivel PRO,
-          disponibles para ti desde 9,99€/mes. Entrenamiento + nutrición incluidos.
+          Los mismos programas con los que compito a nivel PRO en HYROX España. Entrenamiento + nutrición desde 9,99€/mes. Para tu primer HYROX o para bajar tu marca — todos los niveles.
         </p>
         <div className="flex flex-col sm:flex-row gap-4">
           <a
@@ -371,6 +370,120 @@ function About() {
   );
 }
 
+// ─── Por qué Pacomont ────────────────────────────────────────────────────────
+function WhyPacomont() {
+  const items = [
+    {
+      emoji: "🏅",
+      title: "Embajador Oficial HYROX España",
+      desc: "La única plataforma de entrenamiento avalada por el representante oficial de HYROX en España.",
+    },
+    {
+      emoji: "⏱️",
+      title: "Marca PRO de 1:03",
+      desc: "Entrenas con los planes exactos que uso para competir en la élite. No teoría — método probado en carrera.",
+    },
+    {
+      emoji: "👥",
+      title: "+75 atletas entrenados",
+      desc: "Resultados reales en todos los niveles: desde primer HYROX hasta categoría PRO.",
+    },
+    {
+      emoji: "📱",
+      title: "App propia en iOS y Android",
+      desc: "Sin plataformas de terceros. Todo tu entrenamiento en un solo lugar en app.pacomont.es.",
+    },
+  ];
+
+  return (
+    <section className="py-24 px-6 md:px-16 bg-zinc-900">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-16">
+          <p className="text-blue-400 text-sm font-bold tracking-[0.3em] uppercase mb-4">
+            La diferencia
+          </p>
+          <h2 className="text-3xl md:text-5xl font-black mb-4">
+            El único entrenador HYROX<br />
+            <span className="gradient-text">que también compite a nivel PRO.</span>
+          </h2>
+        </div>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {items.map((item) => (
+            <div key={item.title} className="bg-zinc-800 border border-zinc-700 rounded-2xl p-6">
+              <div className="text-3xl mb-4">{item.emoji}</div>
+              <h3 className="text-white font-black text-base mb-2 leading-snug">{item.title}</h3>
+              <p className="text-zinc-400 text-sm leading-relaxed">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+        <div className="text-center">
+          <a
+            href="#planes"
+            className="inline-block bg-blue-500/80 hover:bg-blue-500 text-white font-bold px-8 py-4 rounded-full transition-colors"
+          >
+            Ver mis planes →
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Competiciones ────────────────────────────────────────────────────────────
+function Competitions() {
+  const events = [
+    { city: "Palma de Mallorca", date: "Octubre 2026", flag: "🏝️" },
+  ];
+
+  return (
+    <section className="py-24 px-6 md:px-16" style={{ backgroundColor: "#0d1117" }}>
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-12">
+          <p className="text-blue-400 text-sm font-bold tracking-[0.3em] uppercase mb-4">
+            Calendario oficial
+          </p>
+          <h2 className="text-3xl md:text-5xl font-black mb-4">
+            Próximas competiciones<br />
+            <span className="gradient-text">HYROX España.</span>
+          </h2>
+          <p className="text-zinc-400 text-lg">¿Tienes carrera? Te ayudo a llegar preparado.</p>
+        </div>
+
+        <div className="space-y-4 mb-12">
+          {events.map((e) => (
+            <div key={e.city} className="flex items-center justify-between bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-5">
+              <div className="flex items-center gap-4">
+                <span className="text-2xl">{e.flag}</span>
+                <div>
+                  <p className="text-white font-black text-lg">HYROX {e.city}</p>
+                  <p className="text-zinc-400 text-sm">{e.date}</p>
+                </div>
+              </div>
+              <a
+                href="https://app.pacomont.es"
+                rel="noopener noreferrer"
+                className="bg-blue-500/80 hover:bg-blue-500 text-white font-bold text-sm px-5 py-2.5 rounded-full transition-colors whitespace-nowrap"
+              >
+                Prepararme →
+              </a>
+            </div>
+          ))}
+        </div>
+
+        <div className="text-center">
+          <a
+            href="https://app.pacomont.es"
+            rel="noopener noreferrer"
+            className="inline-block bg-blue-500/80 hover:bg-blue-500 text-white font-bold px-8 py-4 rounded-full transition-colors"
+          >
+            Empieza tu plan de preparación ahora →
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ─── Planes ───────────────────────────────────────────────────────────────────
 type Plan = {
   name: string;
@@ -421,7 +534,7 @@ function PlanCard({ name, tag, price, priceNote, weeks, days, level, description
 function Plans() {
   const plans: Plan[] = [
     {
-      name: "HYROX",
+      name: "Plan HYROX — Preparación Completa",
       tag: "Más popular",
       price: "9,99€",
       priceNote: "/ mes · entrenamiento + nutrición",
@@ -434,7 +547,7 @@ function Plans() {
       highlight: true,
     },
     {
-      name: "Híbrido",
+      name: "Plan Atleta Híbrido — Fuerza y Running",
       tag: "Fuerza + Cardio",
       price: "9,99€",
       priceNote: "/ mes · entrenamiento + nutrición",
@@ -447,7 +560,7 @@ function Plans() {
       highlight: false,
     },
     {
-      name: "Pierde Peso",
+      name: "Plan Definición — Funcional y Nutrición",
       tag: "Composición corporal",
       price: "9,99€",
       priceNote: "/ mes · entrenamiento + nutrición",
@@ -460,7 +573,7 @@ function Plans() {
       highlight: false,
     },
     {
-      name: "GYM",
+      name: "Plan Fuerza GYM — Progresión de Cargas",
       tag: "Fuerza pura",
       price: "9,99€",
       priceNote: "/ mes · entrenamiento + nutrición",
@@ -968,10 +1081,12 @@ export default function Home() {
       <main>
         <Hero />
         <About />
+        <WhyPacomont />
         <Plans />
         <Testimonials />
         <LeadMagnet />
         <Discounts />
+        <Competitions />
         <FAQ />
         <BlogHighlights />
         <Social />
