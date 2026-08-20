@@ -550,7 +550,7 @@ export default function Home() {
       <VideoSection />
       <Includes />
       <CoachIntro />
-      <ForWhom />
+      {/* <ForWhom /> */}
       <TrainingExample />
       <AppMockup />
       <Progress />
