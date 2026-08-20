@@ -336,8 +336,8 @@ function TrainingExample() {
             width: 260, aspectRatio: "402/874", borderRadius: 40, background: "#0d1520",
             padding: 5, boxShadow: "0 40px 80px rgba(0,0,0,0.18)", position: "relative",
           }}>
-            <div style={{ width: "100%", height: "100%", borderRadius: 36, overflow: "hidden", background: "#1a2535", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.2)", textAlign: "center", padding: 20 }}>App screenshot</p>
+            <div style={{ width: "100%", height: "100%", borderRadius: 36, overflow: "hidden", position: "relative" }}>
+              <Image src="/images/app-training.png" alt="Sesión de entrenamiento en la app" fill style={{ objectFit: "cover", objectPosition: "top center" }} sizes="260px" />
             </div>
             <div style={{ position: "absolute", top: 16, left: "50%", transform: "translateX(-50%)", width: 76, height: 22, borderRadius: 14, background: "#0d1520" }} />
           </div>
