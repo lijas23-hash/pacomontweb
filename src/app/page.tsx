@@ -85,6 +85,7 @@ const TESTIMONIALS = [
     quote: "La combinación entreno + nutri + app es lo más completo que he probado. Y el precio no tiene competencia.",
     name: "David R.",
     role: "Primer HYROX completado",
+    image: "/images/david-cambio.png",
   },
 ];
 
@@ -167,7 +168,7 @@ function Hero() {
           padding: "17px 44px", borderRadius: 3, textDecoration: "none",
           border: "1px solid rgba(255,255,255,0.4)", marginTop: 8,
         }}>
-          Quiero empezar
+          Hablamos por WhatsApp
         </a>
       </div>
     </section>
@@ -406,7 +407,7 @@ function Progress() {
             fontSize: 14, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em",
             padding: "16px 40px", borderRadius: 3, textDecoration: "none",
           }}>
-            Quiero empezar
+            Quiero mi plan
           </a>
         </div>
       </div>
@@ -494,7 +495,7 @@ function Offer() {
             fontSize: 15, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em",
             padding: "18px 48px", borderRadius: 3, textDecoration: "none",
           }}>
-            Quiero empezar
+            Empieza hoy
           </a>
         </div>
       </div>
