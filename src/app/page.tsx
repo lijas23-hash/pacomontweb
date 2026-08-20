@@ -127,7 +127,7 @@ function Hero() {
     }}>
       <div style={{ position: "absolute", inset: 0 }}>
         <Image
-          src="/images/hero-new3.png"
+          src="/images/HERO_NEW4.png"
           alt="Pacomont — HYROX PRO España"
           fill priority
           style={{ objectFit: "cover", objectPosition: "center center" }}
@@ -222,11 +222,14 @@ function CoachIntro() {
     <section style={{ background: "#f5f7fb", padding: "88px 24px" }}>
       <div className="coach-grid" style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }}>
         <div style={{ position: "relative" }}>
-          <div style={{ aspectRatio: "3/4", borderRadius: 20, overflow: "hidden", background: "#1a2535", position: "relative" }}>
-            {/* TODO: añade tu foto en public/images/coach.jpg */}
-            <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <p style={{ fontSize: 13, color: "rgba(255,255,255,0.2)", textTransform: "uppercase", letterSpacing: "0.08em" }}>Tu foto aquí</p>
-            </div>
+          <div style={{ aspectRatio: "9/16", borderRadius: 20, overflow: "hidden", background: "#0d1520", position: "relative" }}>
+            <iframe
+              src="https://www.youtube.com/embed/ZmzHbVOQ3Aw?rel=0&modestbranding=1"
+              title="Pacomont — Tu nuevo coach"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
+            />
           </div>
           <div style={{
             position: "absolute", bottom: -16, right: -16,
@@ -335,14 +338,19 @@ function AppMockup() {
         <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 800, color: "#0d1520", lineHeight: 1.15, letterSpacing: "-0.02em", margin: "0 0 48px", maxWidth: 560 }}>
           Tus entrenamientos, siempre a mano
         </h2>
-        <div style={{ display: "flex", justifyContent: "center", gap: 32, flexWrap: "wrap" }}>
-          {["screen-1", "screen-2", "screen-3"].map((id) => (
-            <div key={id} style={{
+        <div style={{ display: "flex", justifyContent: "center", gap: 32, flexWrap: "wrap", alignItems: "flex-end" }}>
+          {[
+            { src: "/images/app-training.png", alt: "Sesión de entrenamiento en la app Pacomont", offset: 32 },
+            { src: "/images/app-perfil.png", alt: "Perfil y progreso en la app Pacomont", offset: 0 },
+            { src: "/images/app-nutri.png", alt: "Plan de nutrición en la app Pacomont", offset: 32 },
+          ].map((screen) => (
+            <div key={screen.src} style={{
               width: 220, aspectRatio: "402/874", borderRadius: 36, background: "#0d1520",
               padding: 4, boxShadow: "0 40px 80px rgba(0,0,0,0.18)", position: "relative",
+              flexShrink: 0, marginBottom: screen.offset,
             }}>
-              <div style={{ width: "100%", height: "100%", borderRadius: 32, overflow: "hidden", background: "#1a2535", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <p style={{ fontSize: 11, color: "rgba(255,255,255,0.15)", textAlign: "center", padding: 16 }}>Captura app</p>
+              <div style={{ width: "100%", height: "100%", borderRadius: 32, overflow: "hidden", position: "relative" }}>
+                <Image src={screen.src} alt={screen.alt} fill style={{ objectFit: "cover", objectPosition: "top center" }} sizes="220px" />
               </div>
               <div style={{ position: "absolute", top: 14, left: "50%", transform: "translateX(-50%)", width: 64, height: 18, borderRadius: 12, background: "#0d1520" }} />
             </div>
