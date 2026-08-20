@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 html {
   scroll-behavior: smooth;
@@ -39,14 +40,6 @@ body {
 h1, h2, h3 {
   font-family: var(--font-bebas), system-ui, sans-serif;
   letter-spacing: 0.02em;
-}
-
-.btn-hero {
-  transition: background 0.2s ease;
-}
-
-.btn-hero:hover {
-  background: #1da851 !important;
 }
 
 .card-hover {
