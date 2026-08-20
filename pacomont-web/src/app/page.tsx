@@ -2,8 +2,8 @@
 import Image from "next/image";
 import { useState } from "react";
 
-const WA_LINK = "https://wa.me/34600000000?text=Hola%20Paco%2C%20quiero%20info%20sobre%20el%20entrenamiento";
-const WA_LINK_START = "https://wa.me/34600000000?text=Hola%20Paco%2C%20quiero%20empezar";
+const WA_LINK = "https://wa.me/34681816004?text=Hola%20Paco%2C%20quiero%20info%20sobre%20el%20entrenamiento";
+const WA_LINK_START = "https://wa.me/34681816004?text=Hola%20Paco%2C%20quiero%20empezar";
 const IG_LINK = "https://www.instagram.com/pacomont24/";
 
 // ─── Schema SEO ───────────────────────────────────────────────────────────────
