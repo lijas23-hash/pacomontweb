@@ -33,7 +33,7 @@ const INCLUDES = [
 ];
 
 const STATS = [
-  { num: "-20kg", label: "Perdi mas de 20kg" },
+  { num: "-20kg", label: "Mi propia transformación" },
   { num: "+75", label: "Atletas entrenados" },
   { num: "4", label: "HYROX PRO" },
 ];
@@ -57,22 +57,22 @@ const WORKOUT = [
 
 const PROGRESS = [
   { n: "01", title: "Todo tu progreso en un mismo lugar", desc: "Registra tus entrenamientos, controla tu evolución y comprueba todo lo que estás avanzando desde la app." },
-  { n: "02", title: "Un camino claro", desc: "Sabrás qué hacer cada día, sin perder tiempo buscando entrenamientos o improvisando en el gimnasio." },
-  { n: "03", title: "Acompañamiento constante", desc: "No estarás solo durante el proceso. Tendrás acceso a la comunidad, soporte y nuevas herramientas para ayudarte a mantener la constancia." },
+  { n: "02", title: "Sabrás exactamente qué hacer.", desc: "Sin perder tiempo buscando entrenamientos ni improvisando en el gimnasio." },
+  { n: "03", title: "No vas a hacerlo solo.", desc: "Tendrás soporte directo, nuevas herramientas y el acompañamiento necesario para mantener la constancia." },
   { n: "04", title: "Un método que evoluciona contigo", desc: "Avanza progresivamente y adapta el entrenamiento a tu nivel, tus objetivos y tu vida real." },
 ];
 
 const STEPS = [
-  { n: "01", title: "Hablamos por WhatsApp", desc: "Me cuentas tu situación, objetivo y disponibilidad. Sin formularios, sin esperas." },
+  { n: "01", title: "Cuéntame dónde estás y dónde quieres llegar", desc: "Por WhatsApp, sin formularios ni esperas. Me cuentas tu situación, objetivo y disponibilidad." },
   { n: "02", title: "Diseño tu plan", desc: "Entreno + nutrición personalizados para ti. Lo tienes en la app en 24h." },
-  { n: "03", title: "Seguimiento real", desc: "Ajustes cada 15 dias, respondo tus dudas y vamos mejorando juntos." },
+  { n: "03", title: "Seguimiento real", desc: "Ajustes cada 15 días, respondo tus dudas y vamos avanzando juntos." },
 ];
 
 const TESTIMONIALS = [
   {
     quote: "En solo 3 meses he conseguido sentirme más fuerte, verme mejor y crear una rutina que por fin puedo mantener.",
     name: "Antonia M.",
-    role: "Atleta que queria verse mejor.",
+    role: "Objetivo: verse y sentirse mejor.",
     image: "/images/antonia-cambio.png",
   },
   {
@@ -131,7 +131,7 @@ function Hero() {
           src="/images/sled-push.jpg"
           alt="Pacomont — HYROX PRO España"
           fill priority
-          style={{ objectFit: "cover", objectPosition: "50% 20%" }}
+          style={{ objectFit: "contain", objectPosition: "center center" }}
           sizes="100vw"
         />
       </div>
@@ -145,8 +145,8 @@ function Hero() {
           <span style={{ display: "block", color: "#2563eb", fontSize: "clamp(56px, 11vw, 120px)" }}>mejor versión</span>
         </h1>
         <p style={{ fontSize: "clamp(13px, 1.3vw, 15px)", fontWeight: 400, lineHeight: 1.65, color: "rgba(255,255,255,0.7)", margin: 0, maxWidth: 420 }}>
-          Entrenamiento, nutrición y seguimiento personalizados.<br />
-          Adaptados a ti y a tu objetivo.
+          Entrenamiento, nutrición y seguimiento adaptados a ti,<br />
+          a tu objetivo y a tu vida.
         </p>
         <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className="btn-hero" style={{
           display: "inline-block", background: "#25D366", color: "#fff",
@@ -197,7 +197,7 @@ function Includes() {
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "#2563eb", margin: "0 0 14px" }}>Lo que incluye</p>
         <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 800, color: "#0d1520", lineHeight: 1.15, letterSpacing: "-0.02em", margin: 0 }}>
-          Todo lo que necesitas para mejorar
+          Todo lo que necesitas para avanzar.
         </h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px,1fr))", gap: 16, marginTop: 48 }}>
           {INCLUDES.map((item) => (
@@ -247,17 +247,13 @@ function CoachIntro() {
         </div>
 
         <div>
-          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "#2563eb", margin: "0 0 14px" }}>Tu nuevo coach</p>
+          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "#2563eb", margin: "0 0 14px" }}>Yo también empecé desde otro punto.</p>
           <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 800, color: "#0d1520", lineHeight: 1.15, letterSpacing: "-0.02em", margin: "0 0 20px" }}>
             Tengo 36 años.<br />
             <span style={{ color: "#2563eb" }}>El mejor momento de mi vida.</span>
           </h2>
-          <p style={{ fontSize: 16, color: "#4b5563", lineHeight: 1.75, margin: "0 0 16px" }}>
-            No te lo digo como excusa ni para presumir.<br />
-            Te lo digo porque hace años no imaginaba que, a los 36 años, competiría en HYROX PRO, tendría más energía que a los 25 y estaría en la mejor forma de mi vida.
-          </p>
           <p style={{ fontSize: 16, color: "#4b5563", lineHeight: 1.75, margin: 0 }}>
-            La edad no es el límite. El verdadero cambio empieza cuando encuentras un método que encaja contigo y eres constante. Yo lo conseguí, y ahora quiero ayudarte a que tú también lo consigas.
+            Hace unos años no imaginaba que a los 36 estaría compitiendo en HYROX PRO y en la mejor forma de mi vida. No necesitas ser un atleta profesional. Necesitas un plan que encaje contigo y constancia para seguirlo.
           </p>
           <div className="stats-row" style={{ display: "flex", gap: 40, marginTop: 40 }}>
             {STATS.map((s) => (
@@ -304,7 +300,7 @@ function TrainingExample() {
         <div>
           <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "#2563eb", margin: "0 0 14px" }}>Un día por dentro</p>
           <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 800, color: "#0d1520", lineHeight: 1.15, letterSpacing: "-0.02em", margin: "0 0 40px" }}>
-            Así es un ejemplo de entrenamiento
+            Así puede ser uno de tus entrenamientos.
           </h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
             {WORKOUT.map((w) => (
@@ -341,7 +337,7 @@ function AppMockup() {
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "#2563eb", margin: "0 0 14px" }}>La app</p>
         <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 800, color: "#0d1520", lineHeight: 1.15, letterSpacing: "-0.02em", margin: "0 0 48px", maxWidth: 560 }}>
-          Tus entrenamientos, siempre a mano
+          Tu plan. Tu progreso. Todo en un mismo sitio.
         </h2>
         <div style={{ display: "flex", justifyContent: "center", gap: 32, flexWrap: "wrap", alignItems: "flex-end" }}>
           {[
@@ -390,7 +386,7 @@ function Progress() {
         </div>
         <div className="cta-box" style={{ maxWidth: 680, margin: "56px auto 0", textAlign: "center", padding: "56px 40px", background: "#0d1520", borderRadius: 24 }}>
           <p style={{ fontSize: "clamp(20px, 2.6vw, 26px)", fontWeight: 700, color: "#fff", letterSpacing: "-0.01em", lineHeight: 1.4, margin: "0 0 28px" }}>
-            Tú haces el trabajo. Nosotros te damos el plan, las herramientas y el apoyo para conseguirlo.
+            Tú haces el trabajo. Yo te doy el plan, las herramientas y el acompañamiento para avanzar.
           </p>
           <a href={WA_LINK_START} target="_blank" rel="noopener noreferrer" style={{
             display: "inline-block", background: "#2563eb", color: "#fff",
@@ -411,10 +407,10 @@ function Testimonials() {
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "#2563eb", margin: "0 0 14px" }}>Resultados</p>
         <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 800, color: "#0d1520", lineHeight: 1.15, letterSpacing: "-0.02em", margin: "0 0 16px" }}>
-          Personas reales. Cambios reales.
+          Ellos empezaron como tú.
         </h2>
         <p style={{ fontSize: 16, color: "#4b5563", lineHeight: 1.75, margin: 0, maxWidth: 620 }}>
-          Ellos también empezaron con dudas, poco tiempo y sin saber qué hacer. Hoy entrenan mejor, se sienten más fuertes y han conseguido un cambio que pueden mantener.
+          Distintos objetivos, distintos puntos de partida. Una cosa en común: empezar a entrenar con un plan.
         </p>
         <div className="testimonials-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24, marginTop: 48 }}>
           {TESTIMONIALS.map((t) => (
@@ -475,10 +471,10 @@ function Offer() {
         <div className="cta-box" style={{ maxWidth: 680, margin: "0 auto", textAlign: "center", padding: "64px 40px", background: "#0d1520", borderRadius: 24 }}>
           <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "#2563eb", margin: "0 0 14px" }}>Empieza hoy</p>
           <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 800, color: "#fff", lineHeight: 1.15, letterSpacing: "-0.02em", margin: "0 0 16px" }}>
-            ¿Listo para ver resultados reales?
+            Tu mejor versión no aparece sola. Se construye.
           </h2>
           <p style={{ fontSize: 16, color: "#9ca3af", lineHeight: 1.75, margin: "0 0 40px" }}>
-            Sin precios escondidos ni compromisos raros. Escríbeme y en menos de 24h tienes tu plan.
+            Cuéntame tu objetivo y vemos cómo podemos llegar hasta él.
           </p>
           <a href={WA_LINK_START} target="_blank" rel="noopener noreferrer" style={{
             display: "inline-block", background: "#2563eb", color: "#fff",
@@ -532,7 +528,7 @@ function Footer() {
     <footer style={{ background: "#0d1520", color: "#9ca3af", padding: "48px 24px", textAlign: "center", fontSize: 14 }}>
       <p style={{ fontSize: 20, fontWeight: 800, letterSpacing: "0.15em", textTransform: "uppercase", color: "#fff", margin: "0 0 16px" }}>Pacomont</p>
       <p style={{ margin: 0 }}>
-        Embajador Oficial HYROX España ·{" "}
+        Embajador Oficial HYROX España y México ·{" "}
         <a href={IG_LINK} target="_blank" rel="noopener noreferrer" style={{ color: "#9ca3af" }}>@pacomont24</a>
       </p>
       <p style={{ margin: "8px 0 0", fontSize: 12, color: "#4b5563" }}>© 2026 Pacomont. Todos los derechos reservados.</p>
