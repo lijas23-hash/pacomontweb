@@ -64,7 +64,7 @@ const PROGRESS = [
 
 const STEPS = [
   { n: "01", title: "Cuéntame dónde estás y dónde quieres llegar", desc: "Por WhatsApp, sin formularios ni esperas. Me cuentas tu situación, objetivo y disponibilidad." },
-  { n: "02", title: "Diseño tu plan", desc: "Entreno + nutrición personalizados para ti. Lo tienes en la app en 24h." },
+  { n: "02", title: "Diseño tu plan", desc: "Entreno + nutrición personalizados para ti. Lo tienes en la app en 24/48h." },
   { n: "03", title: "Seguimiento real", desc: "Ajustes cada 15 días, respondo tus dudas y vamos avanzando juntos." },
 ];
 
@@ -90,11 +90,11 @@ const TESTIMONIALS = [
 ];
 
 const FAQS = [
-  { q: "¿Necesito experiencia previa en HYROX?", a: "No. Trabajo con atletas de todos los niveles, desde quien va a su primer HYROX hasta quienes buscan bajar su marca en categoría PRO." },
+  { q: "¿Necesito experiencia entrenando?", a: "No. Trabajo con personas de todos los niveles, desde quien empieza desde cero hasta quien ya entrena y quiere mejorar sus resultados." },
   { q: "¿Cuántos días a la semana tengo que entrenar?", a: "Los que puedas. El plan se diseña según tu disponibilidad real, no la ideal. Funciona con 3 días o con 6." },
-  { q: "¿Cómo funciona el seguimiento?", a: "Por WhatsApp, directamente conmigo. Reviso tus sesiones cada semana, ajusto el plan y resuelvo tus dudas cuando las tengas." },
+  { q: "¿Cómo funciona el seguimiento?", a: "A través del chat de la app, directamente conmigo. Reviso tus sesiones, ajusto el plan y resuelvo tus dudas cuando las tengas." },
   { q: "¿Incluye plan de nutrición?", a: "Sí. Entrenamiento y nutrición van juntos. Sin una buena alimentación no hay progreso real." },
-  { q: "¿Cuánto tiempo tarda en llegar mi plan?", a: "En menos de 24h desde nuestra primera conversación tienes tu plan listo en la app." },
+  { q: "¿Cuánto tiempo tarda en llegar mi plan?", a: "En menos de 24/48h desde nuestra primera conversación tienes tu plan listo en la app." },
 ];
 
 // ─── Components ───────────────────────────────────────────────────────────────
