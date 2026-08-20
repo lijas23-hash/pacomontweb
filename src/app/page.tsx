@@ -127,7 +127,7 @@ function Hero() {
     }}>
       <div style={{ position: "absolute", inset: 0 }}>
         <Image
-          src="/images/HERO_NEW4.png"
+          src="/images/Hero_New_5.jpg"
           alt="Pacomont — HYROX PRO España"
           fill priority
           style={{ objectFit: "cover", objectPosition: "center center" }}
