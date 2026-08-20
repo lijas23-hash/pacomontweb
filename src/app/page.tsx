@@ -330,16 +330,14 @@ function TrainingExample() {
             ))}
           </div>
         </div>
-        {/* Phone mockup */}
-        <div className="training-phone" style={{ display: "flex", justifyContent: "center" }}>
+        {/* Training photo */}
+        <div className="training-phone" style={{ display: "flex", justifyContent: "center", alignItems: "flex-start" }}>
           <div style={{
-            width: 260, aspectRatio: "402/874", borderRadius: 40, background: "#0d1520",
-            padding: 5, boxShadow: "0 40px 80px rgba(0,0,0,0.18)", position: "relative",
+            width: "100%", maxWidth: 380, aspectRatio: "3/4", borderRadius: 20,
+            overflow: "hidden", position: "relative",
+            boxShadow: "0 40px 80px rgba(0,0,0,0.14)",
           }}>
-            <div style={{ width: "100%", height: "100%", borderRadius: 36, overflow: "hidden", position: "relative" }}>
-              <Image src="/images/app-training.png" alt="Sesión de entrenamiento en la app" fill style={{ objectFit: "cover", objectPosition: "top center" }} sizes="260px" />
-            </div>
-            <div style={{ position: "absolute", top: 16, left: "50%", transform: "translateX(-50%)", width: 76, height: 22, borderRadius: 14, background: "#0d1520" }} />
+            <Image src="/images/entrenamiento.jpg" alt="Paco Montero entrenando" fill style={{ objectFit: "cover", objectPosition: "center 20%" }} sizes="(max-width:768px) 100vw, 380px" />
           </div>
         </div>
       </div>
@@ -539,15 +537,67 @@ function FAQ() {
   );
 }
 
+const TT_LINK = "https://www.tiktok.com/@pacomont24";
+const YT_LINK = "https://www.youtube.com/@pacomont24";
+
 function Footer() {
   return (
-    <footer style={{ background: "#0d1520", color: "#9ca3af", padding: "48px 24px", textAlign: "center", fontSize: 14 }}>
-      <p style={{ fontSize: 20, fontWeight: 800, letterSpacing: "0.15em", textTransform: "uppercase", color: "#fff", margin: "0 0 16px" }}>Pacomont</p>
-      <p style={{ margin: 0 }}>
-        Embajador Oficial HYROX España y México ·{" "}
-        <a href={IG_LINK} target="_blank" rel="noopener noreferrer" style={{ color: "#9ca3af" }}>@pacomont24</a>
-      </p>
-      <p style={{ margin: "8px 0 0", fontSize: 12, color: "#4b5563" }}>© 2026 Pacomont. Todos los derechos reservados.</p>
+    <footer style={{ background: "#0d1520", color: "#9ca3af", padding: "56px 24px 40px", fontSize: 14 }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: 28 }}>
+        {/* Logo */}
+        <p style={{ fontSize: 22, fontWeight: 800, letterSpacing: "0.15em", textTransform: "uppercase", color: "#fff", margin: 0 }}>Pacomont</p>
+        <p style={{ margin: 0, textAlign: "center", lineHeight: 1.6 }}>
+          Entrenador Personal · Embajador Oficial HYROX España
+        </p>
+
+        {/* Social icons */}
+        <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+          {/* Instagram */}
+          <a href={IG_LINK} target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ color: "#9ca3af", transition: "color 0.2s" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
+            onMouseLeave={e => (e.currentTarget.style.color = "#9ca3af")}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+              <circle cx="12" cy="12" r="4.5"/>
+              <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+            </svg>
+          </a>
+          {/* TikTok */}
+          <a href={TT_LINK} target="_blank" rel="noopener noreferrer" aria-label="TikTok" style={{ color: "#9ca3af", transition: "color 0.2s" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
+            onMouseLeave={e => (e.currentTarget.style.color = "#9ca3af")}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V9.05a8.16 8.16 0 0 0 4.77 1.52V7.12a4.85 4.85 0 0 1-1-.43z"/>
+            </svg>
+          </a>
+          {/* YouTube */}
+          <a href={YT_LINK} target="_blank" rel="noopener noreferrer" aria-label="YouTube" style={{ color: "#9ca3af", transition: "color 0.2s" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
+            onMouseLeave={e => (e.currentTarget.style.color = "#9ca3af")}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M21.8 8.001s-.2-1.4-.8-2a2.83 2.83 0 0 0-2-.85C16.7 5 12 5 12 5s-4.7 0-7 .16a2.83 2.83 0 0 0-2 .85c-.6.6-.8 2-.8 2S2 9.56 2 11.11v1.45c0 1.55.2 3.1.2 3.1s.2 1.4.8 2a2.97 2.97 0 0 0 2.09.87C6.4 18.7 12 18.7 12 18.7s4.7 0 7-.15a2.83 2.83 0 0 0 2-.85c.6-.6.8-2 .8-2s.2-1.55.2-3.1v-1.45c0-1.55-.2-3.1-.2-3.1zM9.74 14.85V9.03l5.41 2.92-5.41 2.9z"/>
+            </svg>
+          </a>
+        </div>
+
+        {/* Legal links */}
+        <div style={{ display: "flex", gap: 24, flexWrap: "wrap", justifyContent: "center", fontSize: 12, color: "#4b5563" }}>
+          <a href="/aviso-legal" style={{ color: "#4b5563", textDecoration: "none" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "#9ca3af")}
+            onMouseLeave={e => (e.currentTarget.style.color = "#4b5563")}>Aviso Legal</a>
+          <a href="/politica-privacidad" style={{ color: "#4b5563", textDecoration: "none" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "#9ca3af")}
+            onMouseLeave={e => (e.currentTarget.style.color = "#4b5563")}>Política de Privacidad</a>
+          <a href="/politica-cookies" style={{ color: "#4b5563", textDecoration: "none" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "#9ca3af")}
+            onMouseLeave={e => (e.currentTarget.style.color = "#4b5563")}>Política de Cookies</a>
+          <a href="/terminos" style={{ color: "#4b5563", textDecoration: "none" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "#9ca3af")}
+            onMouseLeave={e => (e.currentTarget.style.color = "#4b5563")}>Términos y Condiciones</a>
+        </div>
+
+        <p style={{ margin: 0, fontSize: 12, color: "#4b5563" }}>© 2026 Pacomont. Todos los derechos reservados.</p>
+      </div>
     </footer>
   );
 }
