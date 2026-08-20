@@ -33,9 +33,9 @@ const INCLUDES = [
 ];
 
 const STATS = [
-  { num: "-20kg", label: "Mi propia transformación" },
-  { num: "+75", label: "Atletas entrenados" },
-  { num: "4", label: "HYROX PRO" },
+  { num: "–20 kg", label: "Mi propia transformación" },
+  { num: "+75", label: "Personas acompañadas" },
+  { num: "36 años", label: "Mi mejor forma hasta ahora" },
 ];
 
 const AUDIENCE = [
@@ -267,7 +267,9 @@ function CoachIntro() {
             <span style={{ color: "#2563eb" }}>El mejor momento de mi vida.</span>
           </h2>
           <p style={{ fontSize: 16, color: "#4b5563", lineHeight: 1.75, margin: 0 }}>
-            Hace unos años no imaginaba que a los 36 estaría compitiendo en HYROX PRO y en la mejor forma de mi vida. No necesitas ser un atleta profesional. Necesitas un plan que encaje contigo y constancia para seguirlo.
+            Perdí 20 kg. Hoy, con 36 años, compito en HYROX PRO.<br /><br />
+            No soy atleta profesional ni siempre he tenido este físico. También sé lo que es empezar sin experiencia, cometer errores y no saber qué camino seguir.<br /><br />
+            Con el tiempo entendí que el cambio no depende de hacer cosas extremas, sino de tener un plan que encaje con tu vida y mantenerlo el tiempo suficiente.
           </p>
           <div className="stats-row" style={{ display: "flex", gap: 40, marginTop: 40 }}>
             {STATS.map((s) => (
