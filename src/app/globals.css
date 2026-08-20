@@ -59,7 +59,11 @@ h1, h2, h3 {
 }
 
 /* ─── Mobile responsive ─────────────────────────────────────────────────────── */
+.hero-panels { grid-template-columns: 1fr 1fr 1fr; }
+
 @media (max-width: 768px) {
+  .hero-panels { grid-template-columns: 1fr !important; }
+  .hero-panel-extra { display: none !important; }
   .nav-inner { padding: 14px 16px !important; }
   .nav-cta { font-size: 11px !important; padding: 9px 12px !important; letter-spacing: 0.04em !important; }
   .coach-grid { grid-template-columns: 1fr !important; gap: 40px !important; }

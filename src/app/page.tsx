@@ -126,23 +126,29 @@ function Hero() {
       alignItems: "center", justifyContent: "center",
       textAlign: "center", overflow: "hidden",
     }}>
-      <div style={{ position: "absolute", inset: 0 }}>
-        <Image
-          src="/images/sled-push.jpg"
-          alt="Pacomont — HYROX PRO España"
-          fill priority
-          style={{ objectFit: "contain", objectPosition: "center center" }}
-          sizes="100vw"
-        />
+      {/* Panels — 3 on desktop, 1 on mobile */}
+      <div className="hero-panels" style={{
+        position: "absolute", inset: 0,
+        display: "grid",
+      }}>
+        <div style={{ position: "relative", overflow: "hidden" }}>
+          <Image src="/images/sled-push.jpg" alt="Pacomont sled push HYROX" fill priority style={{ objectFit: "cover", objectPosition: "center 30%" }} sizes="(max-width:768px) 100vw, 33vw" />
+        </div>
+        <div className="hero-panel-extra" style={{ position: "relative", overflow: "hidden" }}>
+          <Image src="/images/Hero_New_6.jpg" alt="Pacomont SkiErg HYROX" fill style={{ objectFit: "cover", objectPosition: "center top" }} sizes="33vw" />
+        </div>
+        <div className="hero-panel-extra" style={{ position: "relative", overflow: "hidden" }}>
+          <Image src="/images/Velites_Hyrox_Madrid_PacoChristian_127.jpg" alt="Pacomont competición HYROX Madrid" fill style={{ objectFit: "cover", objectPosition: "center top" }} sizes="33vw" />
+        </div>
       </div>
       <div style={{
         position: "absolute", inset: 0, pointerEvents: "none",
-        background: "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.35) 35%, rgba(0,0,0,0.5) 65%, rgba(0,0,0,0.85) 100%)",
+        background: "linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.3) 30%, rgba(0,0,0,0.45) 60%, rgba(0,0,0,0.85) 100%)",
       }} />
       <div style={{ position: "relative", zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", gap: 20, maxWidth: 700, padding: "0 24px" }}>
         <h1 style={{ margin: 0, lineHeight: 0.95, letterSpacing: "-0.01em" }}>
-          <span style={{ display: "block", color: "#fff", fontSize: "clamp(56px, 11vw, 120px)" }}>Busca tu</span>
-          <span style={{ display: "block", color: "#2563eb", fontSize: "clamp(56px, 11vw, 120px)" }}>mejor versión</span>
+          <span style={{ display: "block", color: "#fff", fontSize: "clamp(40px, 6vw, 80px)" }}>Busca tu</span>
+          <span style={{ display: "block", color: "#2563eb", fontSize: "clamp(40px, 6vw, 80px)" }}>mejor versión</span>
         </h1>
         <p style={{ fontSize: "clamp(13px, 1.3vw, 15px)", fontWeight: 400, lineHeight: 1.65, color: "rgba(255,255,255,0.7)", margin: 0, maxWidth: 420 }}>
           Entrenamiento, nutrición y seguimiento adaptados a ti,<br />
