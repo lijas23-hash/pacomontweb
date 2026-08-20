@@ -1,6 +1,28 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect, createContext, useContext } from "react";
+
+// ─── Cookie consent ───────────────────────────────────────────────────────────
+const CookieConsent = createContext<{
+  consent: "all" | "necessary" | null;
+  accept: () => void;
+  decline: () => void;
+}>({ consent: null, accept: () => {}, decline: () => {} });
+
+function CookieConsentProvider({ children }: { children: React.ReactNode }) {
+  const [consent, setConsent] = useState<"all" | "necessary" | null>(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("cookie_consent");
+    if (stored === "all" || stored === "necessary") setConsent(stored);
+    else setConsent(null);
+  }, []);
+
+  const accept = () => { localStorage.setItem("cookie_consent", "all"); setConsent("all"); };
+  const decline = () => { localStorage.setItem("cookie_consent", "necessary"); setConsent("necessary"); };
+
+  return <CookieConsent.Provider value={{ consent, accept, decline }}>{children}</CookieConsent.Provider>;
+}
 
 const WA_LINK = "https://wa.me/34681816004?text=Hola%20Paco%2C%20quiero%20info%20sobre%20el%20entrenamiento";
 const WA_LINK_START = "https://wa.me/34681816004?text=Hola%20Paco%2C%20quiero%20empezar";
@@ -121,6 +143,8 @@ function Navbar() {
 }
 
 function Hero() {
+  const { consent } = useContext(CookieConsent);
+
   return (
     <section className="hero-section" style={{
       position: "relative", minHeight: "100vh",
@@ -128,26 +152,35 @@ function Hero() {
       alignItems: "center", justifyContent: "flex-end",
       textAlign: "center", overflow: "hidden",
     }}>
-      {/* Video background */}
+      {/* Background: video if consent given, static photo otherwise */}
       <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: "#0d1117" }}>
-        <iframe
-          src="https://www.youtube.com/embed/at8llho7vn8?autoplay=1&mute=1&loop=1&playlist=at8llho7vn8&playsinline=1&controls=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1"
-          title="Pacomont HYROX"
-          allow="autoplay; encrypted-media"
-          style={{
-            position: "absolute",
-            top: "50%", left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "100vw",
-            height: "56.25vw",
-            minHeight: "100vh",
-            minWidth: "177.78vh",
-            border: "none",
-            pointerEvents: "none",
-          }}
-        />
-        {/* Blocks YouTube controls from showing on hover/click */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 1 }} />
+        {consent === "all" ? (
+          <>
+            <iframe
+              src="https://www.youtube.com/embed/at8llho7vn8?autoplay=1&mute=1&loop=1&playlist=at8llho7vn8&playsinline=1&controls=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1"
+              title="Pacomont HYROX"
+              allow="autoplay; encrypted-media"
+              style={{
+                position: "absolute",
+                top: "50%", left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: "100vw", height: "56.25vw",
+                minHeight: "100vh", minWidth: "177.78vh",
+                border: "none", pointerEvents: "none",
+              }}
+            />
+            <div style={{ position: "absolute", inset: 0, zIndex: 1 }} />
+          </>
+        ) : (
+          <Image
+            src="/images/Hero_New_6.jpg"
+            alt="Pacomont HYROX"
+            fill
+            priority
+            style={{ objectFit: "cover", objectPosition: "center 30%" }}
+            sizes="100vw"
+          />
+        )}
       </div>
       <div style={{
         position: "absolute", inset: 0, pointerEvents: "none",
@@ -602,6 +635,42 @@ function Footer() {
   );
 }
 
+// ─── Cookie Banner ────────────────────────────────────────────────────────────
+function CookieBanner() {
+  const { consent, accept, decline } = useContext(CookieConsent);
+  if (consent !== null) return null;
+
+  return (
+    <div style={{
+      position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 9999,
+      background: "#0d1520", borderTop: "1px solid #1e2d3d",
+      padding: "20px 24px", display: "flex", gap: 16,
+      alignItems: "center", justifyContent: "space-between", flexWrap: "wrap",
+    }}>
+      <p style={{ margin: 0, fontSize: 13, color: "#9ca3af", lineHeight: 1.6, maxWidth: 680 }}>
+        Usamos cookies de terceros (YouTube) para mostrar el vídeo del hero. Puedes aceptarlas o continuar solo con las cookies necesarias.{" "}
+        <a href="/politica-cookies" style={{ color: "#60a5fa", textDecoration: "underline" }}>Más información</a>
+      </p>
+      <div style={{ display: "flex", gap: 10, flexShrink: 0 }}>
+        <button onClick={decline} style={{
+          background: "transparent", color: "#9ca3af", border: "1px solid #374151",
+          fontSize: 13, fontWeight: 600, padding: "10px 20px", borderRadius: 6,
+          cursor: "pointer", whiteSpace: "nowrap",
+        }}>
+          Solo necesarias
+        </button>
+        <button onClick={accept} style={{
+          background: "#2563eb", color: "#fff", border: "none",
+          fontSize: 13, fontWeight: 700, padding: "10px 24px", borderRadius: 6,
+          cursor: "pointer", whiteSpace: "nowrap",
+        }}>
+          Aceptar todas
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ─── Schema JSON-LD ───────────────────────────────────────────────────────────
 function SchemaScript() {
   return (
@@ -615,7 +684,7 @@ function SchemaScript() {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function Home() {
   return (
-    <>
+    <CookieConsentProvider>
       <SchemaScript />
       <Navbar />
       <Hero />
@@ -631,6 +700,7 @@ export default function Home() {
       <Offer />
       <FAQ />
       <Footer />
-    </>
+      <CookieBanner />
+    </CookieConsentProvider>
   );
 }
