@@ -79,6 +79,7 @@ const TESTIMONIALS = [
     quote: "Me siento fenomenal, nunca había corrido y me he hecho los 10k esta mañana y mejorando el ritmo, voy lento pero cada vez mejor.",
     name: "Rodrigo G.",
     role: "Runner principiante",
+    image: "/images/rodrigo-cambio.png",
   },
   {
     quote: "La combinación entreno + nutri + app es lo más completo que he probado. Y el precio no tiene competencia.",
@@ -126,31 +127,37 @@ function Hero() {
       alignItems: "center", justifyContent: "flex-end",
       textAlign: "center", overflow: "hidden",
     }}>
-      {/* Panels — 3 on desktop, 1 on mobile */}
-      <div className="hero-panels" style={{
-        position: "absolute", inset: 0,
-        display: "grid",
-      }}>
-        <div className="hero-panel-extra" style={{ position: "relative", overflow: "hidden" }}>
-          <Image src="/images/Hero_New_6.jpg" alt="Pacomont SkiErg HYROX" fill style={{ objectFit: "cover", objectPosition: "center top" }} sizes="33vw" />
-        </div>
-        <div style={{ position: "relative", overflow: "hidden" }}>
-          <Image src="/images/sled-push.jpg" alt="Pacomont rope pull HYROX" fill priority style={{ objectFit: "cover", objectPosition: "45% 45%" }} sizes="(max-width:768px) 100vw, 33vw" />
-        </div>
-        <div className="hero-panel-extra" style={{ position: "relative", overflow: "hidden" }}>
-          <Image src="/images/Velites_Hyrox_Madrid_PacoChristian_127.jpg" alt="Pacomont competición HYROX Madrid" fill style={{ objectFit: "cover", objectPosition: "center top" }} sizes="33vw" />
-        </div>
+      {/* Video background */}
+      <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: "#0d1117" }}>
+        <iframe
+          src="https://www.youtube.com/embed/at8llho7vn8?autoplay=1&mute=1&loop=1&playlist=at8llho7vn8&playsinline=1&controls=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1"
+          title="Pacomont HYROX"
+          allow="autoplay; encrypted-media"
+          style={{
+            position: "absolute",
+            top: "50%", left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "100vw",
+            height: "56.25vw",
+            minHeight: "100vh",
+            minWidth: "177.78vh",
+            border: "none",
+            pointerEvents: "none",
+          }}
+        />
+        {/* Blocks YouTube controls from showing on hover/click */}
+        <div style={{ position: "absolute", inset: 0, zIndex: 1 }} />
       </div>
       <div style={{
         position: "absolute", inset: 0, pointerEvents: "none",
-        background: "linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.3) 30%, rgba(0,0,0,0.45) 60%, rgba(0,0,0,0.85) 100%)",
+        background: "linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.2) 35%, rgba(0,0,0,0.5) 65%, rgba(0,0,0,0.88) 100%)",
       }} />
-      <div style={{ position: "relative", zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", gap: 20, maxWidth: 700, padding: "0 24px 10vh" }}>
-        <h1 style={{ margin: 0, lineHeight: 0.95, letterSpacing: "-0.01em" }}>
-          <span style={{ display: "block", color: "#fff", fontSize: "clamp(40px, 6vw, 80px)" }}>Busca tu</span>
-          <span style={{ display: "block", color: "#2563eb", fontSize: "clamp(40px, 6vw, 80px)" }}>mejor versión</span>
+      <div style={{ position: "relative", zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", gap: 16, maxWidth: 760, padding: "0 24px 10vh" }}>
+        <h1 style={{ margin: 0, lineHeight: 1.05 }}>
+          <span style={{ display: "block", color: "#fff", fontSize: "clamp(38px, 5.5vw, 76px)", fontWeight: 800 }}>Mejora tu rendimiento.</span>
+          <span style={{ display: "block", color: "#fff", fontSize: "clamp(24px, 3.2vw, 48px)", fontWeight: 700, opacity: 0.9 }}>Construye tu mejor versión</span>
         </h1>
-        <p style={{ fontSize: "clamp(13px, 1.3vw, 15px)", fontWeight: 400, lineHeight: 1.65, color: "rgba(255,255,255,0.7)", margin: 0, maxWidth: 420 }}>
+        <p style={{ fontSize: "clamp(12px, 1.1vw, 14px)", fontWeight: 400, lineHeight: 1.65, color: "rgba(255,255,255,0.65)", margin: 0, maxWidth: 420 }}>
           Entrenamiento, nutrición y seguimiento adaptados a ti,<br />
           a tu objetivo y a tu vida.
         </p>
