@@ -73,6 +73,7 @@ const TESTIMONIALS = [
     quote: "En solo 3 meses he conseguido sentirme más fuerte, verme mejor y crear una rutina que por fin puedo mantener.",
     name: "Antonia M.",
     role: "Atleta que queria verse mejor.",
+    image: "/images/antonia-cambio.png",
   },
   {
     quote: "Me siento fenomenal, nunca había corrido y me he hecho los 10k esta mañana y mejorando el ritmo, voy lento pero cada vez mejor.",
@@ -127,7 +128,7 @@ function Hero() {
     }}>
       <div style={{ position: "absolute", inset: 0 }}>
         <Image
-          src="/images/Hero_New_5.jpg"
+          src="/images/Hero_New_6.jpg"
           alt="Pacomont — HYROX PRO España"
           fill priority
           style={{ objectFit: "cover", objectPosition: "center center" }}
@@ -414,15 +415,20 @@ function Testimonials() {
         <div className="testimonials-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24, marginTop: 48 }}>
           {TESTIMONIALS.map((t) => (
             <div key={t.name} style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, overflow: "hidden" }}>
-              {/* Antes/después placeholder */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", aspectRatio: "4/3" }}>
-                <div style={{ background: "#e5e7eb", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <p style={{ fontSize: 11, color: "#9ca3af", margin: 0 }}>Antes</p>
+              {t.image ? (
+                <div style={{ position: "relative", aspectRatio: "4/3", overflow: "hidden" }}>
+                  <Image src={t.image} alt={`Cambio de ${t.name}`} fill style={{ objectFit: "cover", objectPosition: "center top" }} sizes="(max-width:768px) 100vw, 33vw" />
                 </div>
-                <div style={{ background: "#d1d5db", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <p style={{ fontSize: 11, color: "#9ca3af", margin: 0 }}>Después</p>
+              ) : (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", aspectRatio: "4/3" }}>
+                  <div style={{ background: "#e5e7eb", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <p style={{ fontSize: 11, color: "#9ca3af", margin: 0 }}>Antes</p>
+                  </div>
+                  <div style={{ background: "#d1d5db", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <p style={{ fontSize: 11, color: "#9ca3af", margin: 0 }}>Después</p>
+                  </div>
                 </div>
-              </div>
+              )}
               <div style={{ padding: "28px 24px" }}>
                 <p style={{ fontSize: 15, color: "#4b5563", lineHeight: 1.7, margin: "0 0 20px", fontStyle: "italic" }}>"{t.quote}"</p>
                 <p style={{ fontSize: 14, fontWeight: 700, color: "#0d1520", margin: 0 }}>{t.name}</p>
