@@ -120,10 +120,10 @@ function Navbar() {
 
 function Hero() {
   return (
-    <section style={{
+    <section className="hero-section" style={{
       position: "relative", minHeight: "100vh",
       display: "flex", flexDirection: "column",
-      alignItems: "center", justifyContent: "center",
+      alignItems: "center", justifyContent: "flex-end",
       textAlign: "center", overflow: "hidden",
     }}>
       {/* Panels — 3 on desktop, 1 on mobile */}
@@ -131,11 +131,11 @@ function Hero() {
         position: "absolute", inset: 0,
         display: "grid",
       }}>
-        <div style={{ position: "relative", overflow: "hidden" }}>
-          <Image src="/images/sled-push.jpg" alt="Pacomont sled push HYROX" fill priority style={{ objectFit: "cover", objectPosition: "center 30%" }} sizes="(max-width:768px) 100vw, 33vw" />
-        </div>
         <div className="hero-panel-extra" style={{ position: "relative", overflow: "hidden" }}>
           <Image src="/images/Hero_New_6.jpg" alt="Pacomont SkiErg HYROX" fill style={{ objectFit: "cover", objectPosition: "center top" }} sizes="33vw" />
+        </div>
+        <div style={{ position: "relative", overflow: "hidden" }}>
+          <Image src="/images/sled-push.jpg" alt="Pacomont rope pull HYROX" fill priority style={{ objectFit: "cover", objectPosition: "45% 45%" }} sizes="(max-width:768px) 100vw, 33vw" />
         </div>
         <div className="hero-panel-extra" style={{ position: "relative", overflow: "hidden" }}>
           <Image src="/images/Velites_Hyrox_Madrid_PacoChristian_127.jpg" alt="Pacomont competición HYROX Madrid" fill style={{ objectFit: "cover", objectPosition: "center top" }} sizes="33vw" />
@@ -145,7 +145,7 @@ function Hero() {
         position: "absolute", inset: 0, pointerEvents: "none",
         background: "linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.3) 30%, rgba(0,0,0,0.45) 60%, rgba(0,0,0,0.85) 100%)",
       }} />
-      <div style={{ position: "relative", zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", gap: 20, maxWidth: 700, padding: "0 24px" }}>
+      <div style={{ position: "relative", zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", gap: 20, maxWidth: 700, padding: "0 24px 10vh" }}>
         <h1 style={{ margin: 0, lineHeight: 0.95, letterSpacing: "-0.01em" }}>
           <span style={{ display: "block", color: "#fff", fontSize: "clamp(40px, 6vw, 80px)" }}>Busca tu</span>
           <span style={{ display: "block", color: "#2563eb", fontSize: "clamp(40px, 6vw, 80px)" }}>mejor versión</span>
