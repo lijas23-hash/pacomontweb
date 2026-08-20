@@ -123,24 +123,28 @@ function Hero() {
     <section style={{
       position: "relative", minHeight: "100vh",
       display: "flex", flexDirection: "column",
-      alignItems: "center", justifyContent: "flex-end",
-      padding: "0 24px 80px", textAlign: "center", overflow: "hidden",
+      alignItems: "center", justifyContent: "center",
+      textAlign: "center", overflow: "hidden",
     }}>
       <div style={{ position: "absolute", inset: 0 }}>
         <Image
-          src="/images/Hero_New_6.jpg"
+          src="/images/sled-push.jpg"
           alt="Pacomont — HYROX PRO España"
           fill priority
-          style={{ objectFit: "cover", objectPosition: "center center" }}
+          style={{ objectFit: "cover", objectPosition: "50% 20%" }}
           sizes="100vw"
         />
       </div>
       <div style={{
         position: "absolute", inset: 0, pointerEvents: "none",
-        background: "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 35%, rgba(0,0,0,0.45) 65%, rgba(0,0,0,0.78) 100%)",
+        background: "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.35) 35%, rgba(0,0,0,0.5) 65%, rgba(0,0,0,0.85) 100%)",
       }} />
-      <div style={{ position: "relative", zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", gap: 24, maxWidth: 580 }}>
-        <p style={{ fontSize: "clamp(17px, 2.2vw, 22px)", fontWeight: 600, lineHeight: 1.55, color: "#e5e7eb", margin: 0 }}>
+      <div style={{ position: "relative", zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", gap: 20, maxWidth: 700, padding: "0 24px" }}>
+        <h1 style={{ margin: 0, lineHeight: 0.95, letterSpacing: "-0.01em" }}>
+          <span style={{ display: "block", color: "#fff", fontSize: "clamp(56px, 11vw, 120px)" }}>Busca tu</span>
+          <span style={{ display: "block", color: "#2563eb", fontSize: "clamp(56px, 11vw, 120px)" }}>mejor versión</span>
+        </h1>
+        <p style={{ fontSize: "clamp(13px, 1.3vw, 15px)", fontWeight: 400, lineHeight: 1.65, color: "rgba(255,255,255,0.7)", margin: 0, maxWidth: 420 }}>
           Entrenamiento, nutrición y seguimiento personalizados.<br />
           Adaptados a ti y a tu objetivo.
         </p>
@@ -148,7 +152,7 @@ function Hero() {
           display: "inline-block", background: "#25D366", color: "#fff",
           fontSize: 14, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em",
           padding: "17px 44px", borderRadius: 3, textDecoration: "none",
-          border: "1px solid #fff",
+          border: "1px solid rgba(255,255,255,0.4)", marginTop: 8,
         }}>
           Quiero empezar
         </a>
