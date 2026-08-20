@@ -97,7 +97,7 @@ const FAQS = [
 // ─── Components ───────────────────────────────────────────────────────────────
 function Navbar() {
   return (
-    <nav style={{
+    <nav className="nav-inner" style={{
       position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
       padding: "20px 32px", display: "flex", alignItems: "center",
       justifyContent: "space-between",
@@ -106,7 +106,7 @@ function Navbar() {
       <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: "0.15em", textTransform: "uppercase", color: "#fff" }}>
         Pacomont
       </span>
-      <a href={WA_LINK} target="_blank" rel="noopener noreferrer" style={{
+      <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className="nav-cta" style={{
         background: "#0d1520", color: "#fff", fontSize: 13, fontWeight: 700,
         textTransform: "uppercase", letterSpacing: "0.08em",
         padding: "11px 22px", borderRadius: 3, textDecoration: "none",
@@ -220,7 +220,7 @@ function Includes() {
 function CoachIntro() {
   return (
     <section style={{ background: "#f5f7fb", padding: "88px 24px" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }}>
+      <div className="coach-grid" style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }}>
         <div style={{ position: "relative" }}>
           <div style={{ aspectRatio: "3/4", borderRadius: 20, overflow: "hidden", background: "#1a2535", position: "relative" }}>
             {/* TODO: añade tu foto en public/images/coach.jpg */}
@@ -251,7 +251,7 @@ function CoachIntro() {
           <p style={{ fontSize: 16, color: "#4b5563", lineHeight: 1.75, margin: 0 }}>
             La edad no es el límite. El verdadero cambio empieza cuando encuentras un método que encaja contigo y eres constante. Yo lo conseguí, y ahora quiero ayudarte a que tú también lo consigas.
           </p>
-          <div style={{ display: "flex", gap: 40, marginTop: 40 }}>
+          <div className="stats-row" style={{ display: "flex", gap: 40, marginTop: 40 }}>
             {STATS.map((s) => (
               <div key={s.num}>
                 <p style={{ fontSize: 38, fontWeight: 900, color: "#0d1520", letterSpacing: "-0.03em", lineHeight: 1, margin: 0 }}>{s.num}</p>
@@ -292,7 +292,7 @@ function ForWhom() {
 function TrainingExample() {
   return (
     <section style={{ background: "#f5f7fb", padding: "88px 24px" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 0.8fr", gap: 64, alignItems: "start" }}>
+      <div className="training-grid" style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 0.8fr", gap: 64, alignItems: "start" }}>
         <div>
           <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "#2563eb", margin: "0 0 14px" }}>Un día por dentro</p>
           <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 800, color: "#0d1520", lineHeight: 1.15, letterSpacing: "-0.02em", margin: "0 0 40px" }}>
@@ -311,7 +311,7 @@ function TrainingExample() {
           </div>
         </div>
         {/* Phone mockup */}
-        <div style={{ display: "flex", justifyContent: "center" }}>
+        <div className="training-phone" style={{ display: "flex", justifyContent: "center" }}>
           <div style={{
             width: 260, aspectRatio: "402/874", borderRadius: 40, background: "#0d1520",
             padding: 5, boxShadow: "0 40px 80px rgba(0,0,0,0.18)", position: "relative",
@@ -363,7 +363,7 @@ function Progress() {
         <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 800, color: "#0d1520", letterSpacing: "-0.02em", lineHeight: 1.2, maxWidth: 620, margin: "0 0 56px" }}>
           Deja de entrenar sin rumbo.<br />Empieza a avanzar con un método claro.
         </h2>
-        <div style={{
+        <div className="progress-grid" style={{
           display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 1,
           background: "#e5e7eb", border: "1px solid #e5e7eb", borderRadius: 16, overflow: "hidden",
         }}>
@@ -375,7 +375,7 @@ function Progress() {
             </div>
           ))}
         </div>
-        <div style={{ maxWidth: 680, margin: "56px auto 0", textAlign: "center", padding: "56px 40px", background: "#0d1520", borderRadius: 24 }}>
+        <div className="cta-box" style={{ maxWidth: 680, margin: "56px auto 0", textAlign: "center", padding: "56px 40px", background: "#0d1520", borderRadius: 24 }}>
           <p style={{ fontSize: "clamp(20px, 2.6vw, 26px)", fontWeight: 700, color: "#fff", letterSpacing: "-0.01em", lineHeight: 1.4, margin: "0 0 28px" }}>
             Tú haces el trabajo. Nosotros te damos el plan, las herramientas y el apoyo para conseguirlo.
           </p>
@@ -403,7 +403,7 @@ function Testimonials() {
         <p style={{ fontSize: 16, color: "#4b5563", lineHeight: 1.75, margin: 0, maxWidth: 620 }}>
           Ellos también empezaron con dudas, poco tiempo y sin saber qué hacer. Hoy entrenan mejor, se sienten más fuertes y han conseguido un cambio que pueden mantener.
         </p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24, marginTop: 48 }}>
+        <div className="testimonials-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24, marginTop: 48 }}>
           {TESTIMONIALS.map((t) => (
             <div key={t.name} style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, overflow: "hidden" }}>
               {/* Antes/después placeholder */}
@@ -436,7 +436,7 @@ function HowItWorks() {
         <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 800, color: "#0d1520", lineHeight: 1.15, letterSpacing: "-0.02em", margin: 0 }}>
           Simple. Directo. Sin complicaciones.
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 32, marginTop: 48 }}>
+        <div className="steps-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 32, marginTop: 48 }}>
           {STEPS.map((st) => (
             <div key={st.n}>
               <p style={{ fontSize: 48, fontWeight: 900, color: "#e5e7eb", lineHeight: 1, margin: "0 0 16px", letterSpacing: "-0.04em" }}>{st.n}</p>
@@ -454,7 +454,7 @@ function Offer() {
   return (
     <section id="oferta" style={{ background: "#f5f7fb", padding: "88px 24px" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <div style={{ maxWidth: 680, margin: "0 auto", textAlign: "center", padding: "64px 40px", background: "#0d1520", borderRadius: 24 }}>
+        <div className="cta-box" style={{ maxWidth: 680, margin: "0 auto", textAlign: "center", padding: "64px 40px", background: "#0d1520", borderRadius: 24 }}>
           <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "#2563eb", margin: "0 0 14px" }}>Empieza hoy</p>
           <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 800, color: "#fff", lineHeight: 1.15, letterSpacing: "-0.02em", margin: "0 0 16px" }}>
             ¿Listo para ver resultados reales?

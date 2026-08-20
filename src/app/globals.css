@@ -57,3 +57,19 @@ h1, h2, h3 {
   transform: translateY(-4px);
   box-shadow: 0 20px 40px rgba(59, 130, 246, 0.12);
 }
+
+/* ─── Mobile responsive ─────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .nav-inner { padding: 14px 16px !important; }
+  .nav-cta { font-size: 11px !important; padding: 9px 12px !important; letter-spacing: 0.04em !important; }
+  .coach-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+  .coach-grid > div:first-child { order: 2; }
+  .coach-grid > div:last-child { order: 1; }
+  .training-grid { grid-template-columns: 1fr !important; }
+  .training-phone { display: none !important; }
+  .testimonials-grid { grid-template-columns: 1fr !important; }
+  .steps-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+  .progress-grid { grid-template-columns: 1fr !important; }
+  .cta-box { padding: 36px 20px !important; }
+  .stats-row { gap: 20px !important; flex-wrap: wrap !important; }
+}
