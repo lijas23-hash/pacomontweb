@@ -224,7 +224,7 @@ function CoachIntro() {
         <div style={{ position: "relative" }}>
           <div style={{ aspectRatio: "9/16", borderRadius: 20, overflow: "hidden", background: "#0d1520", position: "relative" }}>
             <iframe
-              src="https://www.youtube.com/embed/ZmzHbVOQ3Aw?rel=0&modestbranding=1"
+              src="https://www.youtube.com/embed/ZmzHbVOQ3Aw?rel=0&modestbranding=1&autoplay=1&mute=1&loop=1&playlist=ZmzHbVOQ3Aw&playsinline=1"
               title="Pacomont — Tu nuevo coach"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
