@@ -29,19 +29,54 @@ const WA_LINK_START = "https://wa.me/34681816004?text=Hola%20Paco%2C%20quiero%20
 const IG_LINK = "https://www.instagram.com/pacomont24/";
 
 // ─── Schema SEO ───────────────────────────────────────────────────────────────
-const personSchema = {
+const siteSchema = {
   "@context": "https://schema.org",
-  "@type": "Person",
-  name: "Pacomont",
-  alternateName: "pacomont24",
-  description: "Embajador oficial HYROX en España. Atleta PRO con mejor tiempo de 1:03 en categoría PRO.",
-  url: "https://www.pacomont.es",
-  sameAs: [
-    "https://www.instagram.com/pacomont24/",
-    "https://www.tiktok.com/@pacomont24",
-    "https://www.youtube.com/@pacomont24",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://www.pacomont.es/#paco",
+      name: "Paco Montero",
+      jobTitle: "Entrenador Online · HYROX Ambassador Oficial",
+      description: "Entrenador online. HYROX Ambassador Oficial España. Transformación personal documentada: -19 kg en 4 meses.",
+      image: "https://www.pacomont.es/images/Velites_Hyrox_Madrid_PacoChristian_127.jpg",
+      url: "https://www.pacomont.es",
+      sameAs: [
+        "https://www.instagram.com/pacomont24/",
+        "https://www.tiktok.com/@pacomont24",
+        "https://www.youtube.com/@pacomont24",
+      ],
+      knowsAbout: [
+        "Entrenamiento personal online",
+        "Pérdida de peso",
+        "Hipertrofia",
+        "HYROX Training",
+        "Nutrición deportiva",
+        "Entrenamiento híbrido",
+      ],
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://www.pacomont.es/#org",
+      name: "Pacomont",
+      url: "https://www.pacomont.es",
+      logo: "https://www.pacomont.es/icon.svg",
+      founder: { "@id": "https://www.pacomont.es/#paco" },
+      sameAs: [
+        "https://www.instagram.com/pacomont24/",
+        "https://www.tiktok.com/@pacomont24",
+        "https://www.youtube.com/@pacomont24",
+      ],
+      areaServed: { "@type": "Country", name: "ES" },
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://www.pacomont.es/#website",
+      url: "https://www.pacomont.es",
+      name: "Pacomont",
+      publisher: { "@id": "https://www.pacomont.es/#org" },
+      inLanguage: "es-ES",
+    },
   ],
-  jobTitle: "Embajador Oficial HYROX",
 };
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
@@ -187,13 +222,14 @@ function Hero() {
         background: "linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.2) 35%, rgba(0,0,0,0.5) 65%, rgba(0,0,0,0.88) 100%)",
       }} />
       <div style={{ position: "relative", zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", gap: 16, maxWidth: 760, padding: "0 24px 10vh" }}>
-        <h1 style={{ margin: 0, lineHeight: 1.05 }}>
-          <span style={{ display: "block", color: "#fff", fontSize: "clamp(38px, 5.5vw, 76px)", fontWeight: 800 }}>Mejora tu rendimiento.</span>
-          <span style={{ display: "block", color: "#fff", fontSize: "clamp(24px, 3.2vw, 48px)", fontWeight: 700, opacity: 0.9 }}>Construye tu mejor versión</span>
+        <h1 style={{ margin: 0, lineHeight: 1.1 }}>
+          <span style={{ display: "block", color: "#fff", fontSize: "clamp(28px, 4vw, 60px)", fontWeight: 800 }}>
+            Entrenador online que hizo el mismo camino que tú.
+          </span>
         </h1>
-        <p style={{ fontSize: "clamp(12px, 1.1vw, 14px)", fontWeight: 400, lineHeight: 1.65, color: "rgba(255,255,255,0.65)", margin: 0, maxWidth: 420 }}>
-          Entrenamiento, nutrición y seguimiento adaptados a ti,<br />
-          a tu objetivo y a tu vida.
+        <p style={{ fontSize: "clamp(13px, 1.2vw, 15px)", fontWeight: 400, lineHeight: 1.7, color: "rgba(255,255,255,0.75)", margin: 0, maxWidth: 560 }}>
+          Bajé 19 kg en 4 meses. Ahora te entreno online — perder peso, ganar músculo,<br />
+          preparar un HYROX o todo a la vez. HYROX Ambassador Oficial · +75 atletas activos.
         </p>
         <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className="btn-hero" style={{
           display: "inline-block", background: "#25D366", color: "#fff",
@@ -296,8 +332,7 @@ function CoachIntro() {
         <div>
           <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "#2563eb", margin: "0 0 14px" }}>Yo también empecé desde otro punto.</p>
           <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 800, color: "#0d1520", lineHeight: 1.15, letterSpacing: "-0.02em", margin: "0 0 20px" }}>
-            Tengo 36 años.<br />
-            <span style={{ color: "#2563eb" }}>El mejor momento de mi vida.</span>
+            El método que me sacó de <span style={{ color: "#2563eb" }}>97 kg.</span>
           </h2>
           <p style={{ fontSize: 16, color: "#4b5563", lineHeight: 1.75, margin: 0 }}>
             Perdí 20 kg. Hoy, con 36 años, compito en HYROX PRO.<br /><br />
@@ -454,7 +489,7 @@ function Testimonials() {
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "#2563eb", margin: "0 0 14px" }}>Resultados</p>
         <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 800, color: "#0d1520", lineHeight: 1.15, letterSpacing: "-0.02em", margin: "0 0 16px" }}>
-          Ellos empezaron como tú.
+          Qué dicen los +75 atletas activos.
         </h2>
         <p style={{ fontSize: 16, color: "#4b5563", lineHeight: 1.75, margin: 0, maxWidth: 620 }}>
           Distintos objetivos, distintos puntos de partida. Una cosa en común: empezar a entrenar con un plan.
@@ -495,7 +530,7 @@ function HowItWorks() {
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "#2563eb", margin: "0 0 14px" }}>Cómo funciona</p>
         <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 800, color: "#0d1520", lineHeight: 1.15, letterSpacing: "-0.02em", margin: 0 }}>
-          Simple. Directo. Sin complicaciones.
+          Cómo funciona en 3 pasos.
         </h2>
         <div className="steps-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 32, marginTop: 48 }}>
           {STEPS.map((st) => (
@@ -673,11 +708,20 @@ function CookieBanner() {
 
 // ─── Schema JSON-LD ───────────────────────────────────────────────────────────
 function SchemaScript() {
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: FAQS.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
-    />
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(siteSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+    </>
   );
 }
 
