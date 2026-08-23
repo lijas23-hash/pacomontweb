@@ -251,22 +251,14 @@ function VideoSection() {
           width: "100%", aspectRatio: "16/9", background: "#0d1520",
           borderRadius: 16, overflow: "hidden", position: "relative",
           boxShadow: "0 24px 64px rgba(0,0,0,0.15)",
-          display: "flex", alignItems: "center", justifyContent: "center",
         }}>
-          {/* Reemplazar por <video> o embed cuando tengas el vídeo */}
-          <div style={{
-            width: 80, height: 80, background: "rgba(37,99,235,0.9)",
-            borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
-              <polygon points="6,3 20,12 6,21" />
-            </svg>
-          </div>
-          <p style={{
-            position: "absolute", bottom: 20, left: 0, right: 0, textAlign: "center",
-            fontSize: 12, fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase",
-            color: "rgba(255,255,255,0.3)", margin: 0,
-          }}>Tu vídeo aquí</p>
+          <iframe
+            src="https://www.youtube.com/embed/OtzrC0rZu_Q?rel=0&modestbranding=1"
+            title="Pacomont — Entrenador online"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
+          />
         </div>
       </div>
     </section>
