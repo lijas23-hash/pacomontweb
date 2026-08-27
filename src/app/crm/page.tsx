@@ -62,6 +62,18 @@ function parseNotas(raw: string): NotaEntry[] {
   return [];
 }
 
+function needsMonthlyCall(c: Client): boolean {
+  const isActive = c.EstadoPlan === "Activo" || !c.EstadoPlan;
+  if (!isActive) return false;
+  if (c.ProximaLlamada && new Date(c.ProximaLlamada) < new Date()) return true;
+  const startDays = c.FechaInicio ? Math.floor((Date.now()-new Date(c.FechaInicio).getTime())/864e5) : 0;
+  if (startDays < 30) return false;
+  const notas = parseNotas(c.NotasSeguimiento||"");
+  if (notas.length === 0) return true;
+  const daysSince = Math.floor((Date.now()-new Date(notas[0].fecha).getTime())/864e5);
+  return daysSince >= 30;
+}
+
 function callStatus(dateStr: string) {
   if (!dateStr) return null;
   const d = new Date(dateStr); const now = new Date();
@@ -387,6 +399,7 @@ export default function CrmPage() {
   const [filterPlan,   setFilterPlan]  = useState("Todos");
   const [filterMod,    setFilterMod]   = useState("Todos");
   const [filterCobro,  setFilterCobro] = useState("Todos");
+  const [filterCalls,  setFilterCalls] = useState(false);
   const [selected,     setSelected]    = useState<Client|null>(null);
   const [search,       setSearch]      = useState("");
 
@@ -435,6 +448,7 @@ export default function CrmPage() {
       if (filterCobro==="Este mes"   && (days===null||days<0||days>30)) return false;
       if (filterCobro==="Sin fecha"  && days!==null) return false;
     }
+    if (filterCalls && !needsMonthlyCall(c)) return false;
     return true;
   });
 
@@ -463,7 +477,7 @@ export default function CrmPage() {
       {/* Main tabs */}
       <div style={{borderBottom:`1px solid ${B.arena}`,padding:"0 24px",background:"#fff",display:"flex"}}>
         {([["leads","Leads",leads.length],["clientes","Clientes",clientes.length]] as const).map(([id,label,count])=>(
-          <button key={id} onClick={()=>{setView(id);setSearch("");setFilter("Todos");setFilterPlan("Todos");setFilterMod("Todos");setFilterCobro("Todos");}} style={{padding:"14px 20px",border:"none",background:"none",cursor:"pointer",fontFamily:B.font,fontSize:14,fontWeight:view===id?700:400,color:view===id?B.carbon:B.topo,borderBottom:view===id?`2px solid ${B.carbon}`:"2px solid transparent",transition:"all 0.15s"}}>
+          <button key={id} onClick={()=>{setView(id);setSearch("");setFilter("Todos");setFilterPlan("Todos");setFilterMod("Todos");setFilterCobro("Todos");setFilterCalls(false);}} style={{padding:"14px 20px",border:"none",background:"none",cursor:"pointer",fontFamily:B.font,fontSize:14,fontWeight:view===id?700:400,color:view===id?B.carbon:B.topo,borderBottom:view===id?`2px solid ${B.carbon}`:"2px solid transparent",transition:"all 0.15s"}}>
             {label} <span style={{fontSize:12,marginLeft:4,padding:"2px 7px",borderRadius:20,background:view===id?B.carbon:B.arena,color:view===id?B.beige:B.topo,fontWeight:600}}>{count}</span>
           </button>
         ))}
@@ -527,43 +541,72 @@ export default function CrmPage() {
         {view==="clientes"&&(
           <>
             {(()=>{
-              const activos        = clientes.filter(c=>c.EstadoPlan==="Activo"||!c.EstadoPlan);
-              const mrr            = activos.reduce((s,c)=>{const i=precioInfo(c.Modalidad);return s+(i?Math.round(i.corte/i.meses*100)/100:0);},0);
-              const mrrBruto       = activos.reduce((s,c)=>{const i=precioInfo(c.Modalidad);return s+(i?Math.round(i.precio/i.meses*100)/100:0);},0);
-              const proxCobros     = clientes.filter(c=>{if(!c.ProximoCobro)return false;const d=Math.ceil((new Date(c.ProximoCobro).getTime()-Date.now())/864e5);return d>=0&&d<=30;}).length;
+              const sinLlamada     = clientes.filter(c=>(c.EstadoPlan==="Activo"||!c.EstadoPlan)&&needsMonthlyCall(c));
+              const activosFilt    = filteredClients.filter(c=>c.EstadoPlan==="Activo"||!c.EstadoPlan);
+              const mrr            = activosFilt.reduce((s,c)=>{const i=precioInfo(c.Modalidad);return s+(i?i.corte/i.meses:0);},0);
+              const mrrBruto       = activosFilt.reduce((s,c)=>{const i=precioInfo(c.Modalidad);return s+(i?i.precio/i.meses:0);},0);
+              const proxCobros     = filteredClients.filter(c=>{if(!c.ProximoCobro)return false;const d=Math.ceil((new Date(c.ProximoCobro).getTime()-Date.now())/864e5);return d>=0&&d<=30;}).length;
+              const isFiltered     = filterPlan!=="Todos"||filterMod!=="Todos"||filterCobro!=="Todos"||filterCalls||!!search;
               return (
                 <>
-                  {/* Tarjeta destacada de ingresos mensuales */}
-                  <div style={{background:B.carbon,borderRadius:14,padding:"20px 24px",marginBottom:14,display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:16}}>
-                    <div>
-                      <p style={{fontSize:12,fontWeight:600,color:B.topo,margin:"0 0 6px",textTransform:"uppercase",letterSpacing:"0.06em"}}>Tu ingreso mensual (activos)</p>
-                      <p style={{fontSize:42,fontWeight:800,color:"#4ade80",margin:0,letterSpacing:"-0.02em"}}>{mrr?`${Math.round(mrr)}€`:"—"}</p>
-                      <p style={{fontSize:13,color:B.arena,margin:"4px 0 0"}}>Facturación bruta mensual: {mrrBruto?`${Math.round(mrrBruto)}€`:"—"}</p>
+                  {/* Alertas de llamadas mensuales */}
+                  {sinLlamada.length>0&&(
+                    <div style={{background:"#1c1400",border:"1px solid #92400e",borderRadius:12,padding:"14px 18px",marginBottom:14}}>
+                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+                        <p style={{fontSize:13,fontWeight:700,color:"#fbbf24",margin:0}}>⚠ {sinLlamada.length} cliente{sinLlamada.length!==1?"s":""} sin llamada mensual</p>
+                        <button onClick={()=>setFilterCalls(true)} style={{background:"#92400e",border:"none",color:"#fef3c7",fontSize:12,fontWeight:600,padding:"4px 10px",borderRadius:6,cursor:"pointer",fontFamily:B.font}}>Ver solo estos</button>
+                      </div>
+                      <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                        {sinLlamada.map(c=>{
+                          const notas=parseNotas(c.NotasSeguimiento||"");
+                          const dias=notas.length>0?Math.floor((Date.now()-new Date(notas[0].fecha).getTime())/864e5):null;
+                          return(
+                            <button key={c._row} onClick={()=>setSelected(c)} style={{background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.15)",color:"#fef3c7",padding:"5px 12px",borderRadius:20,fontSize:13,cursor:"pointer",fontFamily:B.font,textAlign:"left"}}>
+                              {c.Nombre} {c.Apellido}
+                              <span style={{opacity:0.6,marginLeft:6}}>{dias!==null?`${dias}d sin nota`:c.ProximaLlamada&&new Date(c.ProximaLlamada)<new Date()?"llamada vencida":"sin registro"}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                    <div style={{display:"flex",gap:24,flexWrap:"wrap"}}>
-                      <div style={{textAlign:"center"}}>
-                        <p style={{fontSize:28,fontWeight:800,color:"#fff",margin:0}}>{activos.length}</p>
-                        <p style={{fontSize:12,color:B.topo,margin:0}}>Clientes activos</p>
+                  )}
+
+                  {/* Tarjeta MRR — responde a filtros activos */}
+                  <div style={{background:B.carbon,borderRadius:14,padding:"20px 24px",marginBottom:14}}>
+                    {isFiltered&&<p style={{fontSize:11,color:B.topo,margin:"0 0 8px",textTransform:"uppercase",letterSpacing:"0.06em"}}>Mostrando {filteredClients.length} de {clientes.length} clientes</p>}
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:16}}>
+                      <div>
+                        <p style={{fontSize:12,fontWeight:600,color:B.topo,margin:"0 0 4px",textTransform:"uppercase",letterSpacing:"0.06em"}}>Tu ingreso mensual{isFiltered?" (filtrado)":""}</p>
+                        <p style={{fontSize:42,fontWeight:800,color:"#4ade80",margin:0,letterSpacing:"-0.02em"}}>{mrr?`${Math.round(mrr)}€`:"—"}</p>
+                        <p style={{fontSize:13,color:B.arena,margin:"4px 0 0"}}>Bruto mensual: {mrrBruto?`${Math.round(mrrBruto)}€`:"—"}</p>
                       </div>
-                      <div style={{textAlign:"center"}}>
-                        <p style={{fontSize:28,fontWeight:800,color:proxCobros>0?"#fbbf24":"#fff",margin:0}}>{proxCobros}</p>
-                        <p style={{fontSize:12,color:B.topo,margin:0}}>Cobros en 30 días</p>
-                      </div>
-                      <div style={{textAlign:"center"}}>
-                        <p style={{fontSize:28,fontWeight:800,color:"#fff",margin:0}}>{mrr?`${Math.round(mrr*12)}€`:"—"}</p>
-                        <p style={{fontSize:12,color:B.topo,margin:0}}>Proyección anual</p>
+                      <div style={{display:"flex",gap:24,flexWrap:"wrap"}}>
+                        <div style={{textAlign:"center"}}>
+                          <p style={{fontSize:28,fontWeight:800,color:"#fff",margin:0}}>{activosFilt.length}</p>
+                          <p style={{fontSize:12,color:B.topo,margin:0}}>{isFiltered?"Filtrados activos":"Activos"}</p>
+                        </div>
+                        <div style={{textAlign:"center"}}>
+                          <p style={{fontSize:28,fontWeight:800,color:proxCobros>0?"#fbbf24":"#fff",margin:0}}>{proxCobros}</p>
+                          <p style={{fontSize:12,color:B.topo,margin:0}}>Cobros 30d</p>
+                        </div>
+                        <div style={{textAlign:"center"}}>
+                          <p style={{fontSize:28,fontWeight:800,color:"#fff",margin:0}}>{mrr?`${Math.round(mrr*12)}€`:"—"}</p>
+                          <p style={{fontSize:12,color:B.topo,margin:0}}>Proyección anual</p>
+                        </div>
                       </div>
                     </div>
                   </div>
+
                   {/* Stats secundarios */}
                   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))",gap:10,marginBottom:16}}>
                     {[
                       {l:"Total clientes",v:`${clientes.length}`,c:B.brown},
                       {l:"Trimestral",v:`${clientes.filter(c=>c.Modalidad==="Trimestral").length}`,c:B.brown,sub:"299€ · cobras 209€"},
                       {l:"Semestral",v:`${clientes.filter(c=>c.Modalidad==="Semestral").length}`,c:B.brown,sub:"459€ · cobras 321€"},
-                      {l:"Sin modalidad",v:`${clientes.filter(c=>!c.Modalidad).length}`,c:B.arena},
+                      {l:"Sin llamada mensual",v:`${sinLlamada.length}`,c:sinLlamada.length>0?"#92400e":B.topo,clickable:true},
                     ].map(s=>(
-                      <div key={s.l} style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:10,padding:"14px 16px"}}>
+                      <div key={s.l} onClick={"clickable" in s&&s.clickable?()=>setFilterCalls(!filterCalls):undefined}
+                        style={{background:"#fff",border:`1px solid ${"clickable" in s&&s.clickable&&sinLlamada.length>0?"#fde68a":B.arena}`,borderRadius:10,padding:"14px 16px",cursor:"clickable" in s&&s.clickable?"pointer":"default"}}>
                         <p style={{fontSize:22,fontWeight:800,color:s.c,margin:"0 0 2px"}}>{s.v}</p>
                         <p style={{fontSize:12,color:B.topo,margin:0}}>{s.l}</p>
                         {"sub" in s&&s.sub&&<p style={{fontSize:11,color:B.arena,margin:"2px 0 0"}}>{s.sub}</p>}
@@ -612,7 +655,7 @@ export default function CrmPage() {
                 </div>
               </div>
               {/* Filtro próximo cobro */}
-              <div>
+              <div style={{marginBottom:10}}>
                 <p style={{fontSize:10,fontWeight:700,color:B.topo,textTransform:"uppercase",letterSpacing:"0.07em",margin:"0 0 7px"}}>Próximo cobro</p>
                 <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
                   {(["Todos","Vencidos","Esta semana","Este mes","Sin fecha"]).map(t=>{
@@ -623,6 +666,13 @@ export default function CrmPage() {
                     </button>;
                   })}
                 </div>
+              </div>
+              {/* Filtro llamadas mensuales */}
+              <div>
+                <p style={{fontSize:10,fontWeight:700,color:B.topo,textTransform:"uppercase",letterSpacing:"0.07em",margin:"0 0 7px"}}>Llamadas</p>
+                <button onClick={()=>setFilterCalls(!filterCalls)} style={{padding:"5px 13px",borderRadius:20,fontSize:13,fontFamily:B.font,cursor:"pointer",border:filterCalls?"1.5px solid #fde68a":"1.5px solid "+B.arena,background:filterCalls?"#fffbeb":"#fff",color:filterCalls?"#92400e":B.topo,fontWeight:filterCalls?600:400}}>
+                  {filterCalls?"✓ ":""}Sin llamada mensual
+                </button>
               </div>
             </div>
             {loading?<p style={{color:B.topo,textAlign:"center",padding:48}}>Cargando…</p>
