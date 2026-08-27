@@ -382,10 +382,13 @@ export default function CrmPage() {
   const [authed,  setAuthed]   = useState(false);
   const [clients, setClients]  = useState<Client[]>([]);
   const [loading, setLoading]  = useState(false);
-  const [view,    setView]     = useState<"leads"|"clientes">("leads");
-  const [filter,  setFilter]   = useState("Todos");
-  const [selected,setSelected] = useState<Client|null>(null);
-  const [search,  setSearch]   = useState("");
+  const [view,         setView]        = useState<"leads"|"clientes">("leads");
+  const [filter,       setFilter]      = useState("Todos");
+  const [filterPlan,   setFilterPlan]  = useState("Todos");
+  const [filterMod,    setFilterMod]   = useState("Todos");
+  const [filterCobro,  setFilterCobro] = useState("Todos");
+  const [selected,     setSelected]    = useState<Client|null>(null);
+  const [search,       setSearch]      = useState("");
 
   useEffect(()=>{ if (localStorage.getItem("crm_token")) setAuthed(true); },[]);
 
@@ -416,8 +419,23 @@ export default function CrmPage() {
     return ok && (!q||(c.Nombre+" "+c.Apellido).toLowerCase().includes(q)||c.Email?.toLowerCase().includes(q)||c.Objetivo?.toLowerCase().includes(q));
   });
   const filteredClients = clientes.filter(c=>{
-    const q=search.toLowerCase();
-    return !q||(c.Nombre+" "+c.Apellido).toLowerCase().includes(q)||c.PlanContratado?.toLowerCase().includes(q);
+    const q = search.toLowerCase();
+    if (q && !(c.Nombre+" "+c.Apellido).toLowerCase().includes(q) && !c.PlanContratado?.toLowerCase().includes(q) && !c.Email?.toLowerCase().includes(q)) return false;
+    if (filterPlan!=="Todos") {
+      const ep = c.EstadoPlan||"Activo";
+      if (ep!==filterPlan) return false;
+    }
+    if (filterMod!=="Todos") {
+      if (filterMod==="Sin asignar" ? !!c.Modalidad : c.Modalidad!==filterMod) return false;
+    }
+    if (filterCobro!=="Todos") {
+      const days = c.ProximoCobro ? Math.ceil((new Date(c.ProximoCobro).getTime()-Date.now())/864e5) : null;
+      if (filterCobro==="Vencidos"   && (days===null||days>=0)) return false;
+      if (filterCobro==="Esta semana"&& (days===null||days<0||days>7)) return false;
+      if (filterCobro==="Este mes"   && (days===null||days<0||days>30)) return false;
+      if (filterCobro==="Sin fecha"  && days!==null) return false;
+    }
+    return true;
   });
 
   const proximaSemana = clientes.filter(c=>{
@@ -445,7 +463,7 @@ export default function CrmPage() {
       {/* Main tabs */}
       <div style={{borderBottom:`1px solid ${B.arena}`,padding:"0 24px",background:"#fff",display:"flex"}}>
         {([["leads","Leads",leads.length],["clientes","Clientes",clientes.length]] as const).map(([id,label,count])=>(
-          <button key={id} onClick={()=>{setView(id);setSearch("");setFilter("Todos");}} style={{padding:"14px 20px",border:"none",background:"none",cursor:"pointer",fontFamily:B.font,fontSize:14,fontWeight:view===id?700:400,color:view===id?B.carbon:B.topo,borderBottom:view===id?`2px solid ${B.carbon}`:"2px solid transparent",transition:"all 0.15s"}}>
+          <button key={id} onClick={()=>{setView(id);setSearch("");setFilter("Todos");setFilterPlan("Todos");setFilterMod("Todos");setFilterCobro("Todos");}} style={{padding:"14px 20px",border:"none",background:"none",cursor:"pointer",fontFamily:B.font,fontSize:14,fontWeight:view===id?700:400,color:view===id?B.carbon:B.topo,borderBottom:view===id?`2px solid ${B.carbon}`:"2px solid transparent",transition:"all 0.15s"}}>
             {label} <span style={{fontSize:12,marginLeft:4,padding:"2px 7px",borderRadius:20,background:view===id?B.carbon:B.arena,color:view===id?B.beige:B.topo,fontWeight:600}}>{count}</span>
           </button>
         ))}
@@ -567,7 +585,45 @@ export default function CrmPage() {
               ):null;
             })()}
             <div style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:12,padding:"16px 20px",marginBottom:14}}>
-              <input placeholder="Buscar cliente o plan…" value={search} onChange={e=>setSearch(e.target.value)} style={inp}/>
+              <input placeholder="Buscar nombre, email o plan…" value={search} onChange={e=>setSearch(e.target.value)} style={{...inp,marginBottom:14}}/>
+              {/* Filtro estado del plan */}
+              <div style={{marginBottom:10}}>
+                <p style={{fontSize:10,fontWeight:700,color:B.topo,textTransform:"uppercase",letterSpacing:"0.07em",margin:"0 0 7px"}}>Estado del plan</p>
+                <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                  {(["Todos","Activo","Pausado","Cancelado","Finalizado"]).map(t=>{
+                    const active=filterPlan===t;
+                    const col = t==="Activo"?{bg:"#f0fdf4",text:"#166534",border:"#bbf7d0"} : t==="Pausado"?{bg:"#fffbeb",text:"#92400e",border:"#fde68a"} : t==="Cancelado"?{bg:"#fef2f2",text:"#991b1b",border:"#fecaca"} : t==="Finalizado"?{bg:"#f3f4f6",text:"#374151",border:"#d1d5db"} : null;
+                    return <button key={t} onClick={()=>setFilterPlan(t)} style={{padding:"5px 13px",borderRadius:20,fontSize:13,fontFamily:B.font,cursor:"pointer",border:active&&col?`1.5px solid ${col.border}`:`1.5px solid ${B.arena}`,background:active&&col?col.bg:active?"#f3f4f6":"#fff",color:active&&col?col.text:active?B.carbon:B.topo,fontWeight:active?600:400}}>
+                      {t}{t!=="Todos"&&<span style={{opacity:0.6,marginLeft:4}}>({clientes.filter(c=>(c.EstadoPlan||"Activo")===t).length})</span>}
+                    </button>;
+                  })}
+                </div>
+              </div>
+              {/* Filtro modalidad */}
+              <div style={{marginBottom:10}}>
+                <p style={{fontSize:10,fontWeight:700,color:B.topo,textTransform:"uppercase",letterSpacing:"0.07em",margin:"0 0 7px"}}>Modalidad</p>
+                <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                  {(["Todos","Trimestral","Semestral","Sin asignar"]).map(t=>{
+                    const active=filterMod===t;
+                    return <button key={t} onClick={()=>setFilterMod(t)} style={{padding:"5px 13px",borderRadius:20,fontSize:13,fontFamily:B.font,cursor:"pointer",border:active?`1.5px solid ${B.brown}`:`1.5px solid ${B.arena}`,background:active?B.beige:"#fff",color:active?B.brown:B.topo,fontWeight:active?600:400}}>
+                      {t}{t!=="Todos"&&t!=="Sin asignar"&&<span style={{opacity:0.6,marginLeft:4}}>({clientes.filter(c=>c.Modalidad===t).length})</span>}
+                    </button>;
+                  })}
+                </div>
+              </div>
+              {/* Filtro próximo cobro */}
+              <div>
+                <p style={{fontSize:10,fontWeight:700,color:B.topo,textTransform:"uppercase",letterSpacing:"0.07em",margin:"0 0 7px"}}>Próximo cobro</p>
+                <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                  {(["Todos","Vencidos","Esta semana","Este mes","Sin fecha"]).map(t=>{
+                    const active=filterCobro===t;
+                    const isAlert=t==="Vencidos";
+                    return <button key={t} onClick={()=>setFilterCobro(t)} style={{padding:"5px 13px",borderRadius:20,fontSize:13,fontFamily:B.font,cursor:"pointer",border:active?`1.5px solid ${isAlert?"#fecaca":B.arena}`:`1.5px solid ${B.arena}`,background:active?(isAlert?"#fef2f2":"#f3f4f6"):"#fff",color:active?(isAlert?"#991b1b":B.carbon):B.topo,fontWeight:active?600:400}}>
+                      {t}
+                    </button>;
+                  })}
+                </div>
+              </div>
             </div>
             {loading?<p style={{color:B.topo,textAlign:"center",padding:48}}>Cargando…</p>
             :filteredClients.length===0?<p style={{color:B.topo,textAlign:"center",padding:48}}>Sin clientes todavía.</p>
