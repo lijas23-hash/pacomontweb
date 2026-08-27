@@ -17,12 +17,27 @@ interface Client {
   PlanContratado: string; FechaInicio: string; ProximaLlamada: string;
   NivelCondicion: string; EstadoPlan: string;
   Nutricion: string; Motivacion: string; FactoresExternos: string; NotasSeguimiento: string;
+  Modalidad: string; ProximoCobro: string;
 }
 
 const ESTADOS_LEAD = ["Pendiente llamada","Llamada programada","Llamada hecha","Compró","No compró"];
 const PLANES = ["Entreno + Nutrición","Solo Entreno","Solo Nutrición","Preparación HYROX","Otro"];
 const NIVELES = ["—","Principiante","Intermedio","Avanzado"];
 const ESTADOS_PLAN = ["Activo","Pausado","Cancelado","Finalizado"];
+const MODALIDADES: Record<string,{precio:number;meses:number;label:string}> = {
+  "Trimestral": {precio:299, meses:3,  label:"cada 3 meses"},
+  "Semestral":  {precio:459, meses:6,  label:"cada 6 meses"},
+};
+const CORTE = 0.70;
+function precioInfo(modalidad:string) {
+  const m = MODALIDADES[modalidad];
+  if (!m) return null;
+  return { precio: m.precio, corte: Math.round(m.precio*CORTE*100)/100, label: m.label, meses: m.meses };
+}
+function sumarMeses(fecha:string, meses:number): string {
+  const d = new Date(fecha); d.setMonth(d.getMonth()+meses);
+  return d.toISOString().split("T")[0];
+}
 
 const LEAD_BADGE: Record<string,{bg:string;text:string;border:string}> = {
   "Pendiente llamada": {bg:"#fffbeb",text:"#92400e",border:"#fde68a"},
@@ -111,6 +126,8 @@ function DetailModal({client,onClose,onSave}:{client:Client;onClose:()=>void;onS
   const [proxima,     setProxima]   = useState(client.ProximaLlamada||"");
   const [nivel,       setNivel]     = useState(client.NivelCondicion||"—");
   const [estadoPlan,  setEstadoPlan]= useState(client.EstadoPlan||"Activo");
+  const [modalidad,   setModalidad] = useState(client.Modalidad||"");
+  const [proxCobro,   setProxCobro] = useState(client.ProximoCobro||"");
   const [nutricion,   setNutricion] = useState(client.Nutricion||"");
   const [motivacion,  setMotivacion]= useState(client.Motivacion||"");
   const [factores,    setFactores]  = useState(client.FactoresExternos||"");
@@ -120,12 +137,23 @@ function DetailModal({client,onClose,onSave}:{client:Client;onClose:()=>void;onS
   const [savingNota,  setSavingNota]= useState(false);
   const [showForm,    setShowForm]  = useState(false);
 
+  const info = precioInfo(modalidad);
+
+  const handleModalidad = (m:string) => {
+    setModalidad(m);
+    if (inicio && !proxCobro) {
+      const mi = MODALIDADES[m];
+      if (mi) setProxCobro(sumarMeses(inicio, mi.meses));
+    }
+  };
+
   const saveAll = async () => {
     setSaving(true);
     const comprado = estado==="Compró"?"Sí":estado==="No compró"?"No":client.Comprado;
     await onSave({Estado:estado,Notas:notas,UltimaLlamada:ultimaLl,Comprado:comprado,
       PlanContratado:plan,FechaInicio:inicio,ProximaLlamada:proxima,NivelCondicion:nivel,
-      EstadoPlan:estadoPlan,Nutricion:nutricion,Motivacion:motivacion,
+      EstadoPlan:estadoPlan,Modalidad:modalidad,ProximoCobro:proxCobro,
+      Nutricion:nutricion,Motivacion:motivacion,
       FactoresExternos:factores,NotasSeguimiento:JSON.stringify(historial)});
     setSaving(false);
   };
@@ -202,12 +230,48 @@ function DetailModal({client,onClose,onSave}:{client:Client;onClose:()=>void;onS
                   <input type="date" value={proxima} onChange={e=>setProxima(e.target.value)} style={inp}/>
                 </div>
               </div>
-              <div style={{marginBottom:20}}>
-                <label style={lbl}>Estado del plan</label>
-                <select value={estadoPlan} onChange={e=>setEstadoPlan(e.target.value)} style={{...inp,maxWidth:240}}>
-                  {ESTADOS_PLAN.map(s=><option key={s} value={s}>{s}</option>)}
-                </select>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
+                <div>
+                  <label style={lbl}>Estado del plan</label>
+                  <select value={estadoPlan} onChange={e=>setEstadoPlan(e.target.value)} style={{...inp}}>
+                    {ESTADOS_PLAN.map(s=><option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label style={lbl}>Modalidad de pago</label>
+                  <select value={modalidad} onChange={e=>handleModalidad(e.target.value)} style={{...inp}}>
+                    <option value="">— Seleccionar —</option>
+                    <option value="Trimestral">Trimestral (299€)</option>
+                    <option value="Semestral">Semestral (459€)</option>
+                  </select>
+                </div>
               </div>
+
+              {/* Resumen económico */}
+              {info && (
+                <div style={{background:B.carbon,borderRadius:12,padding:"16px 20px",marginBottom:20,display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12}}>
+                  <div>
+                    <p style={{fontSize:11,color:B.arena,margin:"0 0 4px",textTransform:"uppercase",letterSpacing:"0.05em",fontWeight:600}}>Precio plan</p>
+                    <p style={{fontSize:20,fontWeight:800,color:"#fff",margin:0}}>{info.precio}€</p>
+                    <p style={{fontSize:11,color:B.topo,margin:0}}>{info.label}</p>
+                  </div>
+                  <div>
+                    <p style={{fontSize:11,color:B.arena,margin:"0 0 4px",textTransform:"uppercase",letterSpacing:"0.05em",fontWeight:600}}>Tu parte (70%)</p>
+                    <p style={{fontSize:20,fontWeight:800,color:"#4ade80",margin:0}}>{info.corte}€</p>
+                    <p style={{fontSize:11,color:B.topo,margin:0}}>{info.label}</p>
+                  </div>
+                  <div>
+                    <label style={{...lbl,color:B.arena,margin:"0 0 6px"}}>Próximo cobro</label>
+                    <input type="date" value={proxCobro} onChange={e=>setProxCobro(e.target.value)} style={{width:"100%",padding:"7px 10px",borderRadius:7,border:`1.5px solid ${B.topo}`,background:"rgba(255,255,255,0.1)",color:"#fff",fontSize:13,fontFamily:B.font,outline:"none",boxSizing:"border-box",colorScheme:"dark"}}/>
+                  </div>
+                </div>
+              )}
+              {!info && (
+                <div style={{marginBottom:20}}>
+                  <label style={lbl}>Próximo cobro</label>
+                  <input type="date" value={proxCobro} onChange={e=>setProxCobro(e.target.value)} style={{...inp,maxWidth:220}}/>
+                </div>
+              )}
 
               {/* Perfil del atleta */}
               <div style={{borderTop:`1px solid ${B.arena}`,paddingTop:20,marginBottom:20}}>
@@ -444,14 +508,28 @@ export default function CrmPage() {
         {/* ── CLIENTES ── */}
         {view==="clientes"&&(
           <>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))",gap:12,marginBottom:20}}>
-              {[{l:"Total clientes",v:clientes.length,c:B.brown},{l:"Activos",v:clientes.filter(c=>c.EstadoPlan==="Activo"||!c.EstadoPlan).length,c:"#166534"},{l:"Próxima semana",v:proximaSemana,c:"#92400e"}].map(s=>(
-                <div key={s.l} style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:12,padding:"16px 20px"}}>
-                  <p style={{fontSize:28,fontWeight:800,color:s.c,margin:"0 0 2px"}}>{s.v}</p>
-                  <p style={{fontSize:12,color:B.topo,margin:0}}>{s.l}</p>
+            {(()=>{
+              const totalFacturado = clientes.reduce((s,c)=>s+(precioInfo(c.Modalidad)?.precio||0),0);
+              const totalPaco      = clientes.reduce((s,c)=>s+(precioInfo(c.Modalidad)?.corte||0),0);
+              const proxCobros     = clientes.filter(c=>{if(!c.ProximoCobro)return false;const d=Math.ceil((new Date(c.ProximoCobro).getTime()-Date.now())/864e5);return d>=0&&d<=30;}).length;
+              return (
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:12,marginBottom:20}}>
+                  {[
+                    {l:"Total clientes",v:`${clientes.length}`,c:B.brown},
+                    {l:"Activos",v:`${clientes.filter(c=>c.EstadoPlan==="Activo"||!c.EstadoPlan).length}`,c:"#166534"},
+                    {l:"Facturación total",v:totalFacturado?`${totalFacturado}€`:"—",c:B.brown,sub:"suma de planes"},
+                    {l:"Tu parte total (70%)",v:totalPaco?`${Math.round(totalPaco)}€`:"—",c:"#166534",sub:"suma de cortes"},
+                    {l:"Cobros próx. 30d",v:`${proxCobros}`,c:proxCobros>0?"#92400e":B.topo},
+                  ].map(s=>(
+                    <div key={s.l} style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:12,padding:"16px 20px"}}>
+                      <p style={{fontSize:24,fontWeight:800,color:s.c,margin:"0 0 2px"}}>{s.v}</p>
+                      <p style={{fontSize:12,color:B.topo,margin:0}}>{s.l}</p>
+                      {"sub" in s&&s.sub&&<p style={{fontSize:11,color:B.arena,margin:"2px 0 0"}}>{s.sub}</p>}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              );
+            })()}
             {(()=>{
               const urgentes=clientes.filter(c=>{if(!c.ProximaLlamada)return false;const d=Math.ceil((new Date(c.ProximaLlamada).getTime()-Date.now())/864e5);return d<0||d<=3;});
               return urgentes.length>0?(
@@ -473,7 +551,7 @@ export default function CrmPage() {
                 <div style={{overflowX:"auto"}}>
                   <table style={{width:"100%",borderCollapse:"collapse",minWidth:700}}>
                     <thead><tr style={{borderBottom:`1px solid ${B.arena}`,background:B.beige}}>
-                      {["Nombre","Plan","Inicio","Próxima llamada","Estado","Notas"].map(h=>(
+                      {["Nombre","Plan","Modalidad","Tu parte","Próx. cobro","Estado","Notas"].map(h=>(
                         <th key={h} style={{padding:"11px 16px",textAlign:"left",fontSize:11,fontWeight:600,color:B.topo,textTransform:"uppercase",letterSpacing:"0.05em",whiteSpace:"nowrap"}}>{h}</th>
                       ))}
                     </tr></thead>
@@ -488,11 +566,12 @@ export default function CrmPage() {
                               <p style={{fontSize:12,color:B.brown,margin:0}}>{c.Email}</p>
                             </td>
                             <td style={{padding:"13px 16px",fontSize:13,color:B.topo,whiteSpace:"nowrap"}}>{c.PlanContratado||"—"}</td>
-                            <td style={{padding:"13px 16px",fontSize:13,color:B.topo,whiteSpace:"nowrap"}}>{c.FechaInicio?new Date(c.FechaInicio).toLocaleDateString("es-ES",{day:"numeric",month:"short",year:"2-digit"}):"—"}</td>
+                            <td style={{padding:"13px 16px",fontSize:13,color:B.topo,whiteSpace:"nowrap"}}>{c.Modalidad||"—"}</td>
                             <td style={{padding:"13px 16px",whiteSpace:"nowrap"}}>
-                              {cs?<span style={{display:"inline-block",padding:"3px 10px",borderRadius:20,fontSize:12,fontWeight:600,background:cs.bg,color:cs.color}}>{cs.label}</span>
-                              :c.ProximaLlamada?<span style={{fontSize:13,color:B.topo}}>{new Date(c.ProximaLlamada).toLocaleDateString("es-ES",{day:"numeric",month:"short"})}</span>
-                              :<span style={{fontSize:13,color:B.arena}}>—</span>}
+                              {(()=>{const pi=precioInfo(c.Modalidad);return pi?<span style={{fontSize:14,fontWeight:700,color:"#166534"}}>{pi.corte}€</span>:<span style={{color:B.arena}}>—</span>;})()}
+                            </td>
+                            <td style={{padding:"13px 16px",whiteSpace:"nowrap"}}>
+                              {(()=>{const pcs=c.ProximoCobro?callStatus(c.ProximoCobro):null;return pcs?<span style={{display:"inline-block",padding:"3px 10px",borderRadius:20,fontSize:12,fontWeight:600,background:pcs.bg,color:pcs.color}}>{pcs.label}</span>:c.ProximoCobro?<span style={{fontSize:13,color:B.topo}}>{new Date(c.ProximoCobro).toLocaleDateString("es-ES",{day:"numeric",month:"short"})}</span>:<span style={{fontSize:13,color:B.arena}}>—</span>;})()}
                             </td>
                             <td style={{padding:"13px 16px"}}><SmallBadge text={c.EstadoPlan||"Activo"} bg={PLAN_BADGE[c.EstadoPlan||"Activo"]?.bg||"#f3f4f6"} color={PLAN_BADGE[c.EstadoPlan||"Activo"]?.text||"#374151"}/></td>
                             <td style={{padding:"13px 16px",fontSize:13,color:notas.length>0?B.carbon:B.arena}}>
