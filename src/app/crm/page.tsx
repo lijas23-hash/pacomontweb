@@ -1,0 +1,518 @@
+"use client";
+import { useState, useEffect, useCallback } from "react";
+
+const B = {
+  carbon: "#1A1A1A", beige: "#EFE3D3", brown: "#6B5346",
+  topo: "#8C7868", arena: "#DCCBBB", font: "'Manrope', system-ui, sans-serif",
+};
+
+interface Client {
+  _row: number; ID: string; Fecha: string;
+  Nombre: string; Apellido: string; Email: string; Telefono: string; Edad: string;
+  Objetivo: string; PorQueAhora: string; Lesiones: string;
+  ExperienciaEntrenador: string; MayorObstaculo: string; Importancia: string; Inversion: string;
+  Estado: string; Comprado: string; Notas: string; UltimaLlamada: string;
+  // Ficha de cliente
+  PlanContratado: string; FechaInicio: string; ProximaLlamada: string;
+  NivelCondicion: string; EstadoPlan: string; UsaApp: string;
+  Nutricion: string; Motivacion: string; FactoresExternos: string; NotasSeguimiento: string;
+}
+
+const ESTADOS_LEAD = ["Pendiente llamada","Llamada programada","Llamada hecha","Compró","No compró"];
+const PLANES = ["Entreno + Nutrición","Solo Entreno","Solo Nutrición","Preparación HYROX","Otro"];
+const NIVELES = ["—","Principiante","Intermedio","Avanzado"];
+const ESTADOS_PLAN = ["Activo","Pausado","Cancelado","Finalizado"];
+
+const LEAD_BADGE: Record<string,{bg:string;text:string;border:string}> = {
+  "Pendiente llamada": {bg:"#fffbeb",text:"#92400e",border:"#fde68a"},
+  "Llamada programada":{bg:"#eff6ff",text:"#1e40af",border:"#bfdbfe"},
+  "Llamada hecha":     {bg:"#f5f3ff",text:"#5b21b6",border:"#ddd6fe"},
+  "Compró":            {bg:"#f0fdf4",text:"#166534",border:"#bbf7d0"},
+  "No compró":         {bg:"#fef2f2",text:"#991b1b",border:"#fecaca"},
+};
+const PLAN_BADGE: Record<string,{bg:string;text:string}> = {
+  "Activo":    {bg:"#f0fdf4",text:"#166534"},
+  "Pausado":   {bg:"#fffbeb",text:"#92400e"},
+  "Cancelado": {bg:"#fef2f2",text:"#991b1b"},
+  "Finalizado":{bg:"#f3f4f6",text:"#374151"},
+};
+
+function callStatus(dateStr: string) {
+  if (!dateStr) return null;
+  const d = new Date(dateStr); const now = new Date();
+  const days = Math.ceil((d.getTime() - now.getTime()) / 864e5);
+  if (days < 0)  return {label:`Vencida (${-days}d)`, color:"#991b1b", bg:"#fef2f2"};
+  if (days <= 3) return {label:`En ${days} días ⚡`,  color:"#92400e", bg:"#fffbeb"};
+  if (days <= 7) return {label:`Esta semana`,         color:"#166534", bg:"#f0fdf4"};
+  return {label: d.toLocaleDateString("es-ES",{day:"numeric",month:"short"}), color:B.topo, bg:"transparent"};
+}
+
+function Badge({estado,styles}:{estado:string;styles:Record<string,{bg:string;text:string;border?:string}>}) {
+  const s = styles[estado] ?? {bg:"#f3f4f6",text:"#374151",border:"#e5e7eb"};
+  return <span style={{display:"inline-block",padding:"3px 10px",borderRadius:20,fontSize:12,fontWeight:600,whiteSpace:"nowrap",background:s.bg,color:s.text,border:`1px solid ${(s as any).border||s.bg}`}}>{estado||"—"}</span>;
+}
+
+function Logo({size=32}:{size?:number}) {
+  return (
+    <svg viewBox="0 0 100 100" width={size} height={size} xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="42" fill="none" stroke={B.carbon} strokeWidth="5.5" strokeLinecap="round"/>
+      <path d="M 8 50 C 28 8, 72 92, 92 50" fill="none" stroke={B.carbon} strokeWidth="5.5" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+// ── Login ────────────────────────────────────────────────────────────────────
+function LoginScreen({onLogin}:{onLogin:()=>void}) {
+  const [pw,setPw]=useState(""); const [err,setErr]=useState(""); const [loading,setLoading]=useState(false);
+  const submit = async (e:React.FormEvent) => {
+    e.preventDefault(); setLoading(true); setErr("");
+    try {
+      const res = await fetch("/api/crm-auth",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:pw})});
+      const d = await res.json();
+      if (d.ok) { localStorage.setItem("crm_token",d.token); onLogin(); } else setErr("Contraseña incorrecta.");
+    } catch { setErr("Error de conexión."); } finally { setLoading(false); }
+  };
+  return (
+    <div style={{minHeight:"100vh",background:"#fff",display:"flex",alignItems:"center",justifyContent:"center",padding:24,fontFamily:B.font}}>
+      <div style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:16,padding:40,width:"100%",maxWidth:360}}>
+        <div style={{textAlign:"center",marginBottom:32}}>
+          <Logo size={48}/><p style={{fontSize:18,fontWeight:700,color:B.carbon,margin:"14px 0 2px"}}>PACOMONT</p>
+          <p style={{fontSize:11,letterSpacing:"0.15em",color:B.topo,margin:"0 0 4px"}}>ONLINE COACHING</p>
+          <p style={{fontSize:13,color:B.topo,margin:0}}>Panel de gestión</p>
+        </div>
+        <form onSubmit={submit}>
+          <label style={{display:"block",fontSize:12,fontWeight:600,color:B.topo,textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:7}}>Contraseña</label>
+          <input type="password" value={pw} onChange={e=>setPw(e.target.value)} autoFocus style={{width:"100%",padding:"12px 14px",borderRadius:8,border:`1.5px solid ${B.arena}`,background:B.beige,color:B.carbon,fontSize:15,fontFamily:B.font,outline:"none",boxSizing:"border-box",marginBottom:12}}/>
+          {err && <p style={{color:"#b91c1c",fontSize:13,margin:"0 0 12px"}}>{err}</p>}
+          <button type="submit" disabled={loading} style={{width:"100%",padding:"12px",borderRadius:8,border:"none",background:loading?B.topo:B.carbon,color:B.beige,fontSize:14,fontWeight:600,cursor:loading?"not-allowed":"pointer",fontFamily:B.font}}>{loading?"Verificando…":"Entrar"}</button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ── Detail Panel ─────────────────────────────────────────────────────────────
+function DetailPanel({client,onClose,onSave}:{client:Client;onClose:()=>void;onSave:(u:Partial<Client>)=>Promise<void>}) {
+  const isClient = client.Estado === "Compró";
+  const [estado, setEstado]           = useState(client.Estado||"Pendiente llamada");
+  const [notas, setNotas]             = useState(client.Notas||"");
+  const [ultimaLlamada, setUltima]    = useState(client.UltimaLlamada||"");
+  const [plan, setPlan]               = useState(client.PlanContratado||"");
+  const [inicio, setInicio]           = useState(client.FechaInicio||"");
+  const [proxima, setProxima]         = useState(client.ProximaLlamada||"");
+  const [nivel, setNivel]             = useState(client.NivelCondicion||"—");
+  const [estadoPlan, setEstadoPlan]   = useState(client.EstadoPlan||"Activo");
+  const [usaApp, setUsaApp]           = useState(client.UsaApp||"No");
+  const [nutricion, setNutricion]     = useState(client.Nutricion||"");
+  const [motivacion, setMotivacion]   = useState(client.Motivacion||"");
+  const [factores, setFactores]       = useState(client.FactoresExternos||"");
+  const [seguimiento, setSeguimiento] = useState(client.NotasSeguimiento||"");
+  const [saving, setSaving]           = useState(false);
+  const [openSection, setOpenSection] = useState<string|null>(null);
+
+  const save = async () => {
+    setSaving(true);
+    const comprado = estado==="Compró"?"Sí":estado==="No compró"?"No":client.Comprado;
+    await onSave({Estado:estado,Notas:notas,UltimaLlamada:ultimaLlamada,Comprado:comprado,
+      PlanContratado:plan,FechaInicio:inicio,ProximaLlamada:proxima,NivelCondicion:nivel,
+      EstadoPlan:estadoPlan,UsaApp:usaApp,Nutricion:nutricion,Motivacion:motivacion,
+      FactoresExternos:factores,NotasSeguimiento:seguimiento});
+    setSaving(false);
+  };
+
+  const inp: React.CSSProperties = {width:"100%",padding:"10px 12px",borderRadius:8,border:`1.5px solid ${B.arena}`,background:B.beige,color:B.carbon,fontSize:14,fontFamily:B.font,outline:"none",boxSizing:"border-box"};
+  const ta: React.CSSProperties  = {...inp,minHeight:80,resize:"vertical"};
+  const lbl: React.CSSProperties = {display:"block",fontSize:11,fontWeight:600,color:B.topo,textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6};
+  const fld = (l:string,v:string) => v ? <div style={{marginBottom:12}}><p style={{...lbl,margin:"0 0 4px"}}>{l}</p><p style={{fontSize:14,color:B.carbon,margin:0,lineHeight:1.5}}>{v}</p></div> : null;
+
+  function Section({title,children,id}:{title:string;children:React.ReactNode;id:string}) {
+    const open = openSection===id;
+    return (
+      <div style={{borderTop:`1px solid ${B.arena}`,paddingTop:16,marginTop:16}}>
+        <button onClick={()=>setOpenSection(open?null:id)} style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"none",border:"none",cursor:"pointer",padding:0,fontFamily:B.font}}>
+          <p style={{fontSize:11,fontWeight:600,color:B.topo,textTransform:"uppercase",letterSpacing:"0.06em",margin:0}}>{title}</p>
+          <span style={{color:B.topo,fontSize:16,transform:open?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▾</span>
+        </button>
+        {open && <div style={{marginTop:14}}>{children}</div>}
+      </div>
+    );
+  }
+
+  return (
+    <div style={{position:"fixed",inset:0,zIndex:100,display:"flex",alignItems:"flex-start",justifyContent:"flex-end",background:"rgba(26,26,26,0.35)"}} onClick={e=>e.target===e.currentTarget&&onClose()}>
+      <div style={{width:"min(520px,100vw)",height:"100vh",background:"#fff",borderLeft:`1px solid ${B.arena}`,overflowY:"auto",fontFamily:B.font}}>
+
+        {/* Header */}
+        <div style={{padding:"20px 24px",borderBottom:`1px solid ${B.arena}`,position:"sticky",top:0,background:"#fff",zIndex:1}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+            <div>
+              <h2 style={{color:B.carbon,fontSize:20,fontWeight:700,margin:"0 0 4px"}}>{client.Nombre} {client.Apellido}</h2>
+              <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                {isClient && plan && <Badge estado={plan} styles={Object.fromEntries(PLANES.map(p=>([p,{bg:B.beige,text:B.brown}])))}/>}
+                {isClient && <Badge estado={estadoPlan||"Activo"} styles={PLAN_BADGE}/>}
+                {!isClient && <Badge estado={client.Estado} styles={LEAD_BADGE}/>}
+              </div>
+            </div>
+            <button onClick={onClose} style={{background:"none",border:"none",color:B.topo,fontSize:20,cursor:"pointer",padding:4,flexShrink:0}}>✕</button>
+          </div>
+        </div>
+
+        <div style={{padding:"20px 24px"}}>
+          {/* Contacto */}
+          <div style={{background:B.beige,borderRadius:10,padding:16,marginBottom:20}}>
+            <p style={{fontSize:11,fontWeight:600,color:B.brown,textTransform:"uppercase",letterSpacing:"0.06em",margin:"0 0 10px"}}>Contacto</p>
+            <a href={`mailto:${client.Email}`} style={{display:"block",color:B.brown,fontSize:14,textDecoration:"none",marginBottom:6}}>✉ {client.Email}</a>
+            <a href={`https://wa.me/${client.Telefono?.replace(/\D/g,"")}`} target="_blank" rel="noreferrer" style={{display:"block",color:"#166534",fontSize:14,textDecoration:"none",marginBottom:client.Edad?"6px":0}}>📱 {client.Telefono}</a>
+            {client.Edad && <p style={{color:B.topo,fontSize:14,margin:0}}>🎂 {client.Edad} años</p>}
+          </div>
+
+          {/* ── FICHA DE CLIENTE (solo si compró) ── */}
+          {isClient && (
+            <>
+              <p style={{fontSize:12,fontWeight:700,color:B.carbon,textTransform:"uppercase",letterSpacing:"0.07em",margin:"0 0 14px"}}>Ficha de cliente</p>
+
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
+                <div>
+                  <label style={lbl}>Plan contratado</label>
+                  <select value={plan} onChange={e=>setPlan(e.target.value)} style={{...inp}}>
+                    <option value="">— Seleccionar —</option>
+                    {PLANES.map(p=><option key={p} value={p}>{p}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label style={lbl}>Nivel de condición</label>
+                  <select value={nivel} onChange={e=>setNivel(e.target.value)} style={{...inp}}>
+                    {NIVELES.map(n=><option key={n} value={n}>{n}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
+                <div>
+                  <label style={lbl}>Fecha de inicio</label>
+                  <input type="date" value={inicio} onChange={e=>setInicio(e.target.value)} style={inp}/>
+                </div>
+                <div>
+                  <label style={lbl}>Próxima llamada</label>
+                  <input type="date" value={proxima} onChange={e=>setProxima(e.target.value)} style={inp}/>
+                </div>
+              </div>
+
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:20}}>
+                <div>
+                  <label style={lbl}>Estado del plan</label>
+                  <select value={estadoPlan} onChange={e=>setEstadoPlan(e.target.value)} style={{...inp}}>
+                    {ESTADOS_PLAN.map(s=><option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label style={lbl}>Usa app Playbook</label>
+                  <select value={usaApp} onChange={e=>setUsaApp(e.target.value)} style={{...inp}}>
+                    <option value="No">No</option>
+                    <option value="Sí">Sí</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Seguimiento */}
+              <p style={{fontSize:12,fontWeight:700,color:B.carbon,textTransform:"uppercase",letterSpacing:"0.07em",margin:"0 0 14px"}}>Seguimiento</p>
+
+              <div style={{marginBottom:12}}>
+                <label style={lbl}>Motivación principal</label>
+                <textarea value={motivacion} onChange={e=>setMotivacion(e.target.value)} placeholder="Qué le mueve, por qué quiere cambiar…" style={ta}/>
+              </div>
+              <div style={{marginBottom:12}}>
+                <label style={lbl}>Factores externos</label>
+                <textarea value={factores} onChange={e=>setFactores(e.target.value)} placeholder="Trabajo, familia, viajes, horarios, estrés…" style={ta}/>
+              </div>
+              <div style={{marginBottom:12}}>
+                <label style={lbl}>Nutrición (preferencias / restricciones)</label>
+                <textarea value={nutricion} onChange={e=>setNutricion(e.target.value)} placeholder="Alergias, intolerancias, preferencias, comedor de empresa…" style={ta}/>
+              </div>
+              <div style={{marginBottom:20}}>
+                <label style={lbl}>Notas de seguimiento</label>
+                <textarea value={seguimiento} onChange={e=>setSeguimiento(e.target.value)} placeholder="Progreso, ajustes de plan, observaciones de las llamadas…" style={{...ta,minHeight:110}}/>
+              </div>
+            </>
+          )}
+
+          {/* ── GESTIÓN ── */}
+          <div style={{borderTop:`1px solid ${B.arena}`,paddingTop:16,marginBottom:20}}>
+            <p style={{fontSize:12,fontWeight:700,color:B.carbon,textTransform:"uppercase",letterSpacing:"0.07em",margin:"0 0 14px"}}>Gestión del lead</p>
+            <div style={{marginBottom:12}}>
+              <label style={lbl}>Estado</label>
+              <select value={estado} onChange={e=>setEstado(e.target.value)} style={{...inp}}>
+                {ESTADOS_LEAD.map(s=><option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+            <div style={{marginBottom:12}}>
+              <label style={lbl}>Última llamada</label>
+              <input type="date" value={ultimaLlamada} onChange={e=>setUltima(e.target.value)} style={inp}/>
+            </div>
+            <div style={{marginBottom:20}}>
+              <label style={lbl}>Notas de llamada</label>
+              <textarea value={notas} onChange={e=>setNotas(e.target.value)} placeholder="Resumen de la llamada, próximos pasos…" style={ta}/>
+            </div>
+          </div>
+
+          {/* ── RESPUESTAS DEL FORMULARIO (colapsable) ── */}
+          <div>
+            <button onClick={()=>setOpenSection(openSection==="form"?null:"form")} style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",background:"none",border:`1px solid ${B.arena}`,borderRadius:8,cursor:"pointer",padding:"10px 14px",fontFamily:B.font,marginBottom:8}}>
+              <p style={{fontSize:11,fontWeight:600,color:B.topo,textTransform:"uppercase",letterSpacing:"0.06em",margin:0}}>Respuestas del formulario</p>
+              <span style={{color:B.topo,fontSize:14,transform:openSection==="form"?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▾</span>
+            </button>
+            {openSection==="form" && (
+              <div style={{padding:"14px 4px"}}>
+                {fld("Objetivo",client.Objetivo)}
+                {fld("Por qué ahora",client.PorQueAhora)}
+                {fld("Lesiones / limitaciones",client.Lesiones)}
+                {fld("Experiencia con entrenadores",client.ExperienciaEntrenador)}
+                {fld("Mayor obstáculo",client.MayorObstaculo)}
+                {fld("Importancia (1-10)",client.Importancia)}
+                {fld("Inversión mensual",client.Inversion)}
+              </div>
+            )}
+          </div>
+
+          <button onClick={save} disabled={saving} style={{width:"100%",padding:"13px",borderRadius:10,border:"none",background:saving?B.topo:B.carbon,color:B.beige,fontSize:14,fontWeight:600,cursor:saving?"not-allowed":"pointer",fontFamily:B.font,marginTop:16}}>
+            {saving?"Guardando…":"Guardar cambios"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Main CRM ─────────────────────────────────────────────────────────────────
+export default function CrmPage() {
+  const [authed,  setAuthed]   = useState(false);
+  const [clients, setClients]  = useState<Client[]>([]);
+  const [loading, setLoading]  = useState(false);
+  const [view,    setView]     = useState<"leads"|"clientes">("leads");
+  const [filter,  setFilter]   = useState("Todos");
+  const [selected,setSelected] = useState<Client|null>(null);
+  const [search,  setSearch]   = useState("");
+
+  useEffect(()=>{ if (localStorage.getItem("crm_token")) setAuthed(true); },[]);
+
+  const fetchClients = useCallback(async()=>{
+    setLoading(true);
+    try { const res=await fetch("/api/crm"); const d=await res.json(); if(d.rows) setClients(d.rows.reverse()); }
+    finally { setLoading(false); }
+  },[]);
+
+  useEffect(()=>{ if(authed) fetchClients(); },[authed,fetchClients]);
+
+  const handleSave = async(updated:Partial<Client>)=>{
+    if(!selected) return;
+    await fetch("/api/crm",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({_action:"update",_row:selected._row,...updated})});
+    setClients(prev=>prev.map(c=>c._row===selected._row?{...c,...updated}:c));
+    setSelected(c=>c?{...c,...updated}:c);
+  };
+
+  if (!authed) return <LoginScreen onLogin={()=>setAuthed(true)}/>;
+
+  const leads    = clients.filter(c=>c.Estado!=="Compró");
+  const clientes = clients.filter(c=>c.Estado==="Compró");
+
+  const TABS_LEAD = ["Todos",...ESTADOS_LEAD];
+  const filteredLeads = leads.filter(c=>{
+    const ok = filter==="Todos"||c.Estado===filter;
+    const q  = search.toLowerCase();
+    return ok && (!q||(c.Nombre+" "+c.Apellido).toLowerCase().includes(q)||c.Email?.toLowerCase().includes(q)||c.Objetivo?.toLowerCase().includes(q));
+  });
+  const filteredClients = clientes.filter(c=>{
+    const q=search.toLowerCase();
+    return !q||(c.Nombre+" "+c.Apellido).toLowerCase().includes(q)||c.PlanContratado?.toLowerCase().includes(q);
+  });
+
+  const proximaSemana = clientes.filter(c=>{
+    if(!c.ProximaLlamada) return false;
+    const days=Math.ceil((new Date(c.ProximaLlamada).getTime()-Date.now())/864e5);
+    return days>=0&&days<=7;
+  }).length;
+
+  const inp: React.CSSProperties = {padding:"9px 14px",borderRadius:8,border:`1.5px solid ${B.arena}`,background:B.beige,color:B.carbon,fontSize:14,fontFamily:B.font,outline:"none",boxSizing:"border-box",width:"100%"};
+
+  return (
+    <div style={{minHeight:"100vh",background:"#fff",fontFamily:B.font}}>
+
+      {/* Topbar */}
+      <div style={{background:"#fff",borderBottom:`1px solid ${B.arena}`,padding:"14px 24px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <div style={{display:"flex",alignItems:"center",gap:10}}>
+          <Logo size={30}/>
+          <div><p style={{fontSize:13,fontWeight:700,color:B.carbon,margin:0,letterSpacing:"0.05em"}}>PACOMONT</p><p style={{fontSize:9,letterSpacing:"0.12em",color:B.topo,margin:0}}>ONLINE COACHING</p></div>
+        </div>
+        <div style={{display:"flex",gap:10}}>
+          <button onClick={fetchClients} style={{background:B.beige,border:`1px solid ${B.arena}`,color:B.brown,padding:"7px 14px",borderRadius:8,cursor:"pointer",fontSize:13,fontFamily:B.font,fontWeight:500}}>↻ Actualizar</button>
+          <button onClick={()=>{localStorage.removeItem("crm_token");setAuthed(false);}} style={{background:"none",border:`1px solid ${B.arena}`,color:B.topo,padding:"7px 14px",borderRadius:8,cursor:"pointer",fontSize:13,fontFamily:B.font}}>Salir</button>
+        </div>
+      </div>
+
+      {/* Main tabs */}
+      <div style={{borderBottom:`1px solid ${B.arena}`,padding:"0 24px",background:"#fff",display:"flex",gap:0}}>
+        {([["leads","Leads",leads.length],["clientes","Clientes",clientes.length]] as const).map(([id,label,count])=>(
+          <button key={id} onClick={()=>{setView(id);setSearch("");setFilter("Todos");}} style={{
+            padding:"14px 20px",border:"none",background:"none",cursor:"pointer",fontFamily:B.font,
+            fontSize:14,fontWeight:view===id?700:400,color:view===id?B.carbon:B.topo,
+            borderBottom:view===id?`2px solid ${B.carbon}`:"2px solid transparent",
+            transition:"all 0.15s",
+          }}>
+            {label} <span style={{fontSize:12,marginLeft:4,padding:"2px 7px",borderRadius:20,background:view===id?B.carbon:B.arena,color:view===id?B.beige:B.topo,fontWeight:600}}>{count}</span>
+          </button>
+        ))}
+      </div>
+
+      <div style={{maxWidth:1200,margin:"0 auto",padding:"24px"}}>
+
+        {/* ── LEADS VIEW ── */}
+        {view==="leads" && (
+          <>
+            {/* Stats */}
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))",gap:12,marginBottom:20}}>
+              {[
+                {l:"Total leads",v:leads.length,c:B.brown},
+                {l:"Pendiente",v:leads.filter(c=>c.Estado==="Pendiente llamada").length,c:"#92400e"},
+                {l:"Compraron",v:clientes.length,c:"#166534"},
+                {l:"No compraron",v:leads.filter(c=>c.Estado==="No compró").length,c:"#991b1b"},
+              ].map(s=>(
+                <div key={s.l} style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:12,padding:"16px 20px"}}>
+                  <p style={{fontSize:28,fontWeight:800,color:s.c,margin:"0 0 2px"}}>{s.v}</p>
+                  <p style={{fontSize:12,color:B.topo,margin:0}}>{s.l}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Search + filter */}
+            <div style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:12,padding:"16px 20px",marginBottom:14}}>
+              <input placeholder="Buscar nombre, email u objetivo…" value={search} onChange={e=>setSearch(e.target.value)} style={{...inp,marginBottom:14}}/>
+              <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                {TABS_LEAD.map(t=>{
+                  const active=filter===t; const s=LEAD_BADGE[t];
+                  return <button key={t} onClick={()=>setFilter(t)} style={{padding:"5px 13px",borderRadius:20,fontSize:13,fontFamily:B.font,cursor:"pointer",border:active?`1.5px solid ${s?.border||B.arena}`:`1.5px solid ${B.arena}`,background:active?(s?.bg||B.beige):"#fff",color:active?(s?.text||B.carbon):B.topo,fontWeight:active?600:400}}>
+                    {t} {t!=="Todos"&&<span style={{opacity:0.6}}>({leads.filter(c=>c.Estado===t).length})</span>}
+                  </button>;
+                })}
+              </div>
+            </div>
+
+            {/* Leads table */}
+            {loading?<p style={{color:B.topo,textAlign:"center",padding:48}}>Cargando…</p>
+            :filteredLeads.length===0?<p style={{color:B.topo,textAlign:"center",padding:48}}>Sin resultados.</p>
+            :(
+              <div style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:12,overflow:"hidden"}}>
+                <div style={{overflowX:"auto"}}>
+                  <table style={{width:"100%",borderCollapse:"collapse",minWidth:700}}>
+                    <thead><tr style={{borderBottom:`1px solid ${B.arena}`,background:B.beige}}>
+                      {["Fecha","Nombre","Email","Teléfono","Objetivo","Estado","Últ. llamada"].map(h=>(
+                        <th key={h} style={{padding:"11px 16px",textAlign:"left",fontSize:11,fontWeight:600,color:B.topo,textTransform:"uppercase",letterSpacing:"0.05em",whiteSpace:"nowrap"}}>{h}</th>
+                      ))}
+                    </tr></thead>
+                    <tbody>
+                      {filteredLeads.map((c,i)=>(
+                        <tr key={c._row} onClick={()=>setSelected(c)} style={{borderBottom:i<filteredLeads.length-1?`1px solid ${B.beige}`:"none",cursor:"pointer",transition:"background 0.1s"}} onMouseEnter={e=>(e.currentTarget.style.background=B.beige)} onMouseLeave={e=>(e.currentTarget.style.background="transparent")}>
+                          <td style={{padding:"12px 16px",fontSize:13,color:B.topo,whiteSpace:"nowrap"}}>{c.Fecha?new Date(c.Fecha).toLocaleDateString("es-ES",{day:"numeric",month:"short"}):"—"}</td>
+                          <td style={{padding:"12px 16px",fontSize:14,fontWeight:600,color:B.carbon,whiteSpace:"nowrap"}}>{c.Nombre} {c.Apellido}</td>
+                          <td style={{padding:"12px 16px",fontSize:13,color:B.brown}}>{c.Email}</td>
+                          <td style={{padding:"12px 16px",fontSize:13,color:B.topo,whiteSpace:"nowrap"}}>{c.Telefono}</td>
+                          <td style={{padding:"12px 16px",fontSize:13,color:B.topo,maxWidth:180}}><span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",display:"block"}}>{c.Objetivo||"—"}</span></td>
+                          <td style={{padding:"12px 16px"}}><Badge estado={c.Estado} styles={LEAD_BADGE}/></td>
+                          <td style={{padding:"12px 16px",fontSize:13,color:B.topo,whiteSpace:"nowrap"}}>{c.UltimaLlamada||"—"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* ── CLIENTES VIEW ── */}
+        {view==="clientes" && (
+          <>
+            {/* Stats */}
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))",gap:12,marginBottom:20}}>
+              {[
+                {l:"Total clientes",v:clientes.length,c:B.brown},
+                {l:"Activos",v:clientes.filter(c=>c.EstadoPlan==="Activo"||!c.EstadoPlan).length,c:"#166534"},
+                {l:"Próxima semana",v:proximaSemana,c:"#92400e"},
+                {l:"Usan app",v:clientes.filter(c=>c.UsaApp==="Sí").length,c:"#1e40af"},
+              ].map(s=>(
+                <div key={s.l} style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:12,padding:"16px 20px"}}>
+                  <p style={{fontSize:28,fontWeight:800,color:s.c,margin:"0 0 2px"}}>{s.v}</p>
+                  <p style={{fontSize:12,color:B.topo,margin:0}}>{s.l}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Alertas próximas llamadas */}
+            {(() => {
+              const urgentes = clientes.filter(c=>{
+                if(!c.ProximaLlamada) return false;
+                const days=Math.ceil((new Date(c.ProximaLlamada).getTime()-Date.now())/864e5);
+                return days<0||days<=3;
+              });
+              return urgentes.length>0?(
+                <div style={{background:"#fffbeb",border:"1px solid #fde68a",borderRadius:10,padding:"12px 16px",marginBottom:14}}>
+                  <p style={{fontSize:13,fontWeight:600,color:"#92400e",margin:"0 0 6px"}}>⚡ Llamadas urgentes ({urgentes.length})</p>
+                  {urgentes.map(c=>{
+                    const cs=callStatus(c.ProximaLlamada);
+                    return <p key={c._row} style={{fontSize:13,color:"#92400e",margin:"0 0 2px"}}>{c.Nombre} {c.Apellido} — <span style={{fontWeight:600}}>{cs?.label}</span> <button onClick={()=>setSelected(c)} style={{background:"none",border:"none",color:B.brown,fontSize:12,cursor:"pointer",textDecoration:"underline",fontFamily:B.font}}>Ver</button></p>;
+                  })}
+                </div>
+              ):null;
+            })()}
+
+            {/* Search */}
+            <div style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:12,padding:"16px 20px",marginBottom:14}}>
+              <input placeholder="Buscar cliente o plan…" value={search} onChange={e=>setSearch(e.target.value)} style={inp}/>
+            </div>
+
+            {/* Clientes table */}
+            {loading?<p style={{color:B.topo,textAlign:"center",padding:48}}>Cargando…</p>
+            :filteredClients.length===0?<p style={{color:B.topo,textAlign:"center",padding:48}}>Sin clientes todavía.</p>
+            :(
+              <div style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:12,overflow:"hidden"}}>
+                <div style={{overflowX:"auto"}}>
+                  <table style={{width:"100%",borderCollapse:"collapse",minWidth:700}}>
+                    <thead><tr style={{borderBottom:`1px solid ${B.arena}`,background:B.beige}}>
+                      {["Nombre","Plan","Inicio","Próxima llamada","Estado plan","Usa app","Seguimiento"].map(h=>(
+                        <th key={h} style={{padding:"11px 16px",textAlign:"left",fontSize:11,fontWeight:600,color:B.topo,textTransform:"uppercase",letterSpacing:"0.05em",whiteSpace:"nowrap"}}>{h}</th>
+                      ))}
+                    </tr></thead>
+                    <tbody>
+                      {filteredClients.map((c,i)=>{
+                        const cs=callStatus(c.ProximaLlamada);
+                        return (
+                          <tr key={c._row} onClick={()=>setSelected(c)} style={{borderBottom:i<filteredClients.length-1?`1px solid ${B.beige}`:"none",cursor:"pointer",transition:"background 0.1s"}} onMouseEnter={e=>(e.currentTarget.style.background=B.beige)} onMouseLeave={e=>(e.currentTarget.style.background="transparent")}>
+                            <td style={{padding:"13px 16px"}}>
+                              <p style={{fontSize:14,fontWeight:600,color:B.carbon,margin:"0 0 2px",whiteSpace:"nowrap"}}>{c.Nombre} {c.Apellido}</p>
+                              <p style={{fontSize:12,color:B.brown,margin:0}}>{c.Email}</p>
+                            </td>
+                            <td style={{padding:"13px 16px",fontSize:13,color:B.topo,whiteSpace:"nowrap"}}>{c.PlanContratado||"—"}</td>
+                            <td style={{padding:"13px 16px",fontSize:13,color:B.topo,whiteSpace:"nowrap"}}>{c.FechaInicio?new Date(c.FechaInicio).toLocaleDateString("es-ES",{day:"numeric",month:"short",year:"2-digit"}):"—"}</td>
+                            <td style={{padding:"13px 16px",whiteSpace:"nowrap"}}>
+                              {cs?(
+                                <span style={{display:"inline-block",padding:"3px 10px",borderRadius:20,fontSize:12,fontWeight:600,background:cs.bg,color:cs.color}}>{cs.label}</span>
+                              ):(c.ProximaLlamada?<span style={{fontSize:13,color:B.topo}}>{new Date(c.ProximaLlamada).toLocaleDateString("es-ES",{day:"numeric",month:"short"})}</span>:<span style={{fontSize:13,color:B.arena}}>—</span>)}
+                            </td>
+                            <td style={{padding:"13px 16px"}}><Badge estado={c.EstadoPlan||"Activo"} styles={PLAN_BADGE}/></td>
+                            <td style={{padding:"13px 16px",fontSize:13,color:c.UsaApp==="Sí"?"#166534":B.topo}}>{c.UsaApp||"No"}</td>
+                            <td style={{padding:"13px 16px",fontSize:13,color:B.topo,maxWidth:200}}><span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",display:"block"}}>{c.NotasSeguimiento||"—"}</span></td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      {selected && <DetailPanel client={selected} onClose={()=>setSelected(null)} onSave={handleSave}/>}
+    </div>
+  );
+}
