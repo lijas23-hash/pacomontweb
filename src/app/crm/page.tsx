@@ -509,25 +509,50 @@ export default function CrmPage() {
         {view==="clientes"&&(
           <>
             {(()=>{
-              const totalFacturado = clientes.reduce((s,c)=>s+(precioInfo(c.Modalidad)?.precio||0),0);
-              const totalPaco      = clientes.reduce((s,c)=>s+(precioInfo(c.Modalidad)?.corte||0),0);
+              const activos        = clientes.filter(c=>c.EstadoPlan==="Activo"||!c.EstadoPlan);
+              const mrr            = activos.reduce((s,c)=>{const i=precioInfo(c.Modalidad);return s+(i?Math.round(i.corte/i.meses*100)/100:0);},0);
+              const mrrBruto       = activos.reduce((s,c)=>{const i=precioInfo(c.Modalidad);return s+(i?Math.round(i.precio/i.meses*100)/100:0);},0);
               const proxCobros     = clientes.filter(c=>{if(!c.ProximoCobro)return false;const d=Math.ceil((new Date(c.ProximoCobro).getTime()-Date.now())/864e5);return d>=0&&d<=30;}).length;
               return (
-                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:12,marginBottom:20}}>
-                  {[
-                    {l:"Total clientes",v:`${clientes.length}`,c:B.brown},
-                    {l:"Activos",v:`${clientes.filter(c=>c.EstadoPlan==="Activo"||!c.EstadoPlan).length}`,c:"#166534"},
-                    {l:"Facturación total",v:totalFacturado?`${totalFacturado}€`:"—",c:B.brown,sub:"suma de planes"},
-                    {l:"Tu parte total (70%)",v:totalPaco?`${Math.round(totalPaco)}€`:"—",c:"#166534",sub:"suma de cortes"},
-                    {l:"Cobros próx. 30d",v:`${proxCobros}`,c:proxCobros>0?"#92400e":B.topo},
-                  ].map(s=>(
-                    <div key={s.l} style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:12,padding:"16px 20px"}}>
-                      <p style={{fontSize:24,fontWeight:800,color:s.c,margin:"0 0 2px"}}>{s.v}</p>
-                      <p style={{fontSize:12,color:B.topo,margin:0}}>{s.l}</p>
-                      {"sub" in s&&s.sub&&<p style={{fontSize:11,color:B.arena,margin:"2px 0 0"}}>{s.sub}</p>}
+                <>
+                  {/* Tarjeta destacada de ingresos mensuales */}
+                  <div style={{background:B.carbon,borderRadius:14,padding:"20px 24px",marginBottom:14,display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:16}}>
+                    <div>
+                      <p style={{fontSize:12,fontWeight:600,color:B.topo,margin:"0 0 6px",textTransform:"uppercase",letterSpacing:"0.06em"}}>Tu ingreso mensual (activos)</p>
+                      <p style={{fontSize:42,fontWeight:800,color:"#4ade80",margin:0,letterSpacing:"-0.02em"}}>{mrr?`${Math.round(mrr)}€`:"—"}</p>
+                      <p style={{fontSize:13,color:B.arena,margin:"4px 0 0"}}>Facturación bruta mensual: {mrrBruto?`${Math.round(mrrBruto)}€`:"—"}</p>
                     </div>
-                  ))}
-                </div>
+                    <div style={{display:"flex",gap:24,flexWrap:"wrap"}}>
+                      <div style={{textAlign:"center"}}>
+                        <p style={{fontSize:28,fontWeight:800,color:"#fff",margin:0}}>{activos.length}</p>
+                        <p style={{fontSize:12,color:B.topo,margin:0}}>Clientes activos</p>
+                      </div>
+                      <div style={{textAlign:"center"}}>
+                        <p style={{fontSize:28,fontWeight:800,color:proxCobros>0?"#fbbf24":"#fff",margin:0}}>{proxCobros}</p>
+                        <p style={{fontSize:12,color:B.topo,margin:0}}>Cobros en 30 días</p>
+                      </div>
+                      <div style={{textAlign:"center"}}>
+                        <p style={{fontSize:28,fontWeight:800,color:"#fff",margin:0}}>{mrr?`${Math.round(mrr*12)}€`:"—"}</p>
+                        <p style={{fontSize:12,color:B.topo,margin:0}}>Proyección anual</p>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Stats secundarios */}
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))",gap:10,marginBottom:16}}>
+                    {[
+                      {l:"Total clientes",v:`${clientes.length}`,c:B.brown},
+                      {l:"Trimestral",v:`${clientes.filter(c=>c.Modalidad==="Trimestral").length}`,c:B.brown,sub:"299€ · cobras 209€"},
+                      {l:"Semestral",v:`${clientes.filter(c=>c.Modalidad==="Semestral").length}`,c:B.brown,sub:"459€ · cobras 321€"},
+                      {l:"Sin modalidad",v:`${clientes.filter(c=>!c.Modalidad).length}`,c:B.arena},
+                    ].map(s=>(
+                      <div key={s.l} style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:10,padding:"14px 16px"}}>
+                        <p style={{fontSize:22,fontWeight:800,color:s.c,margin:"0 0 2px"}}>{s.v}</p>
+                        <p style={{fontSize:12,color:B.topo,margin:0}}>{s.l}</p>
+                        {"sub" in s&&s.sub&&<p style={{fontSize:11,color:B.arena,margin:"2px 0 0"}}>{s.sub}</p>}
+                      </div>
+                    ))}
+                  </div>
+                </>
               );
             })()}
             {(()=>{
