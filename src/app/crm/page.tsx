@@ -126,6 +126,77 @@ function LoginScreen({onLogin}:{onLogin:()=>void}) {
   );
 }
 
+// ── Add Modal ────────────────────────────────────────────────────────────────
+function AddModal({defaultEstado, onClose, onAdded}:{defaultEstado:string; onClose:()=>void; onAdded:()=>void}) {
+  const [form, setForm] = useState({
+    Nombre:"", Apellido:"", Email:"", Telefono:"", Edad:"",
+    Objetivo:"", Notas:"", Estado: defaultEstado,
+  });
+  const [saving, setSaving] = useState(false);
+  const [err,    setErr]    = useState("");
+
+  const set = (k: keyof typeof form, v: string) => setForm(f=>({...f,[k]:v}));
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.Nombre || !form.Email) { setErr("Nombre y email son obligatorios."); return; }
+    setSaving(true); setErr("");
+    try {
+      const res = await fetch("/api/crm",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(form)});
+      const d = await res.json();
+      if (d.ok) { onAdded(); onClose(); }
+      else setErr("Error al guardar. Inténtalo de nuevo.");
+    } catch { setErr("Error de conexión."); }
+    finally { setSaving(false); }
+  };
+
+  const inp: React.CSSProperties = {width:"100%",padding:"10px 12px",borderRadius:8,border:`1.5px solid ${B.arena}`,background:"#f9f7f5",color:B.carbon,fontSize:14,fontFamily:B.font,outline:"none",boxSizing:"border-box"};
+  const lbl: React.CSSProperties = {display:"block",fontSize:11,fontWeight:600,color:B.topo,textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6};
+
+  return (
+    <div style={{position:"fixed",inset:0,zIndex:100,background:"rgba(26,26,26,0.5)",display:"flex",alignItems:"center",justifyContent:"center",padding:16,backdropFilter:"blur(2px)"}} onClick={e=>e.target===e.currentTarget&&onClose()}>
+      <div style={{width:"100%",maxWidth:520,background:"#fff",borderRadius:18,overflow:"hidden",boxShadow:"0 24px 60px rgba(0,0,0,0.25)",fontFamily:B.font}}>
+        <div style={{background:B.carbon,padding:"20px 24px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <h2 style={{color:"#fff",fontSize:18,fontWeight:700,margin:0}}>Añadir manualmente</h2>
+          <button onClick={onClose} style={{background:"rgba(255,255,255,0.12)",border:"none",color:"#fff",width:30,height:30,borderRadius:"50%",cursor:"pointer",fontSize:15,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+        </div>
+        <form onSubmit={submit} style={{padding:"24px"}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
+            <div><label style={lbl}>Nombre *</label><input value={form.Nombre} onChange={e=>set("Nombre",e.target.value)} placeholder="Nombre" style={inp}/></div>
+            <div><label style={lbl}>Apellido</label><input value={form.Apellido} onChange={e=>set("Apellido",e.target.value)} placeholder="Apellido" style={inp}/></div>
+          </div>
+          <div style={{marginBottom:12}}>
+            <label style={lbl}>Email *</label>
+            <input type="email" value={form.Email} onChange={e=>set("Email",e.target.value)} placeholder="email@ejemplo.com" style={inp}/>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
+            <div><label style={lbl}>Teléfono</label><input type="tel" value={form.Telefono} onChange={e=>set("Telefono",e.target.value)} placeholder="+34 600 000 000" style={inp}/></div>
+            <div><label style={lbl}>Edad</label><input type="number" value={form.Edad} onChange={e=>set("Edad",e.target.value)} placeholder="Edad" style={inp}/></div>
+          </div>
+          <div style={{marginBottom:12}}>
+            <label style={lbl}>Objetivo</label>
+            <input value={form.Objetivo} onChange={e=>set("Objetivo",e.target.value)} placeholder="Perder grasa, HYROX, ganar músculo…" style={inp}/>
+          </div>
+          <div style={{marginBottom:12}}>
+            <label style={lbl}>Estado</label>
+            <select value={form.Estado} onChange={e=>set("Estado",e.target.value)} style={{...inp}}>
+              {ESTADOS_LEAD.map(s=><option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+          <div style={{marginBottom:20}}>
+            <label style={lbl}>Notas iniciales</label>
+            <textarea value={form.Notas} onChange={e=>set("Notas",e.target.value)} placeholder="Contexto, cómo ha llegado, referido por…" style={{...inp,minHeight:72,resize:"vertical"}}/>
+          </div>
+          {err&&<p style={{color:"#b91c1c",fontSize:13,background:"#fef2f2",border:"1px solid #fecaca",borderRadius:8,padding:"10px 14px",marginBottom:14}}>{err}</p>}
+          <button type="submit" disabled={saving} style={{width:"100%",padding:"13px",borderRadius:10,border:"none",background:saving?B.topo:B.carbon,color:B.beige,fontSize:14,fontWeight:600,cursor:saving?"not-allowed":"pointer",fontFamily:B.font}}>
+            {saving?"Guardando…":"Añadir"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 // ── Detail Modal ─────────────────────────────────────────────────────────────
 function DetailModal({client,onClose,onSave}:{client:Client;onClose:()=>void;onSave:(u:Partial<Client>)=>Promise<void>}) {
   const isClient = client.Estado === "Compró";
@@ -401,6 +472,7 @@ export default function CrmPage() {
   const [filterCobro,  setFilterCobro] = useState("Todos");
   const [filterCalls,  setFilterCalls] = useState(false);
   const [selected,     setSelected]    = useState<Client|null>(null);
+  const [addOpen,      setAddOpen]     = useState(false);
   const [search,       setSearch]      = useState("");
 
   useEffect(()=>{ if (localStorage.getItem("crm_token")) setAuthed(true); },[]);
@@ -469,6 +541,7 @@ export default function CrmPage() {
           <div><p style={{fontSize:13,fontWeight:700,color:B.carbon,margin:0,letterSpacing:"0.05em"}}>PACOMONT</p><p style={{fontSize:9,letterSpacing:"0.12em",color:B.topo,margin:0}}>ONLINE COACHING</p></div>
         </div>
         <div style={{display:"flex",gap:10}}>
+          <button onClick={()=>setAddOpen(true)} style={{background:B.carbon,border:"none",color:B.beige,padding:"7px 16px",borderRadius:8,cursor:"pointer",fontSize:13,fontFamily:B.font,fontWeight:600}}>+ Añadir</button>
           <button onClick={fetchClients} disabled={loading} style={{background:B.beige,border:`1px solid ${B.arena}`,color:B.brown,padding:"7px 14px",borderRadius:8,cursor:"pointer",fontSize:13,fontFamily:B.font,fontWeight:500}}>{loading?"…":"↻ Actualizar"}</button>
           <button onClick={()=>{localStorage.removeItem("crm_token");setAuthed(false);}} style={{background:"none",border:`1px solid ${B.arena}`,color:B.topo,padding:"7px 14px",borderRadius:8,cursor:"pointer",fontSize:13,fontFamily:B.font}}>Salir</button>
         </div>
@@ -721,6 +794,7 @@ export default function CrmPage() {
       </div>
 
       {selected&&<DetailModal client={selected} onClose={()=>setSelected(null)} onSave={handleSave}/>}
+      {addOpen&&<AddModal defaultEstado={view==="clientes"?"Compró":"Pendiente llamada"} onClose={()=>setAddOpen(false)} onAdded={fetchClients}/>}
     </div>
   );
 }
