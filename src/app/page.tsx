@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useState, useEffect, createContext, useContext } from "react";
+import MetaPixel, { trackWAContact } from "@/components/MetaPixel";
 
 // ─── Cookie consent ───────────────────────────────────────────────────────────
 const CookieConsent = createContext<{
@@ -166,7 +167,7 @@ function Navbar() {
       <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: "0.15em", textTransform: "uppercase", color: "#fff" }}>
         Pacomont
       </span>
-      <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className="nav-cta" style={{
+      <a href={WA_LINK} onClick={(e)=>{e.preventDefault();trackWAContact(WA_LINK);}} rel="noopener noreferrer" className="nav-cta" style={{
         background: "#0d1520", color: "#fff", fontSize: 13, fontWeight: 700,
         textTransform: "uppercase", letterSpacing: "0.08em",
         padding: "11px 22px", borderRadius: 3, textDecoration: "none",
@@ -230,7 +231,7 @@ function Hero() {
           Entrenamiento, nutrición y seguimiento adaptados a ti,<br />
           a tu objetivo y a tu vida.
         </p>
-        <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className="btn-hero" style={{
+        <a href={WA_LINK} onClick={(e)=>{e.preventDefault();trackWAContact(WA_LINK);}} rel="noopener noreferrer" className="btn-hero" style={{
           display: "inline-block", background: "#25D366", color: "#fff",
           fontSize: 14, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em",
           padding: "17px 44px", borderRadius: 3, textDecoration: "none",
@@ -462,7 +463,7 @@ function Progress() {
           <p style={{ fontSize: "clamp(20px, 2.6vw, 26px)", fontWeight: 700, color: "#fff", letterSpacing: "-0.01em", lineHeight: 1.4, margin: "0 0 28px" }}>
             Tú haces el trabajo. Yo te doy el plan, las herramientas y el acompañamiento para avanzar.
           </p>
-          <a href={WA_LINK_START} target="_blank" rel="noopener noreferrer" style={{
+          <a href={WA_LINK_START} onClick={(e)=>{e.preventDefault();trackWAContact(WA_LINK_START);}} rel="noopener noreferrer" style={{
             display: "inline-block", background: "#2563eb", color: "#fff",
             fontSize: 14, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em",
             padding: "16px 40px", borderRadius: 3, textDecoration: "none",
@@ -550,7 +551,7 @@ function Offer() {
           <p style={{ fontSize: 16, color: "#9ca3af", lineHeight: 1.75, margin: "0 0 40px" }}>
             Cuéntame tu objetivo y vemos cómo podemos llegar hasta él.
           </p>
-          <a href={WA_LINK_START} target="_blank" rel="noopener noreferrer" style={{
+          <a href={WA_LINK_START} onClick={(e)=>{e.preventDefault();trackWAContact(WA_LINK_START);}} rel="noopener noreferrer" style={{
             display: "inline-block", background: "#2563eb", color: "#fff",
             fontSize: 15, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em",
             padding: "18px 48px", borderRadius: 3, textDecoration: "none",
@@ -717,10 +718,17 @@ function SchemaScript() {
   );
 }
 
+// ─── Pixel wrapper (reads consent from context) ───────────────────────────────
+function PixelWrapper() {
+  const { consent } = useContext(CookieConsent);
+  return <MetaPixel consent={consent} />;
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function Home() {
   return (
     <CookieConsentProvider>
+      <PixelWrapper />
       <SchemaScript />
       <Navbar />
       <Hero />

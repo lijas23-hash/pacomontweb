@@ -156,10 +156,12 @@ export default function LlamadaPage() {
         <p style={{ color: B.topo, fontSize: 16, lineHeight: 1.6, margin: "0 0 28px" }}>
           Paco revisará tus respuestas antes de la llamada. Si tienes alguna duda, escríbele por WhatsApp.
         </p>
-        <a href="https://wa.me/34681816004" style={{
-          display: "inline-block", background: "#25D366", color: "#fff",
-          padding: "13px 24px", borderRadius: 10, fontWeight: 600, fontSize: 15, textDecoration: "none",
-        }}>
+        <a href="https://wa.me/34681816004"
+          onClick={(e)=>{e.preventDefault();import("@/components/MetaPixel").then(m=>m.trackWAContact("https://wa.me/34681816004"));}}
+          style={{
+            display: "inline-block", background: "#25D366", color: "#fff",
+            padding: "13px 24px", borderRadius: 10, fontWeight: 600, fontSize: 15, textDecoration: "none",
+          }}>
           Escribir por WhatsApp
         </a>
       </div>
