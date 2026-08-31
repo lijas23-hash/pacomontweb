@@ -21,22 +21,32 @@ function parseCSVRow(row: string): string[] {
   return result;
 }
 
-function parseMetaAdsCSV(text: string): {gasto:number;clics:number;impresiones:number}|null {
+interface CsvMonth { periodo: string; gasto: number; clics: number; impresiones: number; }
+function parseMetaAdsCSV(text: string): CsvMonth[] | null {
   const lines = text.split(/\r?\n/).filter(l=>l.trim());
   if (lines.length<2) return null;
   const headers = parseCSVRow(lines[0]);
-  const iG = headers.findIndex(h=>h.includes("Importe gastado"));
-  const iC = headers.findIndex(h=>h.includes("Clics en el enlace")&&!h.toLowerCase().includes("shop"));
-  const iI = headers.findIndex(h=>h==="Impresiones");
+  const iDate = headers.findIndex(h=>h.includes("Inicio del informe"));
+  const iG    = headers.findIndex(h=>h.includes("Importe gastado"));
+  const iC    = headers.findIndex(h=>h.includes("Clics en el enlace")&&!h.toLowerCase().includes("shop"));
+  const iI    = headers.findIndex(h=>h==="Impresiones");
   if (iG===-1) return null;
-  let gasto=0,clics=0,imp=0;
+  const byMonth: Record<string,{gasto:number;clics:number;impresiones:number}> = {};
   for (let i=1;i<lines.length;i++) {
     const r=parseCSVRow(lines[i]);
-    gasto += parseFloat(r[iG]?.replace(",",".")||"0")||0;
-    if (iC>=0) clics += parseInt(r[iC]||"0")||0;
-    if (iI>=0) imp   += parseInt(r[iI]||"0")||0;
+    const g = parseFloat(r[iG]?.replace(",",".")||"0")||0;
+    if (!g) continue;
+    const rawDate = iDate>=0 ? r[iDate] : "";
+    const periodo = rawDate.slice(0,7) || "sin-fecha";
+    if (!byMonth[periodo]) byMonth[periodo]={gasto:0,clics:0,impresiones:0};
+    byMonth[periodo].gasto += g;
+    if (iC>=0) byMonth[periodo].clics += parseInt(r[iC]||"0")||0;
+    if (iI>=0) byMonth[periodo].impresiones += parseInt(r[iI]||"0")||0;
   }
-  return {gasto:Math.round(gasto*100)/100,clics,impresiones:imp};
+  if (!Object.keys(byMonth).length) return null;
+  return Object.entries(byMonth)
+    .map(([periodo,v])=>({periodo,gasto:Math.round(v.gasto*100)/100,clics:v.clics,impresiones:v.impresiones}))
+    .sort((a,b)=>a.periodo.localeCompare(b.periodo));
 }
 
 interface Client {
@@ -508,7 +518,7 @@ export default function CrmPage() {
 
   const [adsRecords,   setAdsRecords]  = useState<AdsRecord[]>([]);
   const [statsForm,    setStatsForm]   = useState({ periodo: new Date().toISOString().slice(0,7), gasto: "", leadsTotal: "" });
-  const [csvParsed,    setCsvParsed]   = useState<{gasto:number;clics:number;impresiones:number}|null>(null);
+  const [csvParsed,    setCsvParsed]   = useState<CsvMonth[]|null>(null);
 
   const [contactos,    setContactos]   = useState<Contacto[]>([]);
   const [ctForm,       setCtForm]      = useState({ nombre:"", telefono:"", fuente:"WhatsApp", fecha: new Date().toISOString().slice(0,10), notas:"" });
@@ -573,14 +583,34 @@ export default function CrmPage() {
     const reader = new FileReader();
     reader.onload = (ev) => {
       const text = ev.target?.result as string;
-      const result = parseMetaAdsCSV(text);
-      if (result) {
-        setCsvParsed(result);
-        setStatsForm(f=>({...f, gasto: String(result.gasto)}));
-      }
+      const months = parseMetaAdsCSV(text);
+      if (!months) return;
+      setCsvParsed(months);
+      // Auto-save each month into adsRecords
+      setAdsRecords(prev => {
+        const updated = [...prev];
+        for (const m of months) {
+          const idx = updated.findIndex(r=>r.periodo===m.periodo);
+          const record: AdsRecord = { periodo: m.periodo, gasto: m.gasto };
+          if (idx>=0) updated[idx]={...updated[idx], gasto: m.gasto};
+          else updated.push(record);
+        }
+        updated.sort((a,b)=>b.periodo.localeCompare(a.periodo));
+        localStorage.setItem("crm_ads_records", JSON.stringify(updated));
+        return updated;
+      });
+      // Pre-fill form with the last month in the CSV
+      const last = months[months.length-1];
+      setStatsForm(f=>({...f, periodo: last.periodo, gasto: String(last.gasto)}));
     };
     reader.readAsText(file, "UTF-8");
     e.target.value = "";
+  };
+
+  const deleteLead = async (client: Client) => {
+    await fetch("/api/crm",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({_action:"update",_row:client._row,Estado:"Eliminado"})});
+    setClients(prev=>prev.map(c=>c._row===client._row?{...c,Estado:"Eliminado"}:c));
+    if (selected?._row===client._row) setSelected(null);
   };
 
   const handleSave = async(updated:Partial<Client>)=>{
@@ -592,7 +622,7 @@ export default function CrmPage() {
 
   if (!authed) return <LoginScreen onLogin={()=>setAuthed(true)}/>;
 
-  const leads    = clients.filter(c=>c.Estado!=="Compró");
+  const leads    = clients.filter(c=>c.Estado!=="Compró"&&c.Estado!=="Eliminado");
   const clientes = clients.filter(c=>c.Estado==="Compró");
 
   const TABS_LEAD = ["Todos",...ESTADOS_LEAD];
@@ -711,9 +741,14 @@ export default function CrmPage() {
                     <input type="file" accept=".csv" onChange={handleCSVUpload} style={{display:"none"}}/>
                   </label>
                   {csvParsed?(
-                    <p style={{fontSize:13,color:"#166534",margin:0}}>✓ <strong>{csvParsed.gasto}€</strong> gasto · <strong>{csvParsed.clics}</strong> clics · <strong>{csvParsed.impresiones.toLocaleString()}</strong> impresiones — Gasto auto-cargado abajo</p>
+                    <div>
+                      {csvParsed.map(m=>(
+                        <p key={m.periodo} style={{fontSize:13,color:"#166534",margin:"0 0 2px"}}>✓ <strong>{periodoLabel(m.periodo)}</strong>: {m.gasto}€ gasto · {m.clics} clics · {m.impresiones.toLocaleString()} impresiones</p>
+                      ))}
+                      <p style={{fontSize:12,color:B.topo,margin:"4px 0 0"}}>Guardado automáticamente en el historial.</p>
+                    </div>
                   ):(
-                    <p style={{fontSize:13,color:B.topo,margin:0}}>Sube el CSV de campañas o anuncios para rellenar el gasto automáticamente.</p>
+                    <p style={{fontSize:13,color:B.topo,margin:0}}>Sube el CSV de Meta Ads Manager. Si tiene varios meses, cada uno se guarda en su periodo.</p>
                   )}
                 </div>
               </div>
@@ -937,7 +972,7 @@ export default function CrmPage() {
                 <div style={{overflowX:"auto"}}>
                   <table style={{width:"100%",borderCollapse:"collapse",minWidth:700}}>
                     <thead><tr style={{borderBottom:`1px solid ${B.arena}`,background:B.beige}}>
-                      {["Fecha","Nombre","Email","Teléfono","Objetivo","Estado","Últ. llamada"].map(h=>(
+                      {["Fecha","Nombre","Email","Teléfono","Objetivo","Estado","Últ. llamada",""].map(h=>(
                         <th key={h} style={{padding:"11px 16px",textAlign:"left",fontSize:11,fontWeight:600,color:B.topo,textTransform:"uppercase",letterSpacing:"0.05em",whiteSpace:"nowrap"}}>{h}</th>
                       ))}
                     </tr></thead>
@@ -951,6 +986,9 @@ export default function CrmPage() {
                           <td style={{padding:"12px 16px",fontSize:13,color:B.topo,maxWidth:180}}><span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",display:"block"}}>{c.Objetivo||"—"}</span></td>
                           <td style={{padding:"12px 16px"}}><SmallBadge text={c.Estado} bg={LEAD_BADGE[c.Estado]?.bg||"#f3f4f6"} color={LEAD_BADGE[c.Estado]?.text||"#374151"} border={LEAD_BADGE[c.Estado]?.border}/></td>
                           <td style={{padding:"12px 16px",fontSize:13,color:B.topo,whiteSpace:"nowrap"}}>{c.UltimaLlamada||"—"}</td>
+                          <td style={{padding:"12px 16px"}} onClick={e=>e.stopPropagation()}>
+                            <button onClick={()=>{ if(window.confirm(`¿Eliminar a ${c.Nombre}? Quedará oculto del CRM.`)) deleteLead(c); }} style={{background:"none",border:"none",color:B.arena,cursor:"pointer",fontSize:16,padding:"2px 6px",borderRadius:6,fontFamily:B.font}} title="Eliminar lead">🗑</button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
