@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import { Bebas_Neue, DM_Sans, Manrope } from "next/font/google";
+import { headers } from "next/headers";
+import { after } from "next/server";
+import { randomUUID } from "crypto";
+import { sendCapiEvent } from "@/lib/meta-capi";
 import "./globals.css";
 
 const bebasNeue = Bebas_Neue({
@@ -62,7 +66,24 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const h = await headers();
+  const ua = h.get("user-agent") ?? "";
+  const ip = h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? h.get("x-real-ip") ?? "";
+  const isBot = /bot|crawl|spider|googlebot|bingbot|facebookexternalhit|meta-externalagent/i.test(ua);
+
+  if (!isBot && ip) {
+    after(async () => {
+      await sendCapiEvent({
+        event_name: "PageView",
+        event_id: randomUUID(),
+        action_source: "website",
+        event_source_url: "https://www.pacomont.es",
+        user_data: { client_ip_address: ip, client_user_agent: ua },
+      }).catch(() => {});
+    });
+  }
+
   return (
     <html lang="es" className={`${bebasNeue.variable} ${dmSans.variable} ${manrope.variable}`}>
       <body className="min-h-screen antialiased" style={{ fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}>
