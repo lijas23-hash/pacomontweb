@@ -544,6 +544,8 @@ export default function CrmPage() {
   const [adsRecords,   setAdsRecords]  = useState<AdsRecord[]>([]);
   const [statsForm,    setStatsForm]   = useState({ periodo: new Date().toISOString().slice(0,7), gasto: "", leadsTotal: "" });
   const [csvParsed,    setCsvParsed]   = useState<CsvMonth[]|null>(null);
+  const [csvPending,   setCsvPending]  = useState<CsvMonth[]|null>(null);
+  const [csvConflicts, setCsvConflicts]= useState<{periodo:string;existing:number;incoming:number}[]>([]);
 
   const [contactos,    setContactos]   = useState<Contacto[]>([]);
   const [ctForm,       setCtForm]      = useState({ nombre:"", telefono:"", fuente:"WhatsApp", fecha: new Date().toISOString().slice(0,10), notas:"" });
@@ -602,6 +604,29 @@ export default function CrmPage() {
     localStorage.setItem("crm_contactos", JSON.stringify(updated));
   };
 
+  const applyCSV = (months: CsvMonth[], mode: "overwrite"|"add"|"skip") => {
+    setAdsRecords(prev => {
+      const updated = [...prev];
+      for (const m of months) {
+        const idx = updated.findIndex(r=>r.periodo===m.periodo);
+        if (idx>=0) {
+          if (mode==="overwrite") updated[idx]={...updated[idx], gasto: m.gasto};
+          else if (mode==="add")  updated[idx]={...updated[idx], gasto: Math.round((updated[idx].gasto+m.gasto)*100)/100};
+          // "skip" → do nothing
+        } else {
+          updated.push({ periodo: m.periodo, gasto: m.gasto });
+        }
+      }
+      updated.sort((a,b)=>b.periodo.localeCompare(a.periodo));
+      localStorage.setItem("crm_ads_records", JSON.stringify(updated));
+      return updated;
+    });
+    const last = months[months.length-1];
+    setStatsForm(f=>({...f, periodo: last.periodo, gasto: String(last.gasto)}));
+    setCsvConflicts([]);
+    setCsvPending(null);
+  };
+
   const handleCSVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -611,22 +636,15 @@ export default function CrmPage() {
       const months = parseMetaAdsCSV(text);
       if (!months) return;
       setCsvParsed(months);
-      // Auto-save each month into adsRecords
-      setAdsRecords(prev => {
-        const updated = [...prev];
-        for (const m of months) {
-          const idx = updated.findIndex(r=>r.periodo===m.periodo);
-          const record: AdsRecord = { periodo: m.periodo, gasto: m.gasto };
-          if (idx>=0) updated[idx]={...updated[idx], gasto: m.gasto};
-          else updated.push(record);
-        }
-        updated.sort((a,b)=>b.periodo.localeCompare(a.periodo));
-        localStorage.setItem("crm_ads_records", JSON.stringify(updated));
-        return updated;
-      });
-      // Pre-fill form with the last month in the CSV
-      const last = months[months.length-1];
-      setStatsForm(f=>({...f, periodo: last.periodo, gasto: String(last.gasto)}));
+      const conflicts = months
+        .filter(m => adsRecords.find(r=>r.periodo===m.periodo))
+        .map(m => ({ periodo: m.periodo, existing: adsRecords.find(r=>r.periodo===m.periodo)!.gasto, incoming: m.gasto }));
+      if (conflicts.length > 0) {
+        setCsvConflicts(conflicts);
+        setCsvPending(months);
+      } else {
+        applyCSV(months, "overwrite");
+      }
     };
     reader.readAsText(file, "UTF-8");
     e.target.value = "";
@@ -767,18 +785,36 @@ export default function CrmPage() {
                     <span>Subir CSV</span>
                     <input type="file" accept=".csv" onChange={handleCSVUpload} style={{display:"none"}}/>
                   </label>
-                  {csvParsed?(
+                  {csvParsed&&csvConflicts.length===0&&(
                     <div>
                       {csvParsed.map(m=>(
                         <p key={m.periodo} style={{fontSize:13,color:"#166534",margin:"0 0 2px"}}>✓ <strong>{periodoLabel(m.periodo)}</strong>: {m.gasto}€ · {m.clics} clics · {m.impresiones.toLocaleString()} imp.</p>
                       ))}
                       <p style={{fontSize:12,color:B.topo,margin:"4px 0 0"}}>Guardado en historial. Tabla de anuncios abajo.</p>
                     </div>
-                  ):(
-                    <p style={{fontSize:13,color:B.topo,margin:0}}>Sube el CSV de Meta Ads Manager. Si tiene varios meses, cada uno se guarda en su periodo.</p>
                   )}
+                  {!csvParsed&&<p style={{fontSize:13,color:B.topo,margin:0}}>Sube el CSV de Meta Ads Manager. Si tiene varios meses, cada uno se guarda en su periodo.</p>}
                 </div>
               </div>
+
+              {/* Conflict resolution */}
+              {csvConflicts.length>0&&csvPending&&(
+                <div style={{background:"#fffbeb",border:"1px solid #fde68a",borderRadius:12,padding:"18px 20px",marginBottom:16}}>
+                  <p style={{fontSize:13,fontWeight:700,color:"#92400e",margin:"0 0 10px"}}>⚠ Ya hay datos para {csvConflicts.length === 1 ? "este periodo" : "estos periodos"}. ¿Qué hacer?</p>
+                  <div style={{marginBottom:14}}>
+                    {csvConflicts.map(c=>(
+                      <p key={c.periodo} style={{fontSize:13,color:"#92400e",margin:"0 0 4px"}}>
+                        <strong>{periodoLabel(c.periodo)}</strong>: guardado <strong>{c.existing}€</strong> → CSV nuevo <strong>{c.incoming}€</strong>
+                      </p>
+                    ))}
+                  </div>
+                  <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+                    <button onClick={()=>applyCSV(csvPending,"overwrite")} style={{padding:"9px 18px",borderRadius:8,border:"none",background:"#92400e",color:"#fff",fontSize:13,fontWeight:600,cursor:"pointer",fontFamily:B.font}}>Sobreescribir con CSV</button>
+                    <button onClick={()=>applyCSV(csvPending,"add")} style={{padding:"9px 18px",borderRadius:8,border:"none",background:B.brown,color:"#fff",fontSize:13,fontWeight:600,cursor:"pointer",fontFamily:B.font}}>Sumar al existente</button>
+                    <button onClick={()=>applyCSV(csvPending,"skip")} style={{padding:"9px 18px",borderRadius:8,border:`1px solid ${B.arena}`,background:"#fff",color:B.topo,fontSize:13,fontWeight:600,cursor:"pointer",fontFamily:B.font}}>Mantener existente</button>
+                  </div>
+                </div>
+              )}
 
               {/* Per-ad breakdown table */}
               {csvParsed&&csvParsed.flatMap(m=>m.rows).length>0&&(
