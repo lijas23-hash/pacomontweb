@@ -21,31 +21,47 @@ function parseCSVRow(row: string): string[] {
   return result;
 }
 
-interface CsvMonth { periodo: string; gasto: number; clics: number; impresiones: number; }
+interface CsvMonth { periodo: string; gasto: number; clics: number; impresiones: number; rows: CsvRow[]; }
+interface CsvRow   { nombre: string; gasto: number; clics: number; ctr: number; impresiones: number; cpm: number; cpc: number; }
 function parseMetaAdsCSV(text: string): CsvMonth[] | null {
   const lines = text.split(/\r?\n/).filter(l=>l.trim());
   if (lines.length<2) return null;
   const headers = parseCSVRow(lines[0]);
-  const iDate = headers.findIndex(h=>h.includes("Inicio del informe"));
-  const iG    = headers.findIndex(h=>h.includes("Importe gastado"));
-  const iC    = headers.findIndex(h=>h.includes("Clics en el enlace")&&!h.toLowerCase().includes("shop"));
-  const iI    = headers.findIndex(h=>h==="Impresiones");
+  const iDate= headers.findIndex(h=>h.includes("Inicio del informe"));
+  const iName= headers.findIndex(h=>h.includes("Nombre"));
+  const iG   = headers.findIndex(h=>h.includes("Importe gastado"));
+  const iC   = headers.findIndex(h=>h.includes("Clics en el enlace")&&!h.toLowerCase().includes("shop"));
+  const iI   = headers.findIndex(h=>h==="Impresiones");
+  const iCTR = headers.findIndex(h=>h.includes("CTR (tasa de clics en el enlace)"));
+  const iCPM = headers.findIndex(h=>h.includes("CPM"));
+  const iCPC = headers.findIndex(h=>h.includes("CPC (Coste por clic en el enlace)"));
   if (iG===-1) return null;
-  const byMonth: Record<string,{gasto:number;clics:number;impresiones:number}> = {};
+  const byMonth: Record<string,{gasto:number;clics:number;impresiones:number;rows:CsvRow[]}> = {};
   for (let i=1;i<lines.length;i++) {
     const r=parseCSVRow(lines[i]);
     const g = parseFloat(r[iG]?.replace(",",".")||"0")||0;
     if (!g) continue;
     const rawDate = iDate>=0 ? r[iDate] : "";
     const periodo = rawDate.slice(0,7) || "sin-fecha";
-    if (!byMonth[periodo]) byMonth[periodo]={gasto:0,clics:0,impresiones:0};
+    if (!byMonth[periodo]) byMonth[periodo]={gasto:0,clics:0,impresiones:0,rows:[]};
     byMonth[periodo].gasto += g;
-    if (iC>=0) byMonth[periodo].clics += parseInt(r[iC]||"0")||0;
-    if (iI>=0) byMonth[periodo].impresiones += parseInt(r[iI]||"0")||0;
+    const cl = iC>=0 ? parseInt(r[iC]||"0")||0 : 0;
+    const im = iI>=0 ? parseInt(r[iI]||"0")||0 : 0;
+    byMonth[periodo].clics += cl;
+    byMonth[periodo].impresiones += im;
+    byMonth[periodo].rows.push({
+      nombre: iName>=0 ? r[iName] : "—",
+      gasto:  Math.round(g*100)/100,
+      clics:  cl,
+      ctr:    iCTR>=0 ? parseFloat(r[iCTR]?.replace(",",".")||"0")||0 : 0,
+      impresiones: im,
+      cpm:    iCPM>=0 ? parseFloat(r[iCPM]?.replace(",",".")||"0")||0 : 0,
+      cpc:    iCPC>=0 ? parseFloat(r[iCPC]?.replace(",",".")||"0")||0 : 0,
+    });
   }
   if (!Object.keys(byMonth).length) return null;
   return Object.entries(byMonth)
-    .map(([periodo,v])=>({periodo,gasto:Math.round(v.gasto*100)/100,clics:v.clics,impresiones:v.impresiones}))
+    .map(([periodo,v])=>({periodo,gasto:Math.round(v.gasto*100)/100,clics:v.clics,impresiones:v.impresiones,rows:v.rows}))
     .sort((a,b)=>a.periodo.localeCompare(b.periodo));
 }
 
@@ -239,7 +255,7 @@ function AddModal({defaultEstado, onClose, onAdded}:{defaultEstado:string; onClo
 }
 
 // ── Detail Modal ─────────────────────────────────────────────────────────────
-function DetailModal({client,onClose,onSave}:{client:Client;onClose:()=>void;onSave:(u:Partial<Client>)=>Promise<void>}) {
+function DetailModal({client,onClose,onSave,onDelete}:{client:Client;onClose:()=>void;onSave:(u:Partial<Client>)=>Promise<void>;onDelete:(c:Client)=>void}) {
   const isClient = client.Estado === "Compró";
 
   const [estado,      setEstado]    = useState(client.Estado||"Pendiente llamada");
@@ -260,6 +276,8 @@ function DetailModal({client,onClose,onSave}:{client:Client;onClose:()=>void;onS
   const [saving,      setSaving]    = useState(false);
   const [savingNota,  setSavingNota]= useState(false);
   const [showForm,    setShowForm]  = useState(false);
+  const [saveResult,  setSaveResult]= useState<"idle"|"ok"|"error">("idle");
+  const [saveErr,     setSaveErr]   = useState("");
 
   const info = precioInfo(modalidad);
 
@@ -272,13 +290,16 @@ function DetailModal({client,onClose,onSave}:{client:Client;onClose:()=>void;onS
   };
 
   const saveAll = async () => {
-    setSaving(true);
-    const comprado = estado==="Compró"?"Sí":estado==="No compró"?"No":client.Comprado;
-    await onSave({Estado:estado,Notas:notas,UltimaLlamada:ultimaLl,Comprado:comprado,
-      PlanContratado:plan,FechaInicio:inicio,ProximaLlamada:proxima,NivelCondicion:nivel,
-      EstadoPlan:estadoPlan,Modalidad:modalidad,ProximoCobro:proxCobro,
-      Nutricion:nutricion,Motivacion:motivacion,
-      FactoresExternos:factores,NotasSeguimiento:JSON.stringify(historial)});
+    setSaving(true); setSaveResult("idle"); setSaveErr("");
+    try {
+      const comprado = estado==="Compró"?"Sí":estado==="No compró"?"No":client.Comprado;
+      await onSave({Estado:estado,Notas:notas,UltimaLlamada:ultimaLl,Comprado:comprado,
+        PlanContratado:plan,FechaInicio:inicio,ProximaLlamada:proxima,NivelCondicion:nivel,
+        EstadoPlan:estadoPlan,Modalidad:modalidad,ProximoCobro:proxCobro,
+        Nutricion:nutricion,Motivacion:motivacion,
+        FactoresExternos:factores,NotasSeguimiento:JSON.stringify(historial)});
+      setSaveResult("ok");
+    } catch(e) { setSaveResult("error"); setSaveErr(e instanceof Error ? e.message : "Error desconocido"); }
     setSaving(false);
   };
 
@@ -313,7 +334,10 @@ function DetailModal({client,onClose,onSave}:{client:Client;onClose:()=>void;onS
                 {!isClient&&<span style={{padding:"3px 10px",borderRadius:20,fontSize:12,fontWeight:600,background:LEAD_BADGE[client.Estado]?.bg,color:LEAD_BADGE[client.Estado]?.text}}>{client.Estado}</span>}
               </div>
             </div>
-            <button onClick={onClose} style={{background:"rgba(255,255,255,0.12)",border:"none",color:"#fff",width:32,height:32,borderRadius:"50%",cursor:"pointer",fontSize:16,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>✕</button>
+            <div style={{display:"flex",gap:8,flexShrink:0}}>
+              <button onClick={()=>{ if(window.confirm(`¿Eliminar a ${client.Nombre}? Desaparecerá del CRM.`)) { onDelete(client); onClose(); } }} style={{background:"rgba(239,68,68,0.18)",border:"1px solid rgba(239,68,68,0.4)",color:"#fca5a5",width:32,height:32,borderRadius:"50%",cursor:"pointer",fontSize:14,display:"flex",alignItems:"center",justifyContent:"center"}} title="Eliminar">🗑</button>
+              <button onClick={onClose} style={{background:"rgba(255,255,255,0.12)",border:"none",color:"#fff",width:32,height:32,borderRadius:"50%",cursor:"pointer",fontSize:16,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+            </div>
           </div>
           <div style={{display:"flex",gap:20,marginTop:16,flexWrap:"wrap"}}>
             <a href={`mailto:${client.Email}`} style={{color:B.arena,fontSize:13,textDecoration:"none"}}>✉ {client.Email}</a>
@@ -492,9 +516,10 @@ function DetailModal({client,onClose,onSave}:{client:Client;onClose:()=>void;onS
 
         {/* Footer fijo */}
         <div style={{borderTop:`1px solid ${B.arena}`,padding:"16px 28px",flexShrink:0,background:"#fff"}}>
-          <button onClick={saveAll} disabled={saving} style={{width:"100%",padding:"13px",borderRadius:10,border:"none",background:saving?B.topo:B.carbon,color:B.beige,fontSize:14,fontWeight:600,cursor:saving?"not-allowed":"pointer",fontFamily:B.font,letterSpacing:"0.02em"}}>
-            {saving?"Guardando…":"Guardar cambios"}
+          <button onClick={saveAll} disabled={saving} style={{width:"100%",padding:"13px",borderRadius:10,border:"none",background:saving?B.topo:saveResult==="ok"?"#166534":saveResult==="error"?"#991b1b":B.carbon,color:B.beige,fontSize:14,fontWeight:600,cursor:saving?"not-allowed":"pointer",fontFamily:B.font,letterSpacing:"0.02em",transition:"background 0.2s"}}>
+            {saving?"Guardando…":saveResult==="ok"?"✓ Guardado":saveResult==="error"?"✕ Error al guardar":"Guardar cambios"}
           </button>
+          {saveResult==="error"&&<p style={{color:"#991b1b",fontSize:12,margin:"8px 0 0",textAlign:"center"}}>{saveErr}</p>}
         </div>
       </div>
     </div>
@@ -607,7 +632,7 @@ export default function CrmPage() {
     e.target.value = "";
   };
 
-  const deleteLead = async (client: Client) => {
+  const deleteEntry = async (client: Client) => {
     await fetch("/api/crm",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({_action:"update",_row:client._row,Estado:"Eliminado"})});
     setClients(prev=>prev.map(c=>c._row===client._row?{...c,Estado:"Eliminado"}:c));
     if (selected?._row===client._row) setSelected(null);
@@ -615,7 +640,9 @@ export default function CrmPage() {
 
   const handleSave = async(updated:Partial<Client>)=>{
     if(!selected) return;
-    await fetch("/api/crm",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({_action:"update",_row:selected._row,...updated})});
+    const res  = await fetch("/api/crm",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({_action:"update",_row:selected._row,...updated})});
+    const data = await res.json().catch(()=>({}));
+    if (data.ok === false) throw new Error(data.error || "Error al guardar en Google Sheets");
     setClients(prev=>prev.map(c=>c._row===selected._row?{...c,...updated}:c));
     setSelected(c=>c?{...c,...updated}:c);
   };
@@ -743,15 +770,51 @@ export default function CrmPage() {
                   {csvParsed?(
                     <div>
                       {csvParsed.map(m=>(
-                        <p key={m.periodo} style={{fontSize:13,color:"#166534",margin:"0 0 2px"}}>✓ <strong>{periodoLabel(m.periodo)}</strong>: {m.gasto}€ gasto · {m.clics} clics · {m.impresiones.toLocaleString()} impresiones</p>
+                        <p key={m.periodo} style={{fontSize:13,color:"#166534",margin:"0 0 2px"}}>✓ <strong>{periodoLabel(m.periodo)}</strong>: {m.gasto}€ · {m.clics} clics · {m.impresiones.toLocaleString()} imp.</p>
                       ))}
-                      <p style={{fontSize:12,color:B.topo,margin:"4px 0 0"}}>Guardado automáticamente en el historial.</p>
+                      <p style={{fontSize:12,color:B.topo,margin:"4px 0 0"}}>Guardado en historial. Tabla de anuncios abajo.</p>
                     </div>
                   ):(
                     <p style={{fontSize:13,color:B.topo,margin:0}}>Sube el CSV de Meta Ads Manager. Si tiene varios meses, cada uno se guarda en su periodo.</p>
                   )}
                 </div>
               </div>
+
+              {/* Per-ad breakdown table */}
+              {csvParsed&&csvParsed.flatMap(m=>m.rows).length>0&&(
+                <div style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:12,overflow:"hidden",marginBottom:16}}>
+                  <div style={{padding:"14px 20px",borderBottom:`1px solid ${B.arena}`}}>
+                    <p style={{fontSize:13,fontWeight:700,color:B.carbon,margin:0}}>Desglose por anuncio / campaña</p>
+                  </div>
+                  <div style={{overflowX:"auto"}}>
+                    <table style={{width:"100%",borderCollapse:"collapse",minWidth:700}}>
+                      <thead><tr style={{background:B.beige}}>
+                        {["Nombre","Gasto","Clics","CTR","Imp.","CPM","CPC"].map(h=>(
+                          <th key={h} style={{padding:"9px 14px",textAlign:"left",fontSize:11,fontWeight:600,color:B.topo,textTransform:"uppercase",letterSpacing:"0.05em",whiteSpace:"nowrap"}}>{h}</th>
+                        ))}
+                      </tr></thead>
+                      <tbody>
+                        {csvParsed.flatMap(m=>m.rows).sort((a,b)=>b.gasto-a.gasto).map((r,i,arr)=>(
+                          <tr key={i} style={{borderBottom:i<arr.length-1?`1px solid ${B.beige}`:"none"}}>
+                            <td style={{padding:"10px 14px",fontSize:13,color:B.carbon,maxWidth:280}}>
+                              <span style={{display:"block",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}} title={r.nombre}>{r.nombre}</span>
+                            </td>
+                            <td style={{padding:"10px 14px",fontWeight:700,color:B.carbon,whiteSpace:"nowrap"}}>{r.gasto}€</td>
+                            <td style={{padding:"10px 14px",color:B.topo,whiteSpace:"nowrap"}}>{r.clics||"—"}</td>
+                            <td style={{padding:"10px 14px",whiteSpace:"nowrap"}}>
+                              {r.ctr>0&&<span style={{padding:"2px 8px",borderRadius:20,fontSize:12,fontWeight:600,background:r.ctr>4?"#f0fdf4":r.ctr>2?"#fffbeb":"#fef2f2",color:r.ctr>4?"#166534":r.ctr>2?"#92400e":"#991b1b"}}>{r.ctr.toFixed(2)}%</span>}
+                              {!r.ctr&&<span style={{color:B.arena}}>—</span>}
+                            </td>
+                            <td style={{padding:"10px 14px",color:B.topo,whiteSpace:"nowrap"}}>{r.impresiones?r.impresiones.toLocaleString():"—"}</td>
+                            <td style={{padding:"10px 14px",color:B.topo,whiteSpace:"nowrap"}}>{r.cpm>0?`${r.cpm.toFixed(2)}€`:"—"}</td>
+                            <td style={{padding:"10px 14px",color:B.topo,whiteSpace:"nowrap"}}>{r.cpc>0?`${r.cpc.toFixed(2)}€`:"—"}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
 
               {/* Input form */}
               <div style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:12,padding:"18px 20px",marginBottom:16}}>
@@ -987,7 +1050,7 @@ export default function CrmPage() {
                           <td style={{padding:"12px 16px"}}><SmallBadge text={c.Estado} bg={LEAD_BADGE[c.Estado]?.bg||"#f3f4f6"} color={LEAD_BADGE[c.Estado]?.text||"#374151"} border={LEAD_BADGE[c.Estado]?.border}/></td>
                           <td style={{padding:"12px 16px",fontSize:13,color:B.topo,whiteSpace:"nowrap"}}>{c.UltimaLlamada||"—"}</td>
                           <td style={{padding:"12px 16px"}} onClick={e=>e.stopPropagation()}>
-                            <button onClick={()=>{ if(window.confirm(`¿Eliminar a ${c.Nombre}? Quedará oculto del CRM.`)) deleteLead(c); }} style={{background:"none",border:"none",color:B.arena,cursor:"pointer",fontSize:16,padding:"2px 6px",borderRadius:6,fontFamily:B.font}} title="Eliminar lead">🗑</button>
+                            <button onClick={()=>{ if(window.confirm(`¿Eliminar a ${c.Nombre}? Quedará oculto del CRM.`)) deleteEntry(c); }} style={{background:"none",border:"none",color:B.arena,cursor:"pointer",fontSize:16,padding:"2px 6px",borderRadius:6,fontFamily:B.font}} title="Eliminar lead">🗑</button>
                           </td>
                         </tr>
                       ))}
@@ -1144,7 +1207,7 @@ export default function CrmPage() {
                 <div style={{overflowX:"auto"}}>
                   <table style={{width:"100%",borderCollapse:"collapse",minWidth:700}}>
                     <thead><tr style={{borderBottom:`1px solid ${B.arena}`,background:B.beige}}>
-                      {["Nombre","Plan","Modalidad","Tu parte","Próx. cobro","Estado","Notas"].map(h=>(
+                      {["Nombre","Plan","Modalidad","Tu parte","Próx. cobro","Estado","Notas",""].map(h=>(
                         <th key={h} style={{padding:"11px 16px",textAlign:"left",fontSize:11,fontWeight:600,color:B.topo,textTransform:"uppercase",letterSpacing:"0.05em",whiteSpace:"nowrap"}}>{h}</th>
                       ))}
                     </tr></thead>
@@ -1170,6 +1233,9 @@ export default function CrmPage() {
                             <td style={{padding:"13px 16px",fontSize:13,color:notas.length>0?B.carbon:B.arena}}>
                               {notas.length>0?`${notas.length} nota${notas.length!==1?"s":""}`:("—")}
                             </td>
+                            <td style={{padding:"13px 16px"}} onClick={e=>e.stopPropagation()}>
+                              <button onClick={()=>{ if(window.confirm(`¿Eliminar a ${c.Nombre}? Quedará oculto del CRM.`)) deleteEntry(c); }} style={{background:"none",border:"none",color:B.arena,cursor:"pointer",fontSize:16,padding:"2px 6px",borderRadius:6,fontFamily:B.font}} title="Eliminar cliente">🗑</button>
+                            </td>
                           </tr>
                         );
                       })}
@@ -1182,7 +1248,7 @@ export default function CrmPage() {
         )}
       </div>
 
-      {selected&&<DetailModal client={selected} onClose={()=>setSelected(null)} onSave={handleSave}/>}
+      {selected&&<DetailModal client={selected} onClose={()=>setSelected(null)} onSave={handleSave} onDelete={deleteEntry}/>}
       {addOpen&&<AddModal defaultEstado={view==="clientes"?"Compró":"Pendiente llamada"} onClose={()=>setAddOpen(false)} onAdded={fetchClients}/>}
     </div>
   );
