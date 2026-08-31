@@ -6,8 +6,38 @@ const B = {
   topo: "#8C7868", arena: "#DCCBBB", font: "'Manrope', system-ui, sans-serif",
 };
 
-interface NotaEntry { fecha: string; texto: string; }
-interface AdsRecord { periodo: string; gasto: number; leadsTotal?: number; clientesNuevos?: number; mrrSnapshot?: number; }
+interface NotaEntry  { fecha: string; texto: string; }
+interface AdsRecord  { periodo: string; gasto: number; leadsTotal?: number; clientesNuevos?: number; mrrSnapshot?: number; contactosN?: number; }
+interface Contacto   { id: string; nombre: string; telefono: string; fuente: string; fecha: string; notas?: string; }
+
+function parseCSVRow(row: string): string[] {
+  const result: string[] = []; let cur = ""; let inQ = false;
+  for (const ch of row) {
+    if (ch==='"') inQ=!inQ;
+    else if (ch===','&&!inQ) { result.push(cur.trim().replace(/^"|"$/g,"")); cur=""; }
+    else cur+=ch;
+  }
+  result.push(cur.trim().replace(/^"|"$/g,""));
+  return result;
+}
+
+function parseMetaAdsCSV(text: string): {gasto:number;clics:number;impresiones:number}|null {
+  const lines = text.split(/\r?\n/).filter(l=>l.trim());
+  if (lines.length<2) return null;
+  const headers = parseCSVRow(lines[0]);
+  const iG = headers.findIndex(h=>h.includes("Importe gastado"));
+  const iC = headers.findIndex(h=>h.includes("Clics en el enlace")&&!h.toLowerCase().includes("shop"));
+  const iI = headers.findIndex(h=>h==="Impresiones");
+  if (iG===-1) return null;
+  let gasto=0,clics=0,imp=0;
+  for (let i=1;i<lines.length;i++) {
+    const r=parseCSVRow(lines[i]);
+    gasto += parseFloat(r[iG]?.replace(",",".")||"0")||0;
+    if (iC>=0) clics += parseInt(r[iC]||"0")||0;
+    if (iI>=0) imp   += parseInt(r[iI]||"0")||0;
+  }
+  return {gasto:Math.round(gasto*100)/100,clics,impresiones:imp};
+}
 
 interface Client {
   _row: number; ID: string; Fecha: string;
@@ -466,7 +496,7 @@ export default function CrmPage() {
   const [authed,  setAuthed]   = useState(false);
   const [clients, setClients]  = useState<Client[]>([]);
   const [loading, setLoading]  = useState(false);
-  const [view,         setView]        = useState<"leads"|"clientes"|"stats">("leads");
+  const [view,         setView]        = useState<"leads"|"clientes"|"stats"|"contactos">("leads");
   const [filter,       setFilter]      = useState("Todos");
   const [filterPlan,   setFilterPlan]  = useState("Todos");
   const [filterMod,    setFilterMod]   = useState("Todos");
@@ -478,10 +508,17 @@ export default function CrmPage() {
 
   const [adsRecords,   setAdsRecords]  = useState<AdsRecord[]>([]);
   const [statsForm,    setStatsForm]   = useState({ periodo: new Date().toISOString().slice(0,7), gasto: "", leadsTotal: "" });
+  const [csvParsed,    setCsvParsed]   = useState<{gasto:number;clics:number;impresiones:number}|null>(null);
+
+  const [contactos,    setContactos]   = useState<Contacto[]>([]);
+  const [ctForm,       setCtForm]      = useState({ nombre:"", telefono:"", fuente:"WhatsApp", fecha: new Date().toISOString().slice(0,10), notas:"" });
 
   useEffect(()=>{ if (localStorage.getItem("crm_token")) setAuthed(true); },[]);
   useEffect(()=>{
     try { const s=localStorage.getItem("crm_ads_records"); if(s) setAdsRecords(JSON.parse(s)); } catch {}
+  },[]);
+  useEffect(()=>{
+    try { const s=localStorage.getItem("crm_contactos"); if(s) setContactos(JSON.parse(s)); } catch {}
   },[]);
 
   const fetchClients = useCallback(async()=>{
@@ -513,6 +550,37 @@ export default function CrmPage() {
     const updated = adsRecords.filter(r=>r.periodo!==periodo);
     setAdsRecords(updated);
     localStorage.setItem("crm_ads_records", JSON.stringify(updated));
+  };
+
+  const addContacto = () => {
+    if (!ctForm.nombre.trim()) return;
+    const c: Contacto = { id: Date.now().toString(), ...ctForm };
+    const updated = [c, ...contactos].sort((a,b)=>b.fecha.localeCompare(a.fecha));
+    setContactos(updated);
+    localStorage.setItem("crm_contactos", JSON.stringify(updated));
+    setCtForm(f=>({...f, nombre:"", telefono:"", notas:""}));
+  };
+
+  const deleteContacto = (id: string) => {
+    const updated = contactos.filter(c=>c.id!==id);
+    setContactos(updated);
+    localStorage.setItem("crm_contactos", JSON.stringify(updated));
+  };
+
+  const handleCSVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const text = ev.target?.result as string;
+      const result = parseMetaAdsCSV(text);
+      if (result) {
+        setCsvParsed(result);
+        setStatsForm(f=>({...f, gasto: String(result.gasto)}));
+      }
+    };
+    reader.readAsText(file, "UTF-8");
+    e.target.value = "";
   };
 
   const handleSave = async(updated:Partial<Client>)=>{
@@ -582,9 +650,10 @@ export default function CrmPage() {
         {([
           ["leads","Leads",leads.length],
           ["clientes","Clientes",clientes.length],
+          ["contactos","Contactos",contactos.length],
           ["stats","Rentabilidad",null],
-        ] as const).map(([id,label,count])=>(
-          <button key={id} onClick={()=>{setView(id);setSearch("");setFilter("Todos");setFilterPlan("Todos");setFilterMod("Todos");setFilterCobro("Todos");setFilterCalls(false);}} style={{padding:"14px 20px",border:"none",background:"none",cursor:"pointer",fontFamily:B.font,fontSize:14,fontWeight:view===id?700:400,color:view===id?B.carbon:B.topo,borderBottom:view===id?`2px solid ${B.carbon}`:"2px solid transparent",transition:"all 0.15s"}}>
+        ] as [string,string,number|null][]).map(([id,label,count])=>(
+          <button key={id} onClick={()=>{setView(id as typeof view);setSearch("");setFilter("Todos");setFilterPlan("Todos");setFilterMod("Todos");setFilterCobro("Todos");setFilterCalls(false);}} style={{padding:"14px 20px",border:"none",background:"none",cursor:"pointer",fontFamily:B.font,fontSize:14,fontWeight:view===id?700:400,color:view===id?B.carbon:B.topo,borderBottom:view===id?`2px solid ${B.carbon}`:"2px solid transparent",transition:"all 0.15s"}}>
             {label}{count!==null&&<span style={{fontSize:12,marginLeft:4,padding:"2px 7px",borderRadius:20,background:view===id?B.carbon:B.arena,color:view===id?B.beige:B.topo,fontWeight:600}}>{count}</span>}
           </button>
         ))}
@@ -616,7 +685,11 @@ export default function CrmPage() {
           const cpl = gasto>0&&leadsN>0 ? gasto/leadsN : null;
           const cac = gasto>0&&clientesNuevosMes>0 ? gasto/clientesNuevosMes : null;
 
-          const KPI = ({label,value,sub,highlight,warn}:{label:string;value:string;sub?:string;highlight?:boolean;warn?:boolean})=>(
+          const contactosMes = contactos.filter(c=>c.fecha.startsWith(statsForm.periodo)).length;
+          const cTL = contactosMes>0 ? Math.round(leadsN/contactosMes*100) : null;
+          const lTC = leadsN>0 ? Math.round(clientesNuevosMes/leadsN*100) : null;
+
+          const KPI =({label,value,sub,highlight,warn}:{label:string;value:string;sub?:string;highlight?:boolean;warn?:boolean})=>(
             <div style={{background:highlight?B.carbon:"#fff",border:`1px solid ${warn?"#fecaca":B.arena}`,borderRadius:12,padding:"18px 20px"}}>
               <p style={{fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:highlight?B.topo:B.topo,margin:"0 0 6px"}}>{label}</p>
               <p style={{fontSize:26,fontWeight:800,color:highlight?"#4ade80":warn?"#991b1b":B.carbon,margin:"0 0 4px",letterSpacing:"-0.01em"}}>{value}</p>
@@ -629,8 +702,24 @@ export default function CrmPage() {
 
           return (
             <>
+              {/* CSV Upload */}
+              <div style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:12,padding:"18px 20px",marginBottom:16}}>
+                <p style={{fontSize:12,fontWeight:700,color:B.topo,textTransform:"uppercase",letterSpacing:"0.06em",margin:"0 0 12px"}}>Importar CSV de Meta Ads Manager</p>
+                <div style={{display:"flex",alignItems:"center",gap:14,flexWrap:"wrap"}}>
+                  <label style={{display:"inline-flex",alignItems:"center",gap:8,padding:"9px 18px",borderRadius:8,background:B.carbon,color:B.beige,fontSize:13,fontWeight:600,cursor:"pointer",fontFamily:B.font}}>
+                    <span>Subir CSV</span>
+                    <input type="file" accept=".csv" onChange={handleCSVUpload} style={{display:"none"}}/>
+                  </label>
+                  {csvParsed?(
+                    <p style={{fontSize:13,color:"#166534",margin:0}}>✓ <strong>{csvParsed.gasto}€</strong> gasto · <strong>{csvParsed.clics}</strong> clics · <strong>{csvParsed.impresiones.toLocaleString()}</strong> impresiones — Gasto auto-cargado abajo</p>
+                  ):(
+                    <p style={{fontSize:13,color:B.topo,margin:0}}>Sube el CSV de campañas o anuncios para rellenar el gasto automáticamente.</p>
+                  )}
+                </div>
+              </div>
+
               {/* Input form */}
-              <div style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:12,padding:"18px 20px",marginBottom:20}}>
+              <div style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:12,padding:"18px 20px",marginBottom:16}}>
                 <p style={{fontSize:12,fontWeight:700,color:B.topo,textTransform:"uppercase",letterSpacing:"0.06em",margin:"0 0 14px"}}>Registrar gasto mensual en ads</p>
                 <div style={{display:"flex",gap:10,flexWrap:"wrap",alignItems:"flex-end"}}>
                   <div style={{flex:"0 0 auto"}}>
@@ -650,6 +739,36 @@ export default function CrmPage() {
                   </button>
                 </div>
                 {currentRecord&&<p style={{fontSize:12,color:"#166534",margin:"10px 0 0"}}>✓ Dato guardado para {periodoLabel(statsForm.periodo)}: {fmt(currentRecord.gasto)} en ads</p>}
+              </div>
+
+              {/* Funnel */}
+              <div style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:12,padding:"18px 20px",marginBottom:16}}>
+                <p style={{fontSize:12,fontWeight:700,color:B.topo,textTransform:"uppercase",letterSpacing:"0.06em",margin:"0 0 16px"}}>Embudo · {periodoLabel(statsForm.periodo)}</p>
+                <div style={{display:"flex",alignItems:"center",gap:0,flexWrap:"wrap"}}>
+                  {([
+                    {label:"Contactos",value:contactosMes,sub:"WA / IG",color:B.brown},
+                    {label:"Leads",value:leadsN,sub:"/llamada form",color:B.topo},
+                    {label:"Clientes nuevos",value:clientesNuevosMes,sub:"compraron",color:"#166534"},
+                  ] as const).map((step,i,arr)=>(
+                    <div key={step.label} style={{display:"flex",alignItems:"center",gap:0}}>
+                      <div style={{textAlign:"center",minWidth:110}}>
+                        <div style={{fontSize:32,fontWeight:800,color:step.color,letterSpacing:"-0.02em"}}>{step.value}</div>
+                        <div style={{fontSize:13,fontWeight:600,color:B.carbon,marginTop:2}}>{step.label}</div>
+                        <div style={{fontSize:11,color:B.topo}}>{step.sub}</div>
+                      </div>
+                      {i<arr.length-1&&(
+                        <div style={{textAlign:"center",padding:"0 12px"}}>
+                          <div style={{fontSize:18,color:B.arena}}>→</div>
+                          <div style={{fontSize:12,fontWeight:600,color:i===0?( cTL!==null?( cTL<20?"#991b1b":cTL<40?"#92400e":"#166534"):B.topo):(lTC!==null?(lTC<10?"#991b1b":lTC<25?"#92400e":"#166534"):B.topo)}}>
+                            {i===0?(cTL!==null?`${cTL}%`:"—"):(lTC!==null?`${lTC}%`:"—")}
+                          </div>
+                          <div style={{fontSize:10,color:B.arena}}>conversión</div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                {contactosMes===0&&<p style={{fontSize:12,color:B.topo,margin:"12px 0 0"}}>Añade contactos en la pestaña <strong>Contactos</strong> para ver las conversiones del embudo.</p>}
               </div>
 
               {/* KPIs */}
@@ -713,6 +832,79 @@ export default function CrmPage() {
                 </div>
               )}
               {adsRecords.length===0&&<p style={{color:B.topo,fontSize:13,textAlign:"center",padding:"32px 0"}}>Aún no hay datos guardados. Rellena el formulario de arriba para tu primer mes.</p>}
+            </>
+          );
+        })()}
+
+        {/* ── CONTACTOS ── */}
+        {view==="contactos"&&(()=>{
+          const inp2: React.CSSProperties = {...inp};
+          const lbl2: React.CSSProperties = {display:"block",fontSize:11,fontWeight:600,color:B.topo,textTransform:"uppercase" as const,letterSpacing:"0.05em",marginBottom:5};
+          const FUENTES = ["WhatsApp","Instagram","Referido","Otro"];
+          return (
+            <>
+              <div style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:12,padding:"20px 24px",marginBottom:20}}>
+                <p style={{fontSize:12,fontWeight:700,color:B.topo,textTransform:"uppercase",letterSpacing:"0.06em",margin:"0 0 16px"}}>Añadir contacto</p>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr auto auto",gap:12,alignItems:"flex-end"}}>
+                  <div>
+                    <label style={lbl2}>Nombre *</label>
+                    <input value={ctForm.nombre} onChange={e=>setCtForm(f=>({...f,nombre:e.target.value}))} placeholder="Nombre" style={inp2}/>
+                  </div>
+                  <div>
+                    <label style={lbl2}>Teléfono</label>
+                    <input type="tel" value={ctForm.telefono} onChange={e=>setCtForm(f=>({...f,telefono:e.target.value}))} placeholder="+34 600 000 000" style={inp2}/>
+                  </div>
+                  <div>
+                    <label style={lbl2}>Fuente</label>
+                    <select value={ctForm.fuente} onChange={e=>setCtForm(f=>({...f,fuente:e.target.value}))} style={inp2}>
+                      {FUENTES.map(f=><option key={f} value={f}>{f}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label style={lbl2}>Fecha</label>
+                    <input type="date" value={ctForm.fecha} onChange={e=>setCtForm(f=>({...f,fecha:e.target.value}))} style={{...inp2,width:"auto"}}/>
+                  </div>
+                  <button onClick={addContacto} disabled={!ctForm.nombre.trim()} style={{padding:"9px 20px",borderRadius:8,border:"none",background:!ctForm.nombre.trim()?B.topo:B.carbon,color:B.beige,fontSize:14,fontWeight:600,cursor:!ctForm.nombre.trim()?"not-allowed":"pointer",fontFamily:B.font,whiteSpace:"nowrap"}}>+ Añadir</button>
+                </div>
+              </div>
+
+              {contactos.length===0?(
+                <div style={{textAlign:"center",padding:"48px 0",color:B.topo}}>
+                  <p style={{fontSize:32,marginBottom:8}}>💬</p>
+                  <p style={{fontSize:14,fontWeight:600,color:B.carbon,margin:"0 0 4px"}}>Sin contactos todavía</p>
+                  <p style={{fontSize:13,margin:0}}>Añade aquí a las personas que te escriben por WA o IG sin rellenar el formulario.</p>
+                </div>
+              ):(
+                <div style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:12,overflow:"hidden"}}>
+                  <div style={{padding:"14px 20px",borderBottom:`1px solid ${B.arena}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <p style={{fontSize:13,fontWeight:700,color:B.carbon,margin:0}}>Todos los contactos <span style={{fontSize:12,color:B.topo,fontWeight:400}}>({contactos.length})</span></p>
+                  </div>
+                  <div style={{overflowX:"auto"}}>
+                    <table style={{width:"100%",borderCollapse:"collapse",minWidth:500}}>
+                      <thead><tr style={{background:B.beige}}>
+                        {["Fecha","Nombre","Teléfono","Fuente",""].map(h=>(
+                          <th key={h} style={{padding:"10px 16px",textAlign:"left",fontSize:11,fontWeight:600,color:B.topo,textTransform:"uppercase",letterSpacing:"0.05em",whiteSpace:"nowrap"}}>{h}</th>
+                        ))}
+                      </tr></thead>
+                      <tbody>
+                        {contactos.map((c,i)=>(
+                          <tr key={c.id} style={{borderBottom:i<contactos.length-1?`1px solid ${B.beige}`:"none"}}>
+                            <td style={{padding:"11px 16px",color:B.topo,whiteSpace:"nowrap"}}>{new Date(c.fecha+"T00:00:00").toLocaleDateString("es-ES",{day:"numeric",month:"short",year:"numeric"})}</td>
+                            <td style={{padding:"11px 16px",fontWeight:600,color:B.carbon}}>{c.nombre}</td>
+                            <td style={{padding:"11px 16px",color:B.topo}}>{c.telefono||"—"}</td>
+                            <td style={{padding:"11px 16px"}}>
+                              <span style={{display:"inline-block",padding:"3px 10px",borderRadius:20,fontSize:12,fontWeight:600,background:c.fuente==="WhatsApp"?"#f0fdf4":c.fuente==="Instagram"?"#fdf2f8":c.fuente==="Referido"?"#eff6ff":"#f9f7f5",color:c.fuente==="WhatsApp"?"#166534":c.fuente==="Instagram"?"#9d174d":c.fuente==="Referido"?"#1e40af":B.topo}}>{c.fuente}</span>
+                            </td>
+                            <td style={{padding:"11px 16px"}}>
+                              <button onClick={()=>deleteContacto(c.id)} style={{background:"none",border:"none",color:B.arena,cursor:"pointer",fontSize:14,fontFamily:B.font}}>✕</button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </>
           );
         })()}
