@@ -461,44 +461,12 @@ function DetailModal({client,onClose,onSave}:{client:Client;onClose:()=>void;onS
   );
 }
 
-// ── Pipeline Card ────────────────────────────────────────────────────────────
-function PipelineCard({c,type,onUpdate,onOpen}:{c:Client;type:"pending"|"called"|"closed";onUpdate:(u:Partial<Client>)=>void;onOpen:()=>void}) {
-  const since = c.Fecha ? Math.round((Date.now()-new Date(c.Fecha).getTime())/3600e3) : null;
-  const timeLabel = since===null?"":since<24?`hace ${since}h`:`hace ${Math.floor(since/24)}d`;
-  const btn = (label:string, onClick:()=>void, style?:React.CSSProperties) => (
-    <button onClick={onClick} style={{border:"none",borderRadius:7,padding:"7px 11px",fontFamily:B.font,fontSize:13,fontWeight:600,cursor:"pointer",...style}}>{label}</button>
-  );
-  return (
-    <div style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:10,padding:"14px 16px",marginBottom:8}}>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:2}}>
-        <p style={{fontSize:14,fontWeight:700,color:B.carbon,margin:0}}>{c.Nombre} {c.Apellido}</p>
-        <span style={{fontSize:11,color:B.topo,flexShrink:0,marginLeft:8}}>{timeLabel}</span>
-      </div>
-      {c.Telefono&&<p style={{fontSize:13,color:B.topo,margin:"0 0 4px"}}>{c.Telefono}</p>}
-      {c.Objetivo&&<p style={{fontSize:12,color:B.brown,margin:"0 0 10px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.Objetivo}</p>}
-      {!c.Objetivo&&<div style={{marginBottom:10}}/>}
-      <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
-        {type==="pending"&&<>
-          {btn("Llamé ✓",()=>onUpdate({Estado:"Llamada hecha",UltimaLlamada:new Date().toLocaleDateString("es-ES")}),{flex:1,background:B.carbon,color:B.beige})}
-          {btn("Ver ficha",onOpen,{background:B.beige,border:`1px solid ${B.arena}`,color:B.brown})}
-        </>}
-        {type==="called"&&<>
-          {btn("Compró ✓",()=>onUpdate({Estado:"Compró"}),{flex:1,background:"#166534",color:"#fff"})}
-          {btn("No compró",()=>onUpdate({Estado:"No compró"}),{flex:1,background:"#fef2f2",color:"#991b1b",border:"1px solid #fecaca"})}
-          {btn("Ver",onOpen,{background:B.beige,border:`1px solid ${B.arena}`,color:B.brown})}
-        </>}
-        {type==="closed"&&<SmallBadge text={c.Estado} bg={LEAD_BADGE[c.Estado]?.bg||"#f3f4f6"} color={LEAD_BADGE[c.Estado]?.text||"#374151"} border={LEAD_BADGE[c.Estado]?.border}/>}
-      </div>
-    </div>
-  );
-}
-
 // ── Main CRM ─────────────────────────────────────────────────────────────────
 export default function CrmPage() {
   const [authed,  setAuthed]   = useState(false);
   const [clients, setClients]  = useState<Client[]>([]);
   const [loading, setLoading]  = useState(false);
-  const [view,         setView]        = useState<"pipeline"|"leads"|"clientes"|"stats">("pipeline");
+  const [view,         setView]        = useState<"leads"|"clientes"|"stats">("leads");
   const [filter,       setFilter]      = useState("Todos");
   const [filterPlan,   setFilterPlan]  = useState("Todos");
   const [filterMod,    setFilterMod]   = useState("Todos");
@@ -507,8 +475,7 @@ export default function CrmPage() {
   const [selected,     setSelected]    = useState<Client|null>(null);
   const [addOpen,      setAddOpen]     = useState(false);
   const [search,       setSearch]      = useState("");
-  const [pipeForm,     setPipeForm]    = useState({Nombre:"",Telefono:"",Fuente:"WhatsApp"});
-  const [pipeAdding,   setPipeAdding]  = useState(false);
+
   const [adsRecords,   setAdsRecords]  = useState<AdsRecord[]>([]);
   const [statsForm,    setStatsForm]   = useState({ periodo: new Date().toISOString().slice(0,7), gasto: "", leadsTotal: "" });
 
@@ -524,21 +491,6 @@ export default function CrmPage() {
   },[]);
 
   useEffect(()=>{ if(authed) fetchClients(); },[authed,fetchClients]);
-
-  const quickUpdate = useCallback(async(c:Client,updates:Partial<Client>)=>{
-    await fetch("/api/crm",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({_action:"update",_row:c._row,...updates})});
-    setClients(prev=>prev.map(x=>x._row===c._row?{...x,...updates}:x));
-  },[]);
-
-  const quickAdd = async()=>{
-    if(!pipeForm.Nombre||pipeAdding) return;
-    setPipeAdding(true);
-    try {
-      const res=await fetch("/api/crm",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({Nombre:pipeForm.Nombre,Telefono:pipeForm.Telefono,Notas:`Via ${pipeForm.Fuente}`,Estado:"Pendiente llamada"})});
-      const d=await res.json();
-      if(d.ok){await fetchClients();setPipeForm({Nombre:"",Telefono:"",Fuente:"WhatsApp"});}
-    }finally{setPipeAdding(false);}
-  };
 
   const saveAdsRecord = (mrrNow: number, clientesNuevosNow: number) => {
     const gasto = parseFloat(statsForm.gasto);
@@ -628,7 +580,6 @@ export default function CrmPage() {
       {/* Main tabs */}
       <div style={{borderBottom:`1px solid ${B.arena}`,padding:"0 24px",background:"#fff",display:"flex"}}>
         {([
-          ["pipeline","Pipeline",leads.filter(c=>c.Estado==="Pendiente llamada").length],
           ["leads","Leads",leads.length],
           ["clientes","Clientes",clientes.length],
           ["stats","Rentabilidad",null],
@@ -765,75 +716,6 @@ export default function CrmPage() {
             </>
           );
         })()}
-
-        {/* ── PIPELINE ── */}
-        {view==="pipeline"&&(
-          <>
-            {/* Quick add */}
-            <div style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:12,padding:"16px 20px",marginBottom:20}}>
-              <p style={{fontSize:12,fontWeight:700,color:B.topo,textTransform:"uppercase",letterSpacing:"0.06em",margin:"0 0 12px"}}>Añadir contacto rápido</p>
-              <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
-                <input placeholder="Nombre *" value={pipeForm.Nombre} onChange={e=>setPipeForm(f=>({...f,Nombre:e.target.value}))} onKeyDown={e=>e.key==="Enter"&&quickAdd()} style={{...inp,flex:"1 1 160px",maxWidth:220}}/>
-                <input placeholder="Teléfono" value={pipeForm.Telefono} onChange={e=>setPipeForm(f=>({...f,Telefono:e.target.value}))} style={{...inp,flex:"1 1 140px",maxWidth:180}}/>
-                <select value={pipeForm.Fuente} onChange={e=>setPipeForm(f=>({...f,Fuente:e.target.value}))} style={{...inp,flex:"0 0 auto"}}>
-                  {["WhatsApp","Instagram","Referido","Formulario","Otro"].map(s=><option key={s}>{s}</option>)}
-                </select>
-                <button onClick={quickAdd} disabled={pipeAdding||!pipeForm.Nombre} style={{background:B.carbon,color:B.beige,border:"none",borderRadius:8,padding:"9px 18px",fontFamily:B.font,fontSize:14,fontWeight:600,cursor:!pipeForm.Nombre||pipeAdding?"not-allowed":"pointer",opacity:!pipeForm.Nombre?0.5:1}}>
-                  {pipeAdding?"…":"+ Añadir"}
-                </button>
-              </div>
-            </div>
-
-            {(()=>{
-              const pending    = leads.filter(c=>c.Estado==="Pendiente llamada");
-              const called     = leads.filter(c=>c.Estado==="Llamada hecha"||c.Estado==="Llamada programada");
-              const closedWeek = leads.filter(c=>(c.Estado==="Compró"||c.Estado==="No compró")&&!!c.Fecha&&(Date.now()-new Date(c.Fecha).getTime())<7*864e5);
-              return (
-                <>
-                  {/* Stat chips */}
-                  <div style={{display:"flex",gap:10,marginBottom:20,flexWrap:"wrap"}}>
-                    {[
-                      {l:"Por llamar",    v:pending.length,    c:"#92400e",bg:"#fffbeb"},
-                      {l:"Ya llamé",      v:called.length,     c:"#1e40af",bg:"#eff6ff"},
-                      {l:"Cerrado semana",v:closedWeek.length, c:"#166534",bg:"#f0fdf4"},
-                      {l:"Total leads",   v:leads.length,      c:B.brown,   bg:B.beige},
-                    ].map(s=>(
-                      <div key={s.l} style={{background:s.bg,borderRadius:10,padding:"10px 16px",display:"flex",gap:10,alignItems:"center"}}>
-                        <span style={{fontSize:22,fontWeight:800,color:s.c}}>{s.v}</span>
-                        <span style={{fontSize:12,color:s.c}}>{s.l}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Kanban columns */}
-                  <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16,alignItems:"start"}}>
-                    <div>
-                      <p style={{fontSize:11,fontWeight:700,color:"#92400e",textTransform:"uppercase",letterSpacing:"0.07em",margin:"0 0 12px"}}>📥 Por llamar ({pending.length})</p>
-                      {pending.length===0
-                        ?<p style={{color:B.topo,fontSize:13}}>¡Ninguno pendiente!</p>
-                        :pending.map(c=><PipelineCard key={c._row} c={c} type="pending" onUpdate={u=>quickUpdate(c,u)} onOpen={()=>setSelected(c)}/>)
-                      }
-                    </div>
-                    <div>
-                      <p style={{fontSize:11,fontWeight:700,color:"#1e40af",textTransform:"uppercase",letterSpacing:"0.07em",margin:"0 0 12px"}}>📞 Ya llamé ({called.length})</p>
-                      {called.length===0
-                        ?<p style={{color:B.topo,fontSize:13}}>Ninguna todavía.</p>
-                        :called.map(c=><PipelineCard key={c._row} c={c} type="called" onUpdate={u=>quickUpdate(c,u)} onOpen={()=>setSelected(c)}/>)
-                      }
-                    </div>
-                    <div>
-                      <p style={{fontSize:11,fontWeight:700,color:"#166534",textTransform:"uppercase",letterSpacing:"0.07em",margin:"0 0 12px"}}>✅ Cerrado esta semana ({closedWeek.length})</p>
-                      {closedWeek.length===0
-                        ?<p style={{color:B.topo,fontSize:13}}>Nada esta semana.</p>
-                        :closedWeek.map(c=><PipelineCard key={c._row} c={c} type="closed" onUpdate={u=>quickUpdate(c,u)} onOpen={()=>setSelected(c)}/>)
-                      }
-                    </div>
-                  </div>
-                </>
-              );
-            })()}
-          </>
-        )}
 
         {/* ── LEADS ── */}
         {view==="leads"&&(
