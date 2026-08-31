@@ -7,6 +7,7 @@ const B = {
 };
 
 interface NotaEntry { fecha: string; texto: string; }
+interface AdsRecord { periodo: string; gasto: number; leadsTotal?: number; clientesNuevos?: number; mrrSnapshot?: number; }
 
 interface Client {
   _row: number; ID: string; Fecha: string;
@@ -497,7 +498,7 @@ export default function CrmPage() {
   const [authed,  setAuthed]   = useState(false);
   const [clients, setClients]  = useState<Client[]>([]);
   const [loading, setLoading]  = useState(false);
-  const [view,         setView]        = useState<"pipeline"|"leads"|"clientes">("pipeline");
+  const [view,         setView]        = useState<"pipeline"|"leads"|"clientes"|"stats">("pipeline");
   const [filter,       setFilter]      = useState("Todos");
   const [filterPlan,   setFilterPlan]  = useState("Todos");
   const [filterMod,    setFilterMod]   = useState("Todos");
@@ -508,8 +509,13 @@ export default function CrmPage() {
   const [search,       setSearch]      = useState("");
   const [pipeForm,     setPipeForm]    = useState({Nombre:"",Telefono:"",Fuente:"WhatsApp"});
   const [pipeAdding,   setPipeAdding]  = useState(false);
+  const [adsRecords,   setAdsRecords]  = useState<AdsRecord[]>([]);
+  const [statsForm,    setStatsForm]   = useState({ periodo: new Date().toISOString().slice(0,7), gasto: "", leadsTotal: "" });
 
   useEffect(()=>{ if (localStorage.getItem("crm_token")) setAuthed(true); },[]);
+  useEffect(()=>{
+    try { const s=localStorage.getItem("crm_ads_records"); if(s) setAdsRecords(JSON.parse(s)); } catch {}
+  },[]);
 
   const fetchClients = useCallback(async()=>{
     setLoading(true);
@@ -532,6 +538,29 @@ export default function CrmPage() {
       const d=await res.json();
       if(d.ok){await fetchClients();setPipeForm({Nombre:"",Telefono:"",Fuente:"WhatsApp"});}
     }finally{setPipeAdding(false);}
+  };
+
+  const saveAdsRecord = (mrrNow: number, clientesNuevosNow: number) => {
+    const gasto = parseFloat(statsForm.gasto);
+    if(!gasto || !statsForm.periodo) return;
+    const record: AdsRecord = {
+      periodo: statsForm.periodo,
+      gasto,
+      mrrSnapshot: mrrNow,
+      clientesNuevos: clientesNuevosNow,
+      ...(statsForm.leadsTotal && { leadsTotal: parseInt(statsForm.leadsTotal) }),
+    };
+    const updated = [record, ...adsRecords.filter(r=>r.periodo!==statsForm.periodo)]
+      .sort((a,b)=>b.periodo.localeCompare(a.periodo));
+    setAdsRecords(updated);
+    localStorage.setItem("crm_ads_records", JSON.stringify(updated));
+    setStatsForm(f=>({...f, gasto:"", leadsTotal:""}));
+  };
+
+  const deleteAdsRecord = (periodo: string) => {
+    const updated = adsRecords.filter(r=>r.periodo!==periodo);
+    setAdsRecords(updated);
+    localStorage.setItem("crm_ads_records", JSON.stringify(updated));
   };
 
   const handleSave = async(updated:Partial<Client>)=>{
@@ -602,14 +631,140 @@ export default function CrmPage() {
           ["pipeline","Pipeline",leads.filter(c=>c.Estado==="Pendiente llamada").length],
           ["leads","Leads",leads.length],
           ["clientes","Clientes",clientes.length],
+          ["stats","Rentabilidad",null],
         ] as const).map(([id,label,count])=>(
           <button key={id} onClick={()=>{setView(id);setSearch("");setFilter("Todos");setFilterPlan("Todos");setFilterMod("Todos");setFilterCobro("Todos");setFilterCalls(false);}} style={{padding:"14px 20px",border:"none",background:"none",cursor:"pointer",fontFamily:B.font,fontSize:14,fontWeight:view===id?700:400,color:view===id?B.carbon:B.topo,borderBottom:view===id?`2px solid ${B.carbon}`:"2px solid transparent",transition:"all 0.15s"}}>
-            {label} <span style={{fontSize:12,marginLeft:4,padding:"2px 7px",borderRadius:20,background:view===id?B.carbon:B.arena,color:view===id?B.beige:B.topo,fontWeight:600}}>{count}</span>
+            {label}{count!==null&&<span style={{fontSize:12,marginLeft:4,padding:"2px 7px",borderRadius:20,background:view===id?B.carbon:B.arena,color:view===id?B.beige:B.topo,fontWeight:600}}>{count}</span>}
           </button>
         ))}
       </div>
 
       <div style={{maxWidth:1200,margin:"0 auto",padding:"24px"}}>
+
+        {/* ── STATS ── */}
+        {view==="stats"&&(()=>{
+          const now = new Date();
+          const [sy,sm] = statsForm.periodo.split("-").map(Number);
+          const activos = clientes.filter(c=>c.EstadoPlan==="Activo"||!c.EstadoPlan);
+          const mrr = activos.reduce((s,c)=>{const i=precioInfo(c.Modalidad);return s+(i?i.corte/i.meses:0);},0);
+          const clientesNuevosMes = clientes.filter(c=>{
+            if(!c.FechaInicio) return false;
+            const d=new Date(c.FechaInicio);
+            return d.getFullYear()===sy&&d.getMonth()+1===sm;
+          }).length;
+          const leadsDelMes = [...leads,...clientes].filter(c=>{
+            if(!c.Fecha) return false;
+            const d=new Date(c.Fecha);
+            return d.getFullYear()===sy&&d.getMonth()+1===sm;
+          }).length;
+          const currentRecord = adsRecords.find(r=>r.periodo===statsForm.periodo);
+          const gasto = currentRecord?.gasto ?? parseFloat(statsForm.gasto||"0") ?? 0;
+          const leadsN = currentRecord?.leadsTotal ?? leadsDelMes;
+          const beneficio = mrr - gasto;
+          const roas = gasto>0 ? mrr/gasto : null;
+          const cpl = gasto>0&&leadsN>0 ? gasto/leadsN : null;
+          const cac = gasto>0&&clientesNuevosMes>0 ? gasto/clientesNuevosMes : null;
+
+          const KPI = ({label,value,sub,highlight,warn}:{label:string;value:string;sub?:string;highlight?:boolean;warn?:boolean})=>(
+            <div style={{background:highlight?B.carbon:"#fff",border:`1px solid ${warn?"#fecaca":B.arena}`,borderRadius:12,padding:"18px 20px"}}>
+              <p style={{fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",color:highlight?B.topo:B.topo,margin:"0 0 6px"}}>{label}</p>
+              <p style={{fontSize:26,fontWeight:800,color:highlight?"#4ade80":warn?"#991b1b":B.carbon,margin:"0 0 4px",letterSpacing:"-0.01em"}}>{value}</p>
+              {sub&&<p style={{fontSize:12,color:highlight?B.arena:B.topo,margin:0}}>{sub}</p>}
+            </div>
+          );
+
+          const fmt = (n:number)=>`${Math.round(n)}€`;
+          const periodoLabel=(p:string)=>{const[y,m]=p.split("-");const d=new Date(+y,+m-1);return d.toLocaleDateString("es-ES",{month:"short",year:"numeric"});};
+
+          return (
+            <>
+              {/* Input form */}
+              <div style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:12,padding:"18px 20px",marginBottom:20}}>
+                <p style={{fontSize:12,fontWeight:700,color:B.topo,textTransform:"uppercase",letterSpacing:"0.06em",margin:"0 0 14px"}}>Registrar gasto mensual en ads</p>
+                <div style={{display:"flex",gap:10,flexWrap:"wrap",alignItems:"flex-end"}}>
+                  <div style={{flex:"0 0 auto"}}>
+                    <p style={{fontSize:11,fontWeight:600,color:B.topo,textTransform:"uppercase",letterSpacing:"0.04em",margin:"0 0 5px"}}>Periodo</p>
+                    <input type="month" value={statsForm.periodo} onChange={e=>setStatsForm(f=>({...f,periodo:e.target.value}))} style={{...inp,width:"auto"}}/>
+                  </div>
+                  <div style={{flex:"1 1 140px"}}>
+                    <p style={{fontSize:11,fontWeight:600,color:B.topo,textTransform:"uppercase",letterSpacing:"0.04em",margin:"0 0 5px"}}>Gasto en ads (€) *</p>
+                    <input type="number" min="0" placeholder="0.00" value={statsForm.gasto} onChange={e=>setStatsForm(f=>({...f,gasto:e.target.value}))} style={{...inp}}/>
+                  </div>
+                  <div style={{flex:"1 1 140px"}}>
+                    <p style={{fontSize:11,fontWeight:600,color:B.topo,textTransform:"uppercase",letterSpacing:"0.04em",margin:"0 0 5px"}}>Leads totales (opcional)</p>
+                    <input type="number" min="0" placeholder={`Auto: ${leadsDelMes} del CRM`} value={statsForm.leadsTotal} onChange={e=>setStatsForm(f=>({...f,leadsTotal:e.target.value}))} style={{...inp}}/>
+                  </div>
+                  <button onClick={()=>saveAdsRecord(mrr, clientesNuevosMes)} disabled={!statsForm.gasto||!statsForm.periodo} style={{background:!statsForm.gasto?B.topo:B.carbon,color:B.beige,border:"none",borderRadius:8,padding:"10px 20px",fontFamily:B.font,fontSize:14,fontWeight:600,cursor:!statsForm.gasto?"not-allowed":"pointer",flexShrink:0}}>
+                    Guardar mes
+                  </button>
+                </div>
+                {currentRecord&&<p style={{fontSize:12,color:"#166534",margin:"10px 0 0"}}>✓ Dato guardado para {periodoLabel(statsForm.periodo)}: {fmt(currentRecord.gasto)} en ads</p>}
+              </div>
+
+              {/* KPIs */}
+              <div style={{marginBottom:10}}>
+                <p style={{fontSize:11,fontWeight:700,color:B.topo,textTransform:"uppercase",letterSpacing:"0.06em",margin:"0 0 10px"}}>Ingresos vs gasto · {periodoLabel(statsForm.periodo)}</p>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:12}}>
+                  <KPI label="MRR actual" value={mrr?fmt(mrr):"—"} sub={`${activos.length} clientes activos`} highlight/>
+                  <KPI label="Gasto ads" value={gasto?fmt(gasto):"—"} sub={periodoLabel(statsForm.periodo)}/>
+                  <KPI label="Beneficio neto" value={gasto&&mrr?fmt(beneficio):"—"} sub="MRR − ads" warn={beneficio<0}/>
+                  <KPI label="ROAS" value={roas?`${roas.toFixed(1)}×`:"—"} sub="objetivo > 5×"/>
+                </div>
+                <p style={{fontSize:11,fontWeight:700,color:B.topo,textTransform:"uppercase",letterSpacing:"0.06em",margin:"12px 0 10px"}}>Pipeline · {periodoLabel(statsForm.periodo)}</p>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+                  <KPI label="Leads (CRM)" value={String(leadsN)} sub={statsForm.leadsTotal?"manual":"del CRM automático"}/>
+                  <KPI label="CPL" value={cpl?fmt(cpl):"—"} sub="coste por lead"/>
+                  <KPI label="Clientes nuevos" value={String(clientesNuevosMes)} sub="entraron este mes"/>
+                  <KPI label="CAC" value={cac?fmt(cac):"—"} sub="coste por cliente"/>
+                </div>
+              </div>
+
+              {/* Historial */}
+              {adsRecords.length>0&&(
+                <div style={{background:"#fff",border:`1px solid ${B.arena}`,borderRadius:12,overflow:"hidden",marginTop:20}}>
+                  <div style={{padding:"14px 20px",borderBottom:`1px solid ${B.arena}`}}>
+                    <p style={{fontSize:13,fontWeight:700,color:B.carbon,margin:0}}>Historial por mes</p>
+                  </div>
+                  <div style={{overflowX:"auto"}}>
+                    <table style={{width:"100%",borderCollapse:"collapse",minWidth:600}}>
+                      <thead><tr style={{background:B.beige}}>
+                        {["Periodo","Gasto ads","MRR","Beneficio","ROAS","Leads","CPL","Clientes nuevos","CAC",""].map(h=>(
+                          <th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:11,fontWeight:600,color:B.topo,textTransform:"uppercase",letterSpacing:"0.05em",whiteSpace:"nowrap"}}>{h}</th>
+                        ))}
+                      </tr></thead>
+                      <tbody>
+                        {adsRecords.map((r,i)=>{
+                          const rm=r.mrrSnapshot??0;
+                          const rb=rm-r.gasto;
+                          const rr=r.gasto>0?rm/r.gasto:null;
+                          const rLeads=r.leadsTotal??0;
+                          const rCpl=r.gasto>0&&rLeads>0?r.gasto/rLeads:null;
+                          const rCac=r.gasto>0&&(r.clientesNuevos??0)>0?r.gasto/(r.clientesNuevos!):null;
+                          const isSelected=r.periodo===statsForm.periodo;
+                          return(
+                            <tr key={r.periodo} onClick={()=>setStatsForm(f=>({...f,periodo:r.periodo}))} style={{borderBottom:i<adsRecords.length-1?`1px solid ${B.beige}`:"none",cursor:"pointer",background:isSelected?B.beige:"transparent"}} onMouseEnter={e=>{if(!isSelected)e.currentTarget.style.background=B.beige;}} onMouseLeave={e=>{if(!isSelected)e.currentTarget.style.background="transparent";}}>
+                              <td style={{padding:"11px 14px",fontWeight:600,color:B.carbon,whiteSpace:"nowrap"}}>{periodoLabel(r.periodo)}</td>
+                              <td style={{padding:"11px 14px",color:B.topo}}>{fmt(r.gasto)}</td>
+                              <td style={{padding:"11px 14px",fontWeight:600,color:"#166534"}}>{rm?fmt(rm):"—"}</td>
+                              <td style={{padding:"11px 14px",fontWeight:600,color:rb>=0?"#166534":"#991b1b"}}>{rm?fmt(rb):"—"}</td>
+                              <td style={{padding:"11px 14px",color:B.carbon}}>{rr?`${rr.toFixed(1)}×`:"—"}</td>
+                              <td style={{padding:"11px 14px",color:B.topo}}>{rLeads||"—"}</td>
+                              <td style={{padding:"11px 14px",color:B.topo}}>{rCpl?fmt(rCpl):"—"}</td>
+                              <td style={{padding:"11px 14px",color:B.topo}}>{r.clientesNuevos??"—"}</td>
+                              <td style={{padding:"11px 14px",color:B.topo}}>{rCac?fmt(rCac):"—"}</td>
+                              <td style={{padding:"11px 14px"}}><button onClick={e=>{e.stopPropagation();deleteAdsRecord(r.periodo);}} style={{background:"none",border:"none",color:B.arena,cursor:"pointer",fontSize:14,fontFamily:B.font}}>✕</button></td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+              {adsRecords.length===0&&<p style={{color:B.topo,fontSize:13,textAlign:"center",padding:"32px 0"}}>Aún no hay datos guardados. Rellena el formulario de arriba para tu primer mes.</p>}
+            </>
+          );
+        })()}
 
         {/* ── PIPELINE ── */}
         {view==="pipeline"&&(
