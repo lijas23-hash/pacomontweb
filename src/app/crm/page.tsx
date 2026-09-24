@@ -82,8 +82,10 @@ const PLANES = ["Entreno + Nutrición","Solo Entreno","Solo Nutrición","Prepara
 const NIVELES = ["—","Principiante","Intermedio","Avanzado"];
 const ESTADOS_PLAN = ["Activo","Pausado","Cancelado","Finalizado"];
 const MODALIDADES: Record<string,{precio:number;meses:number;label:string}> = {
-  "Trimestral": {precio:299, meses:3,  label:"cada 3 meses"},
-  "Semestral":  {precio:459, meses:6,  label:"cada 6 meses"},
+  "Trimestral":          {precio:299, meses:3, label:"cada 3 meses"},
+  "Trimestral Nutrición":{precio:149, meses:3, label:"cada 3 meses"},
+  "Trimestral Entreno":  {precio:199, meses:3, label:"cada 3 meses"},
+  "Semestral":           {precio:459, meses:6, label:"cada 6 meses"},
 };
 const CORTE = 0.70;
 function precioInfo(modalidad:string) {
@@ -390,6 +392,8 @@ function DetailModal({client,onClose,onSave,onDelete}:{client:Client;onClose:()=
                   <select value={modalidad} onChange={e=>handleModalidad(e.target.value)} style={{...inp}}>
                     <option value="">— Seleccionar —</option>
                     <option value="Trimestral">Trimestral (299€)</option>
+                    <option value="Trimestral Nutrición">Trimestral Nutrición (149€)</option>
+                    <option value="Trimestral Entreno">Trimestral Entreno (199€)</option>
                     <option value="Semestral">Semestral (459€)</option>
                   </select>
                 </div>
@@ -1163,6 +1167,8 @@ export default function CrmPage() {
                     {[
                       {l:"Total clientes",v:`${clientes.length}`,c:B.brown},
                       {l:"Trimestral",v:`${clientes.filter(c=>c.Modalidad==="Trimestral").length}`,c:B.brown,sub:"299€ · cobras 209€"},
+                      {l:"Trim. Nutrición",v:`${clientes.filter(c=>c.Modalidad==="Trimestral Nutrición").length}`,c:B.brown,sub:"149€ · cobras 104€"},
+                      {l:"Trim. Entreno",v:`${clientes.filter(c=>c.Modalidad==="Trimestral Entreno").length}`,c:B.brown,sub:"199€ · cobras 139€"},
                       {l:"Semestral",v:`${clientes.filter(c=>c.Modalidad==="Semestral").length}`,c:B.brown,sub:"459€ · cobras 321€"},
                       {l:"Sin llamada mensual",v:`${sinLlamada.length}`,c:sinLlamada.length>0?"#92400e":B.topo,clickable:true},
                     ].map(s=>(
@@ -1207,9 +1213,9 @@ export default function CrmPage() {
               <div style={{marginBottom:10}}>
                 <p style={{fontSize:10,fontWeight:700,color:B.topo,textTransform:"uppercase",letterSpacing:"0.07em",margin:"0 0 7px"}}>Modalidad</p>
                 <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-                  {(["Todos","Trimestral","Semestral","Sin asignar"]).map(t=>{
+                  {(["Todos","Trimestral","Trimestral Nutrición","Trimestral Entreno","Semestral","Sin asignar"]).map(t=>{
                     const active=filterMod===t;
-                    return <button key={t} onClick={()=>setFilterMod(t)} style={{padding:"5px 13px",borderRadius:20,fontSize:13,fontFamily:B.font,cursor:"pointer",border:active?`1.5px solid ${B.brown}`:`1.5px solid ${B.arena}`,background:active?B.beige:"#fff",color:active?B.brown:B.topo,fontWeight:active?600:400}}>
+return <button key={t} onClick={()=>setFilterMod(t)} style={{padding:"5px 13px",borderRadius:20,fontSize:13,fontFamily:B.font,cursor:"pointer",border:active?`1.5px solid ${B.brown}`:`1.5px solid ${B.arena}`,background:active?B.beige:"#fff",color:active?B.brown:B.topo,fontWeight:active?600:400}}>
                       {t}{t!=="Todos"&&t!=="Sin asignar"&&<span style={{opacity:0.6,marginLeft:4}}>({clientes.filter(c=>c.Modalidad===t).length})</span>}
                     </button>;
                   })}
