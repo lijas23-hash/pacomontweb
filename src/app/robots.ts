@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/admin/", "/api/", "/crm/", "/crm"],
+      disallow: ["/admin/", "/api/", "/crm/", "/crm", "/colabs-x4k9mp"],
     },
     sitemap: "https://www.pacomont.es/sitemap.xml",
   };
