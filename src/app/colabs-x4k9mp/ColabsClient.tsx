@@ -50,16 +50,13 @@ const T = {
     sub60_sub:   "Una marca puede ser parte de la historia toda la temporada",
     sub60_body:  "Una serie de YouTube y contenido corto con un objetivo claro: bajar de 60 minutos en HYROX. Cada semana, entrenos reales, datos, fracasos y avances. Una marca puede estar en esa historia desde el principio, con visibilidad en cada entrega.",
     s_collab:    "CÓMO COLABORAR",
-    collab_sub:  "Sin precios en esta página — hablamos y adaptamos",
-    t1:          "PRUEBA",
-    t1_tag:      "Una acción puntual",
-    t1_body:     "Un reel + stories para conocernos. Sin compromisos. La forma más rápida de ver si hay encaje antes de ir a más.",
-    t2:          "PILOTO",
-    t2_tag:      "3 meses de contenido",
-    t2_body:     "Contenido mensual con un informe de resultados al final del período. Medimos, aprendemos y decidimos si seguimos.",
+    collab_sub:  "Me adapto a lo que necesite cada marca.",
+    t1:          "PUNTUAL",
+    t1_body:     "Una colaboración concreta para conocernos.",
+    t2:          "TRIMESTRAL",
+    t2_body:     "Tres meses trabajando juntos para ver cómo encajamos.",
     t3:          "ANUAL",
-    t3_tag:      "Socio · Socio principal · Patrocinador título",
-    t3_body:     "Integraciones en YouTube, derechos de uso del contenido (whitelisting), exclusividad de categoría y tu nombre en la serie Road to SUB60.",
+    t3_body:     "Una alianza para toda la temporada.",
     s_fmt:       "FORMATOS",
     s_cal:       "CALENDARIO DE COMPETICIONES",
     s_contact:   "HABLEMOS",
@@ -103,16 +100,13 @@ const T = {
     sub60_sub:   "A brand can be part of the story all season",
     sub60_body:  "A YouTube series and short-form content with one clear goal: break 60 minutes in HYROX. Every week, real training, data, setbacks and progress. A brand can be in that story from the start, with visibility in every episode.",
     s_collab:    "HOW TO COLLABORATE",
-    collab_sub:  "No pricing on this page — we talk and adapt",
-    t1:          "TRIAL",
-    t1_tag:      "One-off action",
-    t1_body:     "One reel + stories to see if we click. No commitments. The fastest way to test the fit before going further.",
-    t2:          "PILOT",
-    t2_tag:      "3 months of content",
-    t2_body:     "Monthly content with a results report at the end. We measure, learn and decide whether to continue.",
+    collab_sub:  "I adapt to what each brand needs.",
+    t1:          "ONE-OFF",
+    t1_body:     "A concrete collaboration to get to know each other.",
+    t2:          "QUARTERLY",
+    t2_body:     "Three months working together to see how we fit.",
     t3:          "ANNUAL",
-    t3_tag:      "Partner · Lead Partner · Title Sponsor",
-    t3_body:     "YouTube integrations, content usage rights (whitelisting), category exclusivity and your name in the Road to SUB60 series.",
+    t3_body:     "An alliance for the whole season.",
     s_fmt:       "FORMATS",
     s_cal:       "COMPETITION CALENDAR",
     s_contact:   "LET'S TALK",
@@ -126,7 +120,7 @@ const T = {
 
 // ── Data ─────────────────────────────────────────────────
 const STATS = [
-  { val: "104,7K", es: "Instagram",              en: "Instagram",            sub_es: "@pacomont24",                       sub_en: "@pacomont24" },
+  { val: "105,6K", es: "Instagram",              en: "Instagram",            sub_es: "@pacomont24",                       sub_en: "@pacomont24" },
   { val: "17,6K",  es: "TikTok",                 en: "TikTok",               sub_es: "@pacomont24",                       sub_en: "@pacomont24" },
   { val: "9,61%",  es: "Engagement posts",        en: "Post engagement",      sub_es: "últimos 12 meses",                  sub_en: "last 12 months" },
   { val: "8,45%",  es: "Engagement reels",        en: "Reel engagement",      sub_es: "últimos 12 meses",                  sub_en: "last 12 months" },
@@ -159,12 +153,12 @@ const WHO = [
 ];
 
 const VIDEOS = [
-  { id: "DbjIB1tNGNG", type: "ig" as const, l_es: "Competición",   l_en: "Competition" },
-  { id: "Dbs1niWMvcI", type: "ig" as const, l_es: "Entreno",       l_en: "Training" },
-  { id: "DYuvp-as7Rm", type: "ig" as const, l_es: "Lifestyle",     l_en: "Lifestyle" },
-  { id: "DFBL0xhMQZi", type: "ig" as const, l_es: "HYROX",         l_en: "HYROX" },
-  { id: "XLG38hCaaB8", type: "yt" as const, l_es: "YouTube",       l_en: "YouTube" },
-  { id: "DU7wkNuDEbI", type: "ig" as const, l_es: "Road to SUB60", l_en: "Road to SUB60" },
+  { id: "DbjIB1tNGNG", type: "ig" as const, l_es: "Competición",   l_en: "Competition",  thumb: "/images/Velites_Hyrox_Madrid_PacoChristian_127.jpg" },
+  { id: "Dbs1niWMvcI", type: "ig" as const, l_es: "Entreno",       l_en: "Training",     thumb: "/images/entrenamiento.jpg" },
+  { id: "DYuvp-as7Rm", type: "ig" as const, l_es: "Lifestyle",     l_en: "Lifestyle",    thumb: "/images/Hero_New_5.jpg" },
+  { id: "DFBL0xhMQZi", type: "ig" as const, l_es: "HYROX",         l_en: "HYROX",        thumb: "/images/Hero_New_6.jpg" },
+  { id: "XLG38hCaaB8", type: "yt" as const, l_es: "YouTube",       l_en: "YouTube",      thumb: null },
+  { id: "DU7wkNuDEbI", type: "ig" as const, l_es: "Road to SUB60", l_en: "Road to SUB60",thumb: "/images/hero-new3.png" },
 ];
 
 const BRANDS = ["LifePRO", "NOCCO", "Amazfit", "Velites", "RUMM", "GGUDSLEP"];
@@ -318,7 +312,7 @@ export default function ColabsClient() {
           ))}
           <div style={{ marginTop: 28, borderRadius: 12, overflow: "hidden", aspectRatio: "3/2", background: "#ccc" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/action.jpg" alt="Paco Montero entrenando" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+            <img src="/images/entrenamiento.jpg" alt="Paco Montero entrenando" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
           </div>
         </div>
       </section>
@@ -394,7 +388,7 @@ export default function ColabsClient() {
                   border: "none",
                   background: v.type === "yt"
                     ? `url(https://img.youtube.com/vi/${v.id}/hqdefault.jpg) center/cover`
-                    : "linear-gradient(145deg, #1e1e1e 0%, #2a2a2a 100%)",
+                    : v.thumb ? `url(${v.thumb}) center/cover` : "linear-gradient(145deg, #1e1e1e 0%, #2a2a2a 100%)",
                   padding: 0,
                   width: "100%",
                   display: "block",
@@ -457,7 +451,7 @@ export default function ColabsClient() {
         <div style={inner}>
           <div style={{ borderRadius: 14, overflow: "hidden", marginBottom: 28, aspectRatio: "16/9", position: "relative" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/sled-push.jpg" alt="Road to SUB60" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+            <img src="/images/Hero_New_6.jpg" alt="Road to SUB60" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
             <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(0,0,0,0.72), rgba(0,0,0,0.1))" }}>
               <div style={{ padding: "24px 28px" }}>
                 <p style={{ fontSize: 11, color: C.gold, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase" as const, margin: "0 0 6px" }}>SERIE · YOUTUBE</p>
@@ -476,16 +470,13 @@ export default function ColabsClient() {
           <Hdr title={t.s_collab} sub={t.collab_sub} />
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {[
-              { name: t.t1, tag: t.t1_tag, body: t.t1_body, dark: false },
-              { name: t.t2, tag: t.t2_tag, body: t.t2_body, dark: false },
-              { name: t.t3, tag: t.t3_tag, body: t.t3_body, dark: true },
+              { name: t.t1, body: t.t1_body, dark: false },
+              { name: t.t2, body: t.t2_body, dark: false },
+              { name: t.t3, body: t.t3_body, dark: true },
             ].map(tier => (
               <div key={tier.name} style={{ padding: "22px 20px", borderRadius: 12, border: tier.dark ? `2px solid ${C.gold}` : `1px solid ${C.border}`, background: tier.dark ? C.dark : "#fff" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8, gap: 10 }}>
-                  <span style={{ fontFamily: "var(--font-bebas), sans-serif", fontSize: 26, color: tier.dark ? C.gold : C.text, letterSpacing: "0.02em" }}>{tier.name}</span>
-                  <span style={{ fontSize: 11, color: tier.dark ? "rgba(255,255,255,0.45)" : C.muted, fontWeight: 600, textAlign: "right" as const, flexShrink: 0 }}>{tier.tag}</span>
-                </div>
-                <p style={{ fontSize: 14, color: tier.dark ? "rgba(255,255,255,0.75)" : C.muted, margin: 0, lineHeight: 1.65 }}>{tier.body}</p>
+                <span style={{ fontFamily: "var(--font-bebas), sans-serif", fontSize: 28, color: tier.dark ? C.gold : C.text, letterSpacing: "0.02em", display: "block", marginBottom: 8 }}>{tier.name}</span>
+                <p style={{ fontSize: 15, color: tier.dark ? "rgba(255,255,255,0.75)" : C.muted, margin: 0, lineHeight: 1.6 }}>{tier.body}</p>
               </div>
             ))}
           </div>
@@ -533,15 +524,15 @@ export default function ColabsClient() {
               ✉ {t.btn_email}
             </a>
             <a href="https://www.instagram.com/pacomont24/" target="_blank" rel="noreferrer"
-               style={{ display: "block", padding: "14px 24px", border: "1px solid rgba(255,255,255,0.2)", color: "#fff", borderRadius: 30, fontSize: 14, fontWeight: 600, textDecoration: "none" }}>
+               style={{ display: "block", padding: "14px 24px", border: "1px solid rgba(255,255,255,0.35)", background: "rgba(255,255,255,0.07)", color: "#fff", borderRadius: 30, fontSize: 14, fontWeight: 600, textDecoration: "none" }}>
               Instagram · @pacomont24
             </a>
             <a href="https://www.tiktok.com/@pacomont24" target="_blank" rel="noreferrer"
-               style={{ display: "block", padding: "14px 24px", border: "1px solid rgba(255,255,255,0.2)", color: "#fff", borderRadius: 30, fontSize: 14, fontWeight: 600, textDecoration: "none" }}>
+               style={{ display: "block", padding: "14px 24px", border: "1px solid rgba(255,255,255,0.35)", background: "rgba(255,255,255,0.07)", color: "#fff", borderRadius: 30, fontSize: 14, fontWeight: 600, textDecoration: "none" }}>
               TikTok · @pacomont24
             </a>
             <a href="https://www.youtube.com/@pacomont24" target="_blank" rel="noreferrer"
-               style={{ display: "block", padding: "14px 24px", border: "1px solid rgba(255,255,255,0.2)", color: "#fff", borderRadius: 30, fontSize: 14, fontWeight: 600, textDecoration: "none" }}>
+               style={{ display: "block", padding: "14px 24px", border: "1px solid rgba(255,255,255,0.35)", background: "rgba(255,255,255,0.07)", color: "#fff", borderRadius: 30, fontSize: 14, fontWeight: 600, textDecoration: "none" }}>
               YouTube · @pacomont24
             </a>
             <a href="/media-kit.pdf" download="Paco-Montero-Media-Kit.pdf"
