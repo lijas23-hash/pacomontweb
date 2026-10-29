@@ -120,7 +120,7 @@ const T = {
 
 // ── Data ─────────────────────────────────────────────────
 const STATS = [
-  { val: "105,6K", es: "Instagram",              en: "Instagram",            sub_es: "@pacomont24",                       sub_en: "@pacomont24" },
+  { val: "111K", es: "Instagram",              en: "Instagram",            sub_es: "@pacomont24",                       sub_en: "@pacomont24" },
   { val: "17,6K",  es: "TikTok",                 en: "TikTok",               sub_es: "@pacomont24",                       sub_en: "@pacomont24" },
   { val: "9,61%",  es: "Engagement posts",        en: "Post engagement",      sub_es: "últimos 12 meses",                  sub_en: "last 12 months" },
   { val: "8,45%",  es: "Engagement reels",        en: "Reel engagement",      sub_es: "últimos 12 meses",                  sub_en: "last 12 months" },
